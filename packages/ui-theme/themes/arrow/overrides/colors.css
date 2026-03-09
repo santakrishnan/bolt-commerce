@@ -1,0 +1,54 @@
+/* Arrow Brand Colors - From Design Tokens */
+@theme {
+  /* Primary: Blue 500 */
+  --color-primary: #0066cc;
+  --color-primary-foreground: #ffffff;
+
+  /* Accent: Blue 50 with Blue 700 foreground */
+  --color-accent: #e0e3f7;
+  --color-accent-foreground: #1c4483;
+
+  /* Destructive: Red 500 */
+  --color-destructive: #eb0a1e;
+  --color-destructive-foreground: #ffffff;
+
+  /* Brand Colors */
+  --color-brand-red: #eb0a1e;
+  --color-brand-text: #111111;
+  --color-brand-text-primary: #000000;
+  --color-brand-text-secondary: #58595b;
+  --color-brand-text-dealer: #272727;
+  --color-brand-surface: #f8f8f8;
+  --color-brand-success: #12b45d;
+  --color-brand-border-light: #e6e6e6;
+  --color-brand-muted: #58595b;
+  --color-background-grey: #dbe2eb;
+
+  --color-states-muted-foreground: #525252;
+  --color-states-muted: #d4d4d4;
+  --color-core-surfaces-foreground: #0a0a0a;
+  --color-core-surfaces-card: #fff;
+  --color-core-surfaces-background: #f5f5f5;
+  --color-core-surfaces-inverse-foreground: #f5f5f5;
+  --color-actions-secondary-foreground: #fff;
+  --color-actions-secondary: #0a0a0a;
+  --color-actions-tertiary-foreground: #0a0a0a;
+  --color-actions-tertiary-border: #525252;
+  --color-actions-primary-foreground: #ffffff;
+  --color-actions-primary: #eb0a1e;
+  --color-actions-accent: #eb0a1e;
+  --color-structure-interaction-border: #d4d4d4;
+  --color-structure-interaction-inverse-decorative: #f5f5f5;
+  --color-structure-interaction-subtle-border: #e5e5e5;
+  --structure-interaction-subtle-border: #e5e5e5;
+  --color-structure-interaction-border: #d4d4d4;
+  --color-states-disabled-foreground: #747474;
+  --color-structure-interaction-border-two: #0000001a;
+  --color-structure-interaction-border-hover: #eb0d1c;
+
+  /* Car Card Colors */
+  --color-card-title: #111111;
+  --color-card-price: #eb0d1c;
+  --color-card-estimated-payment: #547dd5;
+  --color-card-badge-price-drop: #0066cc;
+}

@@ -1,0 +1,213 @@
+{
+  "hero": {
+    "title": "FIND YOUR\nNEXT VEHICLE",
+    "subtitle": "with transparent pricing and trusted quality",
+    "searchPlaceholder": "SUV under $35K with low miles",
+    "backgroundImage": "https://www.figma.com/api/mcp/asset/841eef9c-b99a-4406-9994-519903034548",
+    "features": [
+      {
+        "id": "vehicles",
+        "value": "20,847",
+        "label": "Vehicles Available",
+        "icon": "https://www.figma.com/api/mcp/asset/53796c69-e181-4f06-a0ba-08ad5ef75109"
+      },
+      {
+        "id": "vin",
+        "value": "100%",
+        "label": "Verified VIN",
+        "icon": "https://www.figma.com/api/mcp/asset/c4a3d76c-13e0-47ec-bb31-36b52e50b1ca"
+      },
+      {
+        "id": "money-back",
+        "value": "7-Day",
+        "label": "Money Back",
+        "icon": "https://www.figma.com/api/mcp/asset/5f494537-0ab4-456e-9f24-51d19121f02f"
+      },
+      {
+        "id": "rating",
+        "value": "4.9",
+        "label": "Customer Rating",
+        "icon": "https://www.figma.com/api/mcp/asset/dbd4cee9-bcd6-4d55-b43b-514a0037460a"
+      }
+    ]
+  },
+  "vehicleTypes": [
+    {
+      "id": "sedan",
+      "title": "SEDAN",
+      "description": "Fuel-efficient\ndaily driver",
+      "image": "https://www.figma.com/api/mcp/asset/4ab597ea-6638-4786-8d6f-f329855a977d"
+    },
+    {
+      "id": "suv",
+      "title": "SUV",
+      "description": "Space & versatility",
+      "image": "https://www.figma.com/api/mcp/asset/6d79ef8a-99b3-4951-8fb8-74e73c1189ba"
+    },
+    {
+      "id": "truck",
+      "title": "TRUCK",
+      "description": "Power & capability",
+      "image": "https://www.figma.com/api/mcp/asset/f7ae69dc-2c54-4d7a-932e-adc6d3d6414d"
+    },
+    {
+      "id": "coupe",
+      "title": "COUPE",
+      "description": "Sleek, sporty, two-door",
+      "image": "https://www.figma.com/api/mcp/asset/c5da849d-bcfd-4f8e-ae44-0b54d399c612"
+    },
+    {
+      "id": "hatchback",
+      "title": "HATCHBACK",
+      "description": "Fuel-efficient\ndaily driver",
+      "image": "https://www.figma.com/api/mcp/asset/998ea8f8-f9c5-497e-81cc-a9f78a9e552c"
+    },
+    {
+      "id": "wagon",
+      "title": "WAGON",
+      "description": "Space & versatility",
+      "image": "https://www.figma.com/api/mcp/asset/23044316-fc41-4f55-b4cd-c98e20dbd13f"
+    },
+    {
+      "id": "van",
+      "title": "VAN",
+      "description": "Power & capability",
+      "image": "https://www.figma.com/api/mcp/asset/8e65d254-9eba-4878-aea3-7a3684467faa"
+    },
+    {
+      "id": "convertible",
+      "title": "CONVERTIBLE",
+      "description": "Sleek, sporty, two-door",
+      "image": "https://www.figma.com/api/mcp/asset/f6a42424-2715-48c0-bd10-77139630a30c"
+    }
+  ],
+  "howToBuy": {
+    "title": "How to buy your next Toyota",
+    "backgroundImage": "https://www.figma.com/api/mcp/asset/f2790007-ee73-4813-a699-86d2e2d23913",
+    "cards": [
+      {
+        "id": "fast-process",
+        "icon": "https://www.figma.com/api/mcp/asset/de1f25f9-36a1-4fd6-89f7-9077d0372216",
+        "title": "Fast & Simple Process",
+        "description": "Clear pricing, no hidden fees. See the full breakdown before you commit.",
+        "link": "Find Out More",
+        "showLink": false
+      },
+      {
+        "id": "transparent",
+        "icon": "https://www.figma.com/api/mcp/asset/b8f84479-85f3-4786-bfa4-2cb9ed546b6e",
+        "title": "Transparent from the Start",
+        "description": "Clear pricing, no hidden fees. See the full breakdown before you commit.",
+        "link": "Find Out More",
+        "showLink": true
+      },
+      {
+        "id": "inspected",
+        "icon": "https://www.figma.com/api/mcp/asset/eb4d4bcb-2d66-45d4-9850-b429c13c930d",
+        "title": "Inspected by Toyota",
+        "description": "Backed by our rigorous 160-point quality standards and decades of expertise.",
+        "link": "Find Out More",
+        "showLink": false
+      },
+      {
+        "id": "confidence",
+        "icon": "https://www.figma.com/api/mcp/asset/841ebb4e-d65b-4b30-bdef-23f8508ed6ea",
+        "title": "Buy with Confidence",
+        "description": "Every listing includes a detailed condition report and full history.",
+        "link": "Find Out More",
+        "showLink": false
+      }
+    ]
+  },
+  "findVehicle": {
+    "title": "Find your vehicle",
+    "backgroundImage": "https://www.figma.com/api/mcp/asset/841eef9c-b99a-4406-9994-519903034548",
+    "categories": [
+      {
+        "id": "under-20k",
+        "icon": "https://www.figma.com/api/mcp/asset/2a04a11a-451a-4bbf-9e70-45f9a0776d83",
+        "title": "Cars Under $20,000",
+        "count": "4,564",
+        "label": "vehicles"
+      },
+      {
+        "id": "excellent-deals",
+        "icon": "https://www.figma.com/api/mcp/asset/94a2c4f6-f3ff-43a0-82cd-0a160085ab8a",
+        "title": "Shop Excellent Deals",
+        "count": "9,797",
+        "label": "vehicles"
+      },
+      {
+        "id": "price-drop",
+        "icon": "https://www.figma.com/api/mcp/asset/54165d91-9bf0-4286-b097-0f263ff78566",
+        "title": "Price Drop",
+        "count": "17,998",
+        "label": "vehicles"
+      },
+      {
+        "id": "low-miles",
+        "icon": "https://www.figma.com/api/mcp/asset/38f64b8a-cc96-4a76-b84a-a75f6f8f94fe",
+        "title": "Low Miles",
+        "count": "9,797",
+        "label": "vehicles"
+      }
+    ]
+  },
+  "prequalify": [
+    {
+      "id": "estimate",
+      "title": "PREQUALIFY FOR\nYOUR NEXT TOYOTA",
+      "description": "Get personalized rates with a soft credit check. Know your budget before you shop.",
+      "ctaText": "Get My Free Estimate",
+      "backgroundImage": "https://www.figma.com/api/mcp/asset/d90ca80c-dd50-404e-8781-a9c1eaeb0024"
+    },
+    {
+      "id": "financing",
+      "title": "FLEXIBLE\nFINANCING OPTIONS",
+      "description": "Choose from multiple financing options tailored to your needs and credit profile.",
+      "ctaText": "Explore Financing",
+      "backgroundImage": "https://www.figma.com/api/mcp/asset/d90ca80c-dd50-404e-8781-a9c1eaeb0024"
+    },
+    {
+      "id": "trade-in",
+      "title": "GET VALUE FOR YOUR\nCURRENT VEHICLE",
+      "description": "Quick and easy trade-in valuation with instant offers on your current vehicle.",
+      "ctaText": "Get Trade-In Value",
+      "backgroundImage": "https://www.figma.com/api/mcp/asset/d90ca80c-dd50-404e-8781-a9c1eaeb0024"
+    }
+  ],
+  "arrowInspected": {
+    "title": "Arrow Inspected®",
+    "subtitle": "Every vehicle is backed by Toyota's commitment to quality and transparency",
+    "cards": [
+      {
+        "id": "160-point",
+        "icon": "https://www.figma.com/api/mcp/asset/4f7a65fd-7bb1-4d7e-9007-dea28b1cb614",
+        "title": "160-Point Inspection",
+        "description": "Every vehicle undergoes our rigorous 160-point certification process",
+        "image": "https://www.figma.com/api/mcp/asset/288925e8-fafe-41df-9305-69d9d441d768"
+      },
+      {
+        "id": "verified-vin",
+        "icon": "https://www.figma.com/api/mcp/asset/25794ff9-cab1-46a4-9758-c5477b4595fb",
+        "title": "Verified VIN\n& Full History Check",
+        "description": "Complete vehicle history with no hidden accidents\nor major repairs",
+        "image": "https://www.figma.com/api/mcp/asset/fd1a966a-df92-4f3a-9291-ee8448afed79"
+      },
+      {
+        "id": "no-hidden-damage",
+        "icon": "https://www.figma.com/api/mcp/asset/4370db95-ee7a-486e-8cda-0c55c8ae4179",
+        "title": "No Hidden Damage Guarantee",
+        "description": "All damage disclosed upfront with detailed condition reports",
+        "image": "https://www.figma.com/api/mcp/asset/4632cc2a-340b-47b0-932c-16c61c95c7e7"
+      },
+      {
+        "id": "7-day-return",
+        "icon": "https://www.figma.com/api/mcp/asset/6fab0632-02a6-41eb-b1f9-673c5bcf766d",
+        "title": "7-Day Return or Exchange",
+        "description": "Not satisfied? Return or exchange within 7 days, no questions asked",
+        "image": "https://www.figma.com/api/mcp/asset/c480b14f-93b7-4720-be8b-99b75794841a"
+      }
+    ]
+  }
+}

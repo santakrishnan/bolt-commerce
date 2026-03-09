@@ -1,0 +1,18 @@
+/**
+ * UI Package Styles
+ *
+ * Imports the Arrow Design System theme which includes:
+ * - Tailwind CSS v4
+ * - Design tokens (colors, spacing, typography, etc.)
+ * - Arrow brand theme
+ * - Base styles and utilities
+ */
+@import "@tfs-ucmp/ui-theme";
+
+/**
+ * UI-specific theme customizations
+ * Use @theme directive to extend or override theme values
+ */
+@theme {
+  /* Add UI package-specific theme customizations here if needed */
+}

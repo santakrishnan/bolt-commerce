@@ -1,0 +1,86 @@
+/* Arrow Semantic Colors - From Design Tokens */
+@theme {
+  /* Core Surfaces */
+  --Core-surfaces-foreground: #0a0a0a; /* Core surfaces foreground color */
+  --Core-surfaces-card-foreground: #0a0a0a; /* Card foreground color */
+  --color-surface: #ffffff; /* White — card/section backgrounds */
+  --color-inverse-background: #0a0a0a; /* Neutrals/950 */
+  --color-background: #f5f5f5; /* Neutrals/100 */
+  --color-inverse-foreground: #f5f5f5; /* Neutrals/100 */
+  --color-foreground: #0a0a0a; /* Neutrals/950 */
+  --color-text-dark: #111111; /* Dark text color */
+  --color-text-primary: #272727; /* Primary text color */
+  --color-text-medium: #2b2b2b; /* Medium dark text color */
+  --color-background-light: #f2f2f2; /* Light background */
+  --color-background-lighter: #f8f8f8; /* Lighter background */
+  --color-card: #ffffff; /* White */
+  --color-inverse-card: #0a0a0a; /* Neutrals/950 */
+  --color-card-foreground: #0a0a0a; /* Neutrals/950 */
+  --color-inverse-card-foreground: #ffffff; /* White */
+  --color-popover: #ffffff; /* White */
+  --color-popover-foreground: #0a0a0a; /* Neutrals/950 */
+
+  /* Actions */
+  --color-primary: #eb0a1e; /* Red/500 */
+  --color-primary-foreground: #ffffff; /* White */
+  --color-primary-hover: rgba(235, 10, 30, 0.8); /* Red/500 at 80% opacity */
+  --color-icon-primary: #eb0d1c; /* Primary icon color - Toyota Red */
+  --color-secondary: #0a0a0a; /* Neutrals/950 */
+  --color-secondary-foreground: #ffffff; /* White */
+  --color-accent: #eb0a1e; /* Red/500 */
+  --color-accent-foreground: #ffffff; /* White */
+
+  /* States */
+  --color-muted: #a3a3a3; /* Neutrals/400 */
+  --color-muted-foreground: #525252; /* Neutrals/600 */
+  --color-inverse-muted: #525252; /* Neutrals/600 */
+  --color-inverse-muted-foreground: #a3a3a3; /* Neutrals/400 */
+  --color-footer-muted: #99a1af; /* Footer text color */
+  --color-destructive: #981b18; /* Red/700 */
+  --color-destructive-foreground: #ffffff; /* White */
+  --color-info: #7d95de; /* Blue/300 */
+  --color-info-foreground: #ffffff; /* White */
+  --color-success: #12b45d; /* Green/500 */
+  --color-success-foreground: #ffffff; /* White */
+  --color-success-strong: #1c5730; /* Green/800 */
+  --color-success-strong-foreground: #ffffff; /* White */
+
+  /* TODO: Design uses #10B981 for pricing badges. Closest token is success (#12b45d).
+     Decide: unify to --color-success, or keep a separate --color-success-badge: #10B981? */
+  --color-success-badge: #10b981; /* Emerald/500 — VDP pricing badge */
+
+  /* Structure & Interaction */
+  --color-decorative: #0a0a0a; /* Neutrals/950 */
+  --color-inverse-decorative: #f5f5f5; /* Neutrals/100 */
+  --color-border: #d4d4d4; /* Neutrals/300 */
+  --color-border-light: #cccccc; /* Light border */
+  --color-border-subtle: rgba(0, 0, 0, 0.1); /* Subtle border with opacity */
+  --color-border-subtle-hover: rgba(0, 0, 0, 0.2); /* Subtle border hover */
+  --color-overlay: rgba(255, 255, 255, 0.3); /* White border overlay for transparent states */
+  --color-background-overlay-hover: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* White background overlay on hover */
+  --color-inverse-border: #262626; /* Neutrals/800 */
+  --color-input: #fafafa; /* Neutrals/50 */
+  --color-ring: #a0afe7; /* Blue/200 */
+
+  /* Brand / Content Hierarchy
+     These are the exact design-spec values. They differ from the base
+     semantic tokens (foreground #0a0a0a, muted-foreground #525252,
+     destructive #981b18) so they live as dedicated tokens. */
+  --color-brand: #eb0a1e; /* Toyota Red/500 — CTAs, price, avatars */
+  --color-heading: #000000; /* Pure black — section headings */
+  --color-body: #111111; /* Design body text — specs, headings, labels */
+  --color-body-muted: #58595b; /* Design muted text — captions, dealer info */
+  --color-body-muted-light: rgba(88, 89, 91, 0.7); /* body-muted at 70% opacity — descriptions */
+  --color-divider: #d9d9d9; /* Divider/separator lines */
+
+  --core-surfaces-foreground: #1a1a1a;
+  --actions-accent: #eb0a1e;
+  --states-inverse-muted-foreground: #99a1af;
+  --structure-interaction-inverse-border: #2d2d2d;
+  --core-surfaces-inverse-foreground: #ffffff;
+}

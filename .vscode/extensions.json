@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.vscode-typescript-next",
+    "usernamehw.errorlens",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
+    "PKief.material-icon-theme",
+    "mikestead.dotenv",
+    "eamodio.gitlens",
+    "yoavbls.pretty-ts-errors",
+    "lokalise.i18n-ally",
+    "csstools.postcss",
+    "unifiedjs.vscode-mdx",
+    "vitest.explorer"
+  ],
+  "unwantedRecommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+}

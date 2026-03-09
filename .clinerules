@@ -1,0 +1,337 @@
+# Agent Skills & Development Guidelines
+
+This project uses agent skills to enhance AI-assisted development with best practices and guidelines.
+
+## Installed Agent Skills
+
+**Location**: `.agents/skills/` (committed to repo, no installation needed!)
+
+### Core Development Skills
+- **vercel-react-best-practices** - React and Next.js performance optimization (57 rules)
+  - Source: https://github.com/vercel-labs/agent-skills
+  - Docs: https://skills.sh/vercel-labs/agent-skills/vercel-react-best-practices
+
+- **next-best-practices** - Next.js framework-specific patterns
+  - Source: https://github.com/vercel-labs/next-skills
+  - Docs: https://skills.sh/vercel-labs/next-skills/next-best-practices
+
+- **vercel-composition-patterns** - React component composition guidelines
+  - Source: https://github.com/vercel-labs/agent-skills
+  - Docs: https://skills.sh/vercel-labs/agent-skills/vercel-composition-patterns
+
+- **web-design-guidelines** - Web interface design best practices
+  - Source: https://github.com/vercel-labs/agent-skills
+  - Docs: https://skills.sh/vercel-labs/agent-skills/web-design-guidelines
+
+- **find-skills** - Discover and install additional skills
+  - Source: https://github.com/vercel-labs/skills
+  - Docs: https://skills.sh/vercel-labs/skills/find-skills
+
+- **next-cache-components** - Next.js 16 Cache Components (PPR, use cache, cacheLife, cacheTag, updateTag)
+  - Source: https://github.com/vercel-labs/next-skills
+  - Docs: https://skills.sh/vercel-labs/next-skills/next-cache-components
+
+> **For Team Members**: Skills are automatically discovered by VSCode GitHub Copilot. Just clone and code!
+>
+> **Updating Skills**: See `.agents/README.md` for update instructions.
+
+## Project Overview
+
+**Arrow E-commerce Monorepo** - Modern e-commerce platform with multi-brand theming support
+
+### Tech Stack
+- Next.js 16 (App Router, React 19, Turbopack)
+- Turborepo v2 (monorepo build system)
+- Tailwind CSS v4 (CSS-first, @theme directive)
+- shadcn/ui (component library)
+- PNPM v10 (package manager)
+- Biome v2 (linter/formatter via Ultracite)
+- Vitest (testing)
+- TypeScript (strict mode)
+
+### Monorepo Structure
+```
+apps/
+  web/              # Next.js e-commerce app (App Router)
+packages/
+  ui/               # Shared UI components (shadcn/ui + custom)
+  ui-theme/         # Multi-brand design system (CSS-first)
+  utils/            # Shared utilities
+  config/           # Centralized configs (TypeScript, Tailwind, Vitest)
+```
+
+## Project-Specific Guidelines
+
+### 1. Multi-Brand Architecture (`packages/ui-theme`)
+
+**Architecture Pattern: Inheritance-based theming**
+- `base/tokens/` - Shared default tokens (all themes inherit)
+- `themes/*/overrides/` - Brand-specific differences only
+- Bundle optimization: 6.6x smaller vs full duplication
+
+**When adding new brands:**
+1. Create `themes/{brand}/overrides/` folder
+2. Only override tokens that differ from base defaults
+3. Create light.css and dark.css variants
+4. Update package.json exports
+5. Document in README.md
+
+**Theme imports (recommended pattern):**
+```css
+/* Import base once, then specific theme */
+@import "@arrow/ui-theme/base";
+@import "@arrow/ui-theme/themes/arrow";
+```
+
+**React theme management:**
+```tsx
+import { ThemeProvider, ThemeSwitcher } from "@arrow/ui-theme/components";
+```
+
+### 2. Component Development
+
+**shadcn/ui components:**
+- Install to `packages/ui` (shared across apps)
+- Use `pnpm ui:add <component>` to add components
+- Customize in `packages/ui/src/components/ui/`
+
+**Component composition (vercel-composition-patterns):**
+- ❌ Avoid boolean props for behavior variants
+- ✅ Use compound components with shared context
+- ✅ Create explicit variant components
+
+**Example:**
+```tsx
+// ❌ Bad: Boolean props
+<Dialog showHeader showFooter hasCloseButton />
+
+// ✅ Good: Composition
+<Dialog>
+  <DialogHeader />
+  <DialogContent />
+  <DialogFooter />
+</Dialog>
+```
+
+### 3. Performance Optimization (vercel-react-best-practices)
+
+**Critical priorities:**
+1. **Eliminate waterfalls** - Use Promise.all(), Suspense boundaries
+2. **Bundle size** - Direct imports (no barrel files), next/dynamic for heavy components
+3. **Server-side** - React.cache() for deduplication, minimize RSC serialization
+
+**Data fetching:**
+```tsx
+// ✅ Good: Parallel fetching in RSC
+const [user, products] = await Promise.all([
+  fetchUser(),
+  fetchProducts()
+]);
+
+// ❌ Bad: Sequential waterfalls
+const user = await fetchUser();
+const products = await fetchProducts();
+```
+
+### 4. Next.js Patterns (next-best-practices)
+
+**File conventions:**
+- Use App Router (`app/` directory)
+- Server Components by default (no 'use client' unless needed)
+- `page.tsx`, `layout.tsx`, `error.tsx`, `loading.tsx`
+- API routes in `app/api/` (Route Handlers)
+
+**Async APIs (Next.js 15+):**
+```tsx
+// Async params/searchParams
+export default async function Page({ params, searchParams }: Props) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+}
+
+// Async cookies/headers
+import { cookies } from 'next/headers';
+const cookieStore = await cookies();
+```
+
+**Image optimization:**
+```tsx
+import Image from 'next/image';
+
+// ✅ Always use next/image with sizes
+<Image
+  src="/product.jpg"
+  alt="Product"
+  width={800}
+  height={600}
+  sizes="(max-width: 768px) 100vw, 50vw"
+/>
+```
+
+### 5. State Management
+
+**Client-side:**
+- Use React hooks (useState, useReducer)
+- SWR for data fetching with automatic deduplication
+- Context for theme/auth (ThemeProvider)
+
+**Server-side:**
+- Server Components for data fetching
+- Server Actions for mutations
+- React.cache() for per-request deduplication
+
+### 6. TypeScript
+
+**Configuration:**
+- Strict mode enabled
+- Path aliases configured (`@/`)
+- Shared configs in `packages/config/typescript/`
+- Types: `base.json`, `nextjs.json`, `react-library.json`
+
+**Best practices:**
+```tsx
+// ✅ Use explicit types
+interface ProductProps {
+  id: string;
+  name: string;
+  price: number;
+}
+
+// ✅ Use readonly for immutable data
+type Product = Readonly<{
+  id: string;
+  name: string;
+}>;
+```
+
+### 7. Styling Guidelines
+
+**Tailwind CSS v4:**
+- Use @theme directive for design tokens
+- CSS-first approach (no tailwind.config.js)
+- Tokens in CSS files (`@theme { --color-primary: ... }`)
+
+**Best practices:**
+```tsx
+// ✅ Use semantic color tokens
+<div className="bg-primary text-primary-foreground" />
+
+// ✅ Use CSS variables for custom values
+<div className="rounded-[--radius]" />
+
+// ❌ Avoid hardcoded values
+<div className="rounded-[8px]" /> // Use --radius instead
+```
+
+### 8. Testing
+
+**Vitest configuration:**
+- Unit tests in `*.test.ts(x)` files
+- Test setup in `src/test/setup.ts`
+- Run with `pnpm test`
+
+**Coverage requirements:**
+- Critical paths: 80%+ coverage
+- Utilities: 90%+ coverage
+- UI components: 70%+ coverage
+
+### 9. Code Quality
+
+**Biome (via Ultracite):**
+- Format: `pnpm check` (check) or `pnpm fix` (fix)
+- Pre-commit hooks via Husky
+- No ESLint or Prettier needed
+
+**Guidelines:**
+- Max file size: 300 lines (split larger files)
+- Max function complexity: 10
+- Use early returns for guard clauses
+- Document complex logic with comments
+
+### 10. Git Workflow
+
+**Commit conventions:**
+```
+feat(scope): Add new feature
+fix(scope): Fix bug
+refactor(scope): Refactor code
+docs(scope): Update documentation
+chore(scope): Update dependencies
+```
+
+**Scopes:**
+- `web` - Next.js app
+- `ui` - Shared UI components
+- `ui-theme` - Design system
+- `config` - Configuration packages
+- `monorepo` - Root/workspace changes
+
+## Common Commands
+
+```bash
+# Development
+pnpm dev                    # Start dev server (all apps)
+pnpm build                  # Build all apps and packages
+pnpm test                   # Run tests
+pnpm check                  # Run linter/formatter check
+pnpm fix                    # Auto-fix formatting issues
+
+# UI Components
+pnpm ui:add <component>     # Add shadcn/ui component
+
+# Package Management
+pnpm add <package> -w       # Add to root workspace
+pnpm add <package> --filter @arrow/web  # Add to specific app
+
+# Type Checking
+pnpm type-check             # Check TypeScript types
+```
+
+## AI Agent Guidelines
+
+**When developing:**
+1. Always apply **vercel-react-best-practices** for performance
+2. Follow **next-best-practices** for Next.js patterns
+3. Use **vercel-composition-patterns** for component design
+4. Reference **web-design-guidelines** for UI/UX
+
+**When adding features:**
+1. Check if component exists in `packages/ui` first
+2. Use multi-brand theming pattern from `packages/ui-theme`
+3. Write tests for critical paths
+4. Update documentation in README.md
+
+**When refactoring:**
+1. Identify performance issues (waterfalls, bundle size)
+2. Apply composition patterns to simplify complex components
+3. Ensure TypeScript types are correct
+4. Run `pnpm check` before committing
+
+**When debugging:**
+1. Check build errors: `pnpm build 2>&1 | tail -50`
+2. Check type errors: `pnpm type-check`
+3. Check formatting: `pnpm check`
+4. Review error boundaries and Suspense usage
+
+## Additional Resources
+
+- **Skills CLI**: `npx skills` - Explore and install more skills
+- **Skills Directory**: https://skills.sh/
+- **Project Docs**: `/docs/` folder
+- **UI Theme README**: `packages/ui-theme/README.md`
+- **shadcn/ui Setup**: `docs/SHADCN_SETUP.md`
+
+## Version Information
+
+- Node.js: >= 20
+- PNPM: >= 10
+- Next.js: 16.x
+- React: 19.x
+- Tailwind CSS: 4.x
+- Turborepo: 2.x
+- Biome: 2.x
+
+---
+
+**Last Updated**: February 10, 2026
+**Maintained By**: Arrow Engineering Team

@@ -1,0 +1,60 @@
+{
+  "name": "arrow-ecommerce",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Arrow E-commerce - A modern Next.js monorepo with Turborepo",
+  "keywords": [
+    "nextjs",
+    "turborepo",
+    "monorepo",
+    "typescript",
+    "tailwindcss"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.29.2",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "format": "ultracite fix",
+    "format:check": "ultracite check",
+    "check": "ultracite check",
+    "check:ci": "ultracite check",
+    "fix": "ultracite fix",
+    "fix:unsafe": "ultracite fix --unsafe",
+    "doctor": "ultracite doctor",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "test:ui": "turbo test:ui",
+    "clean": "turbo clean && rm -rf node_modules .turbo",
+    "prepare": "husky",
+    "ui:add": "cd packages/ui && npx shadcn@latest add",
+    "turbo:login": "turbo login",
+    "turbo:link": "turbo link",
+    "turbo:unlink": "turbo unlink",
+    "gen": "turbo gen",
+    "gen:component": "turbo gen component",
+    "gen:package": "turbo gen package"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.13",
+    "@turbo/gen": "^2.3.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
+    "lucide-react": "^0.469.0",
+    "turbo": "^2.8.4",
+    "typescript": "^5.7.2",
+    "ultracite": "7.1.5"
+  },
+  "lint-staged": {
+    "*": "biome check --write --no-errors-on-unmatched",
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "pnpm dlx ultracite fix"
+    ]
+  }
+}

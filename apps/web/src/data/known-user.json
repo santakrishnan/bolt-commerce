@@ -1,0 +1,26 @@
+{
+  "userName": "Sarah",
+  "isPreQualified": true,
+  "savedVehicle": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "Camry",
+    "price": 27495,
+    "image": "/assets/images/heroes/Carousel-image-1.png",
+    "mileage": 18450,
+    "stockNumber": "SC12324456"
+  },
+  "preQualifiedVehicle": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "Camry",
+    "price": 27495
+  },
+  "tradeInOffer": {
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Camry",
+    "offerAmount": 14500,
+    "expiresInDays": 7
+  }
+}

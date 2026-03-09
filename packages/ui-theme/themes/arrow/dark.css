@@ -1,0 +1,43 @@
+/* Arrow Dark Mode - From Design Tokens */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    /* Base: Neutral 950 background with Neutral 50 text */
+    --color-background: #0a0a0a;
+    --color-foreground: #fafafa;
+
+    /* Card: Neutral 950 with Neutral 50 text */
+    --color-card: #0a0a0a;
+    --color-card-foreground: #fafafa;
+
+    /* Popover: Neutral 950 with Neutral 50 text */
+    --color-popover: #0a0a0a;
+    --color-popover-foreground: #fafafa;
+
+    /* Primary: Blue 400 (lighter for dark mode) */
+    --color-primary: #547dd5;
+    --color-primary-foreground: #ffffff;
+
+    /* Secondary: Neutral 800 with Neutral 50 text */
+    --color-secondary: #262626;
+    --color-secondary-foreground: #fafafa;
+
+    /* Muted: Neutral 800 with Neutral 400 text */
+    --color-muted: #262626;
+    --color-muted-foreground: #a3a3a3;
+
+    /* Accent: Blue 900 with Blue 100 text */
+    --color-accent: #182441;
+    --color-accent-foreground: #c1c9ef;
+
+    /* Destructive: Red 600 (adjusted for dark mode) with Neutral 50 text */
+    --color-destructive: #c1171b;
+    --color-destructive-foreground: #fafafa;
+
+    /* Borders: Neutral 800 */
+    --color-border: #262626;
+    --color-input: #262626;
+
+    /* Ring: Blue 400 */
+    --color-ring: #547dd5;
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":separateMajorReleases"
+  ],
+  "schedule": ["before 5am on monday"],
+  "labels": ["dependencies"],
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2,
+  "updateNotScheduled": false,
+  "timezone": "America/Los_Angeles",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "automergeType": "pr",
+      "requiredStatusChecks": null
+    },
+    {
+      "groupName": "Next.js",
+      "matchPackageNames": ["next"],
+      "matchPackagePatterns": ["^@next/", "^next-"]
+    },
+    {
+      "groupName": "React",
+      "matchPackageNames": ["react", "react-dom"],
+      "matchPackagePatterns": ["^@types/react"]
+    },
+    {
+      "groupName": "Tailwind CSS",
+      "matchPackageNames": ["tailwindcss"],
+      "matchPackagePatterns": ["^@tailwindcss/"]
+    },
+    {
+      "groupName": "Testing",
+      "matchPackagePatterns": ["^vitest", "^@vitest/", "^@testing-library/"]
+    },
+    {
+      "groupName": "Biome",
+      "matchPackageNames": ["@biomejs/biome"],
+      "matchPackagePatterns": ["^@biomejs/"]
+    },
+    {
+      "groupName": "TypeScript",
+      "matchPackageNames": ["typescript"],
+      "matchPackagePatterns": ["^@types/"]
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["security"],
+    "assignees": ["@SANTHAV1_tmcc"]
+  }
+}

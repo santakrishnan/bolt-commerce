@@ -1,0 +1,22 @@
+{
+  "extends": "../../packages/config/typescript/nextjs.json",
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@/*": ["../../packages/ui/src/*"],
+      "@tfs-ucmp/ui": ["../../packages/ui/src"],
+      "utils": ["../../packages/utils/src"]
+    },
+    "jsx": "react-jsx",
+    "strictNullChecks": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "data/*.json",
+    "src/types/global.d.ts"
+  ],
+  "exclude": ["node_modules"]
+}

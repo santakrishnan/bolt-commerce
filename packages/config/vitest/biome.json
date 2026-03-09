@@ -1,0 +1,14 @@
+{
+  "extends": "//",
+  "linter": {
+    "rules": {
+      "performance": {
+        "noNamespaceImport": "off"
+      },
+      "suspicious": {
+        "noEmptyBlockStatements": "off",
+        "noExplicitAny": "off"
+      }
+    }
+  }
+}

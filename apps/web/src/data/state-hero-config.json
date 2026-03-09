@@ -1,0 +1,28 @@
+{
+  "defaultState": "TX",
+  "zipPrefixes": {
+    "TX": { "min": 750, "max": 799 },
+    "FL": { "min": 320, "max": 349 },
+    "CA": { "min": 900, "max": 961 }
+  },
+  "states": {
+    "TX": {
+      "backgroundImage": "/images/heroes/Carousel-image-1.png",
+      "mobileBackgroundImage": "/images/hero-mobile/car-1.png",
+      "zipCode": "75001",
+      "description": "Plano, TX 75001"
+    },
+    "FL": {
+      "backgroundImage": "/images/heroes/Carousel-image-2.png",
+      "mobileBackgroundImage": "/images/hero-mobile/car-2.png",
+      "zipCode": "33101",
+      "description": "Miami, FL 33101"
+    },
+    "CA": {
+      "backgroundImage": "/images/heroes/Carousel-image-3.png",
+      "mobileBackgroundImage": "/images/hero-mobile/car-3.png",
+      "zipCode": "90001",
+      "description": "Los Angeles, CA 90001"
+    }
+  }
+}

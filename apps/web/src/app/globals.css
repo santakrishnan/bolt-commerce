@@ -1,0 +1,112 @@
+/*
+  App Global Styles
+
+  The theme handles all design tokens (colors, typography, etc.)
+  This file is only for app-specific customizations.
+*/
+
+/* Import Arrow theme (includes base + Tailwind CSS) */
+@import "@tfs-ucmp/ui-theme/themes/arrow";
+
+/* Ensure Tailwind scans shared UI package for class names */
+@source "../../../../packages/ui/src";
+
+@layer base {
+  :root {
+    /* ============================================
+       App-Specific Color Values (shadcn format)
+       Arrow theme handles the mapping to Tailwind
+       ============================================ */
+
+    --foreground: hsl(0 0% 7%);
+    --background: hsl(0 0% 100%);
+
+    --card: hsl(0 0% 100%);
+    --color-card: hsl(0 0% 100%);
+    --card-foreground: hsl(0 0% 7%);
+
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(0 0% 7%);
+
+    --primary: hsl(354 91% 48%);
+    --primary-foreground: hsl(0 0% 100%);
+
+    --secondary: hsl(0 0% 96%);
+    --secondary-foreground: hsl(0 0% 7%);
+
+    --muted: hsl(0 0% 96%);
+    --muted-foreground: hsl(0 0% 54%);
+
+    --accent: hsl(36 25% 50%);
+    --accent-foreground: hsl(0 0% 100%);
+
+    --destructive: hsl(354 91% 48%);
+    --destructive-foreground: hsl(0 0% 100%);
+
+    --border: hsl(0 0% 0% / 0.1);
+    --input: hsl(0 0% 0% / 0.1);
+    --ring: hsl(354 91% 48%);
+
+    --radius: 0.5rem;
+  }
+}
+/*
+  App-Specific Font Family Override
+
+  The base theme provides default fonts. This app uses a custom
+  brand font (ToyotaType) loaded via next/font.
+*/
+@theme inline {
+  --font-sans: var(--font-toyota-type), system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "Geist Mono", monospace;
+}
+
+/* Heart pop animation */
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heart-button {
+  transition: transform 0.3s ease;
+  will-change: transform;
+}
+
+.heart-button.animate {
+  animation: heart-pop 0.5s forwards;
+}
+
+/* ==========================================
+   Shimmer / Skeleton loading animation
+   ========================================== */
+@keyframes shimmer {
+  0% {
+    background-position: -700px 0;
+  }
+  100% {
+    background-position: 700px 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+  background-size: 1400px 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* ==========================================
+   Embla Carousel – Fade plugin styles
+   ========================================== */
+.embla-fade [aria-roledescription="slide"] {
+  transition: opacity 0.5s ease-in-out;
+}

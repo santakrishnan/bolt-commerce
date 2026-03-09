@@ -1,0 +1,7 @@
+/* Arrow Border Width Overrides - From Design Tokens */
+@theme {
+  /* Border Width Scale */
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-3: 3px; /* Active tab indicator */
+}

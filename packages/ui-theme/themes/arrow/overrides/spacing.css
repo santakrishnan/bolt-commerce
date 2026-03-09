@@ -1,0 +1,26 @@
+/* Arrow Spacing Scale - From Design Tokens */
+@theme {
+  /* Spacing Scale */
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-sd: 14px; /* 3.5 × 4px — highlight section gap */
+  --spacing-md: 16px;
+  --spacing-5: 20px; /* 5 × 4px — highlight sections */
+  --spacing-lg: 24px;
+  --spacing-7: 28px; /* 7 × 4px — highlight title gap */
+  --spacing-xl: 32px;
+  --spacing-10: 40px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 80px;
+  --spacing-5xl: 90px;
+
+  /* Component-specific sizes */
+  /* TODO: These are VDP-specific. If reused across pages, promote to base tokens. */
+  --size-swatch: 28px; /* Color swatch squares */
+  --size-thumbnail: 107px; /* Image gallery thumbnail */
+  --size-icon-sm: 16px; /* Small inline icons (badges, etc.) */
+  --size-icon-md: 20px; /* Standard toolbar/feature icons */
+  --size-avatar-sm: 32px; /* Dealer avatar, small avatar */
+}
