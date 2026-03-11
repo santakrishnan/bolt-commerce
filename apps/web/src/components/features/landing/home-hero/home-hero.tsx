@@ -1,7 +1,7 @@
 import { cn } from "@tfs-ucmp/ui";
 import type React from "react";
 import { Suspense } from "react";
-import { getHeroStats } from "~/lib/data";
+import { fetchHeroStats } from "~/services/landing";
 import { HomeHeroKnownUserContent } from "./home-hero-known-user-content";
 import { HomeHeroSearch } from "./home-hero-search";
 import { HomeHeroStatic } from "./home-hero-static";
@@ -10,7 +10,7 @@ import { HomeHeroTitle } from "./home-hero-title";
 import type { HomeHeroProps } from "./types";
 
 async function HomeHeroStatsAsync(): Promise<React.JSX.Element> {
-  const stats = await getHeroStats();
+  const stats = await fetchHeroStats();
   return <HomeHeroStats stats={stats} />;
 }
 

@@ -209,16 +209,14 @@ export async function fetchVisitorProfile({
  * Tagged with `visitor-profile` (global) and `visitor-profile-${visitorId}`
  * (per-visitor) so the cache can be surgically invalidated after events.
  *
- * Cache lifetime:
- * - stale: 5 minutes  — serve cached while revalidating
- * - revalidate: 10 min — background refresh interval
- * - expire: 1 hour     — hard expiration
+ * Uses the "profile" cache profile defined in next.config.ts
+ * (stale: 5 min, revalidate: 10 min, expire: 1 hour).
  */
 // biome-ignore lint/suspicious/useAwait: async is required by the "use cache" Next.js directive
 export async function getCachedVisitorProfile(visitorId: string): Promise<VisitorProfile | null> {
   "use cache";
   cacheTag("visitor-profile", `visitor-profile-${visitorId}`);
-  cacheLife({ stale: 300, revalidate: 600, expire: 3600 });
+  cacheLife("profile");
 
   return fetchVisitorProfile({ visitorId });
 }

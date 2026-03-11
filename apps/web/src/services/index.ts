@@ -12,5 +12,6 @@
 
 export * from "./events";
 export * from "./fingerprint";
+export * from "./landing";
 export * from "./search";
 export * from "./visitor-profile";

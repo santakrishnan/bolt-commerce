@@ -1,4 +1,4 @@
-import type { HeroStat } from "~/lib/data";
+import type { HeroStat } from "~/services/landing";
 
 // ─── Shared primitive interfaces ────────────────────────────────────────────
 
