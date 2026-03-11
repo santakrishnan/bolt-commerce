@@ -68,7 +68,10 @@ export function AnimatedCounter({
       const progress = Math.min(elapsed / duration, 1);
       const easedProgress = easeOutExpo(progress);
 
-      setCount(Math.round(easedProgress * value));
+      // Support fractional target values. Animate a floating point
+      // value and let the display formatter round to the appropriate
+      // number of decimal places.
+      setCount(easedProgress * value);
 
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
@@ -79,7 +82,24 @@ export function AnimatedCounter({
     return () => cancelAnimationFrame(animationFrame);
   }, [hasAnimated, value, duration]);
 
-  const displayValue = formatted ? count.toLocaleString() : count.toString();
+  // Always show at most one decimal place for fractional values
+  const decimals = Number.isInteger(value) ? 0 : 1;
+
+  let displayValue: string;
+  if (formatted) {
+    if (decimals === 0) {
+      displayValue = Math.round(count).toLocaleString();
+    } else {
+      displayValue = new Intl.NumberFormat(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }).format(count);
+    }
+  } else if (decimals === 0) {
+    displayValue = Math.round(count).toString();
+  } else {
+    displayValue = count.toFixed(decimals);
+  }
 
   return (
     <span className={className} ref={ref}>

@@ -16,7 +16,8 @@
   --text-xs: 12px;
   --text-sm: 14px;
   --text-md: 16px;
-  --text-body-lg: 18px; /* Between md (16px) and lg (24px) — tab triggers, card titles */
+  --text-body-lg: 18px;
+  /* Between md (16px) and lg (24px) — tab triggers, card titles */
   --text-xl: 20px;
   --text-lg: 24px;
   --text-2xl: 32px;
@@ -38,9 +39,43 @@
   --font-weight-black: 900;
 
   /* Line Heights — design-specific overrides */
-  --leading-heading: 32px; /* Section headings (20px/24px text) */
+  --leading-heading: 32px;
+  /* Section headings (20px/24px text) */
 
   /* Letter Spacing — overrides base --tracking-tight (-0.025em) */
   /* -0.42px from design for dealer name (14px semibold) ≈ -0.03em */
   --tracking-tight: -0.03em;
 }
+
+/* h1 {
+  font-size: var(--font-size-4xl, 40px);
+  font-style: normal;
+  font-weight: 700;
+  line-height: 115%;
+}
+h2 {
+  font-size: var(--font-size-2xl, 32px);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 115%;
+}
+
+h3 {
+  font-size: var(--Font-Size-Scale---font-size-lg, 24px);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 115%;
+}
+
+h4 {
+  font-size: var(--font-size-xl, 20px);
+  font-style: normal;
+  font-weight: 600;
+  line-height: 115%
+} 
+h5{
+font-size: var(--Font-Size-Scale---font-size-md, 16px);
+font-style: normal;
+font-weight: 600;
+line-height: 115%;
+}*/

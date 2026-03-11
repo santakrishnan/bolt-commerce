@@ -18,10 +18,9 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
 
   return (
     <>
-      {/* Header with stats */}
       <div className="rounded-t-lg md:px-[var(--spacing-md)] lg:mb-[var(--spacing-2xl)] lg:px-[var(--spacing-xl)]">
         <div className="mb-[var(--spacing-lg)] flex flex-col gap-[var(--spacing-md)] sm:flex-row sm:items-center sm:justify-between md:px-[var(--spacing-xl)] lg:px-0">
-          <h3 className="font-semibold text-[length:var(--text-xl)] text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-[var(--color-core-surface-foreground)] lg:leading-heading">
+          <h3 className="text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)]font-semibold text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-[var(--color-core-surface-foreground)] lg:leading-heading">
             Pricing
           </h3>
           <div className="hidden flex-wrap items-center text-[length:var(--font-size-sm)] sm:flex">
@@ -29,7 +28,7 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
               <Image
                 alt=""
                 aria-hidden="true"
-                className="h-4 w-4"
+                className="h-[var(--spacing-md)] w-[var(--spacing-md)]"
                 height={14}
                 src="/images/vdp/Vector_9.svg"
                 width={14}
@@ -39,12 +38,12 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
                 on Arrow
               </span>
             </div>
-            <div className="mx-[var(--spacing-sm)] h-5 w-px bg-divider" />
+            <div className="mx-[var(--spacing-sm)] h-[var(--spacing-5)] w-px bg-divider" />
             <div className="flex items-center gap-[var(--spacing-xs)]">
               <Image
                 alt=""
                 aria-hidden="true"
-                className="h-4 w-4"
+                className="h-[var(--spacing-md)] w-[var(--spacing-md)]"
                 height={14}
                 src="/images/vdp/Vector_11.svg"
                 width={14}
@@ -54,12 +53,12 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
                 <span className="font-semibold text-foreground">{pricingData.views}</span> Views
               </span>
             </div>
-            <div className="mx-[var(--spacing-sm)] h-5 w-px bg-divider" />
+            <div className="mx-[var(--spacing-sm)] h-[var(--spacing-5)] w-px bg-divider" />
             <div className="flex items-center gap-[var(--spacing-xs)]">
               <Image
                 alt=""
                 aria-hidden="true"
-                className="h-4 w-4"
+                className="h-[var(--spacing-md)] w-[var(--spacing-md)]"
                 height={14}
                 src="/images/vdp/Vector_10.svg"
                 width={14}
@@ -73,12 +72,9 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
         </div>
       </div>
 
-      {/* Price Analysis Section */}
       <div className="md:px-[var(--spacing-md)] lg:px-0">
         <div className="rounded-md bg-surface px-[var(--spacing-xl)] py-[var(--spacing-xl)]">
-          {/* Price badge and description + Price Range Meter side by side */}
           <div className="flex flex-col items-start gap-[var(--spacing-4xl)] lg:flex-row lg:items-start lg:gap-[var(--spacing-3xl)]">
-            {/* Left: Text content */}
             <div className="w-full shrink-0 lg:w-[324px] lg:max-w-[324px]">
               <div className="flex flex-col">
                 <div className="mb-[var(--spacing-md)] flex items-center">
@@ -96,16 +92,13 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-[var(--spacing-md)]">
-                  {/* If there is a price badge, it would go here in the same row as 'This vehicle is an' */}
-                </div>
+                <div className="flex items-center gap-[var(--spacing-md)]" />
               </div>
               <p className="font-semibold text-[length:var(--font-size-sm)] text-body leading-normal">
                 This vehicle is significantly lower than average market price
               </p>
             </div>
 
-            {/* Right: Price Range Meter */}
             <div className="w-full flex-1 lg:ml-[var(--spacing-4xl)] lg:max-w-2xl">
               <PriceRangeMeter
                 avgPrice={pricingData.avgPrice}
@@ -115,15 +108,13 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
           </div>
 
           <div className="my-[var(--spacing-xl)] h-px bg-divider" />
-
-          {/* Price History — collapsible with framer-motion */}
           <div className="rounded-b-lg">
             <div className="rounded-lg bg-surface">
               <Button
                 aria-controls="price-history-panel"
                 aria-expanded={isHistoryOpen}
                 className={cn(
-                  "h-auto w-full justify-between rounded-none px-0 py-0 text-left font-normal transition-colors hover:bg-background",
+                  "h-auto w-full justify-between rounded-none px-0 py-0 text-left font-normal transition-colors hover:bg-transparent hover:text-inherit focus:bg-transparent active:bg-transparent",
                   isHistoryOpen ? "mb-[var(--spacing-xl)]" : "mb-0"
                 )}
                 onClick={() => setIsHistoryOpen((prev) => !prev)}
@@ -135,10 +126,10 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
                     <Image
                       alt=""
                       aria-hidden="true"
-                      className="h-7.5 w-7.5"
-                      height={30}
+                      className="h-[var(--spacing-7)] w-[var(--spacing-7)]"
+                      height={28}
                       src="/images/vdp/price_icon.svg"
-                      width={30}
+                      width={28}
                     />
                   </div>
                   <span className="font-semibold text-[length:var(--font-size-lg)] text-body leading-7 lg:text-heading">

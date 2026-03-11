@@ -2,7 +2,7 @@ import { Card, CardContent, cn } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import type { InspectionFeature } from "~/data/inspection/features";
 
-interface InspectionFeatureCardProps {
+export interface InspectionFeatureCardProps {
   feature: InspectionFeature;
   className?: string;
 }

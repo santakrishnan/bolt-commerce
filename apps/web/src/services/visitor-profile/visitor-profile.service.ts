@@ -214,6 +214,7 @@ export async function fetchVisitorProfile({
  * - revalidate: 10 min — background refresh interval
  * - expire: 1 hour     — hard expiration
  */
+// biome-ignore lint/suspicious/useAwait: async is required by the "use cache" Next.js directive
 export async function getCachedVisitorProfile(visitorId: string): Promise<VisitorProfile | null> {
   "use cache";
   cacheTag("visitor-profile", `visitor-profile-${visitorId}`);

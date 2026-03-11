@@ -1,9 +1,10 @@
 import { cn } from "@tfs-ucmp/ui";
-import { inspectionFeatures } from "../../../../data/inspection/features";
+import type { InspectionFeature } from "~/lib/data";
 import { ArrowInspectedCarousel } from "./arrow-inspected-carousel";
 import { InspectionFeatureCard } from "./inspection-feature-card";
 
-interface ArrowInspectedSectionProps {
+export interface ArrowInspectedSectionProps {
+  inspectionFeatures: InspectionFeature[];
   headerClassName?: string;
   titleClassName?: string;
   descriptionClassName?: string;
@@ -16,6 +17,7 @@ interface ArrowInspectedSectionProps {
 }
 
 export function ArrowInspectedSection({
+  inspectionFeatures,
   headerClassName,
   titleClassName,
   descriptionClassName,
@@ -70,7 +72,7 @@ export function ArrowInspectedSection({
           )}
         >
           <div className="pl-[var(--spacing-md)] sm:pl-[var(--spacing-lg)] lg:pl-[var(--spacing-xl)]">
-            <ArrowInspectedCarousel />
+            <ArrowInspectedCarousel inspectionFeatures={inspectionFeatures} />
           </div>
         </div>
 

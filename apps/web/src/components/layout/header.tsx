@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useFavorites } from "~/components/providers/favorites-provider";
+import { lockBodyScroll, unlockBodyScroll } from "~/lib/body-scroll-lock";
 import { getCurrentUserSync } from "~/lib/flags/client";
 import { LocationBlock } from "./header/location-block";
 
@@ -13,7 +15,7 @@ const SignInButton = ({ useSolidStyles }: { useSolidStyles: boolean }) => (
     className={cn(
       "h-9 gap-1.5 rounded-full border px-4 transition-colors",
       useSolidStyles
-        ? "border-[#ccc] bg-white text-black hover:bg-gray-50"
+        ? "border-border-light bg-white text-black hover:bg-gray-50"
         : "border-white/30 bg-transparent text-white hover:bg-white/10"
     )}
   >
@@ -21,7 +23,7 @@ const SignInButton = ({ useSolidStyles }: { useSolidStyles: boolean }) => (
       <UserIcon
         className={cn(
           "h-4 w-4 transition-colors",
-          useSolidStyles ? "text-[#EF4444]" : "text-white"
+          useSolidStyles ? "text-actions-primary" : "text-white"
         )}
       />
       <span>Sign In</span>
@@ -42,11 +44,13 @@ const AvatarButton = ({ firstName, useSolidStyles = true }: AvatarButtonProps) =
     <Link
       className={cn(
         "flex h-9 items-center gap-2 rounded-full border px-3 transition-colors",
-        useSolidStyles ? "border-[#ccc] hover:bg-gray-50" : "border-white/30 hover:bg-white/10"
+        useSolidStyles
+          ? "border-border-light hover:bg-gray-50"
+          : "border-white/30 hover:bg-white/10"
       )}
       href="/my-garage"
     >
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#EB0A1E] font-semibold text-sm text-white">
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-actions-primary font-semibold text-sm text-white">
         {initial}
       </div>
       <span className={cn("text-sm", useSolidStyles ? "text-foreground" : "text-white")}>
@@ -98,6 +102,40 @@ const MobileUserButton = ({ showAvatar, firstName, useSolidStyles }: MobileUserB
   );
 };
 
+/** Heart button with badge — extracted to reduce Header complexity */
+const FavoritesButton = ({ useSolidStyles }: { useSolidStyles: boolean }) => {
+  const { savedCount, isLoaded } = useFavorites();
+  const isActive = isLoaded && savedCount > 0;
+
+  return (
+    <Button
+      className={cn(
+        "relative h-9 w-9 rounded-full border transition-colors",
+        useSolidStyles
+          ? "border-border-light hover:bg-muted"
+          : "border-overlay hover:bg-background-overlay-hover",
+        isActive && "border-icon-primary"
+      )}
+      size="icon"
+      variant="ghost"
+    >
+      <Link aria-label={`Favorites (${savedCount} saved)`} href="/favorites">
+        <HeartIcon
+          className={cn(
+            "h-5 w-5 transition-colors",
+            isActive ? "fill-icon-primary text-icon-primary" : "text-icon-primary"
+          )}
+        />
+      </Link>
+      {isActive && (
+        <span className="absolute -top-1 -right-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-icon-primary px-1 font-bold text-2xs text-white leading-none">
+          {savedCount > 99 ? "99+" : savedCount}
+        </span>
+      )}
+    </Button>
+  );
+};
+
 export function Header() {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
@@ -135,14 +173,14 @@ export function Header() {
       }
     };
     if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
+      lockBodyScroll();
     }
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      if (mobileMenuOpen) {
+        unlockBodyScroll();
+      }
     };
   }, [mobileMenuOpen]);
 
@@ -210,26 +248,7 @@ export function Header() {
           <div className="flex flex-1 items-center justify-end">
             {/* Mobile right cluster: heart, user, hamburger */}
             <div className="flex items-center gap-3 lg:hidden">
-              <Button
-                className={cn(
-                  "h-9 w-9 rounded-full border transition-colors",
-                  useSolidStyles
-                    ? "border-border-light hover:bg-muted"
-                    : "border-overlay hover:bg-background-overlay-hover"
-                )}
-                size="icon"
-                variant="ghost"
-              >
-                <Link aria-label="Favorites" href="/favorites">
-                  <HeartIcon
-                    // className={cn(
-                    //   "h-5 w-5 transition-colors",
-                    //   useSolidStyles ? "text-icon-primary" : "text-white"
-                    // )}
-                    className="h-5 w-5 text-icon-primary"
-                  />
-                </Link>
-              </Button>
+              <FavoritesButton useSolidStyles={useSolidStyles} />
 
               <MobileUserButton
                 firstName={userFirstName}
@@ -272,26 +291,7 @@ export function Header() {
                 <LocationBlock useSolidStyles={useSolidStyles} />
               </div>
 
-              <Button
-                className={cn(
-                  "h-9 w-9 rounded-full border transition-colors",
-                  useSolidStyles
-                    ? "border-border-light hover:bg-muted"
-                    : "border-overlay hover:bg-background-overlay-hover"
-                )}
-                size="icon"
-                variant="ghost"
-              >
-                <Link aria-label="Favorites" href="/favorites">
-                  <HeartIcon
-                    // className={cn(
-                    //   "h-5 w-5 transition-colors",
-                    //   useSolidStyles ? "text-icon-primary" : "text-primary"
-                    // )}
-                    className="h-5 w-5 text-icon-primary"
-                  />
-                </Link>
-              </Button>
+              <FavoritesButton useSolidStyles={useSolidStyles} />
 
               {showUserAvatar || isSRP ? (
                 <AvatarButton firstName={userFirstName} useSolidStyles={useSolidStyles} />

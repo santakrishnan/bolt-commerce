@@ -55,14 +55,16 @@ export interface ArrowRequestOptions extends Omit<RequestInit, "body" | "method"
 }
 
 export class ArrowClientError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly code: string,
-    public readonly body?: unknown
-  ) {
+  readonly status: number;
+  readonly code: string;
+  readonly body?: unknown;
+
+  constructor(message: string, status: number, code: string, body?: unknown) {
     super(message);
     this.name = "ArrowClientError";
+    this.status = status;
+    this.code = code;
+    this.body = body;
   }
 }
 
@@ -111,6 +113,48 @@ export function createArrowClient(
     return headers;
   }
 
+  /** Serialise and optionally encrypt the request body */
+  async function serialiseBody(
+    body: unknown,
+    encrypt?: boolean
+  ): Promise<{ serialised: string; extraHeaders: Record<string, string> }> {
+    const extraHeaders: Record<string, string> = {};
+
+    if (encrypt) {
+      const key = resolveEncryptionKey();
+      if (!key) {
+        throw new ArrowClientError(
+          "Encryption requested but NEXT_PUBLIC_ARROW_ENCRYPTION_KEY is not set",
+          0,
+          "ENCRYPTION_KEY_MISSING"
+        );
+      }
+      const serialised = await encryptPayload(body, key);
+      extraHeaders[ARROW_ENCRYPTED_HEADER] = "true";
+      extraHeaders["Content-Type"] = "text/plain";
+      return { serialised, extraHeaders };
+    }
+
+    return { serialised: JSON.stringify(body), extraHeaders };
+  }
+
+  /** Parse an error response body */
+  async function parseErrorResponse(response: Response): Promise<never> {
+    let errorBody: unknown;
+    try {
+      errorBody = await response.json();
+    } catch {
+      errorBody = await response.text().catch(() => null);
+    }
+    const code = (errorBody as Record<string, string>)?.code ?? `HTTP_${response.status}`;
+    throw new ArrowClientError(
+      `Arrow API error: ${response.status} ${response.statusText}`,
+      response.status,
+      code,
+      errorBody
+    );
+  }
+
   /** Internal fetch wrapper with timeout + error handling */
   async function request<T>(
     method: string,
@@ -122,27 +166,13 @@ export function createArrowClient(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    // Optionally encrypt the body
     let serialisedBody: string | undefined;
-    const extraHeaders: Record<string, string> = {};
+    let extraHeaders: Record<string, string> = {};
 
     if (body !== undefined) {
-      if (opts?.encrypt) {
-        const key = resolveEncryptionKey();
-        if (!key) {
-          throw new ArrowClientError(
-            "Encryption requested but NEXT_PUBLIC_ARROW_ENCRYPTION_KEY is not set",
-            0,
-            "ENCRYPTION_KEY_MISSING"
-          );
-        }
-        serialisedBody = await encryptPayload(body, key);
-        extraHeaders[ARROW_ENCRYPTED_HEADER] = "true";
-        // Body is a raw JWE string, not JSON
-        extraHeaders["Content-Type"] = "text/plain";
-      } else {
-        serialisedBody = JSON.stringify(body);
-      }
+      const result = await serialiseBody(body, opts?.encrypt);
+      serialisedBody = result.serialised;
+      extraHeaders = result.extraHeaders;
     }
 
     try {
@@ -150,29 +180,15 @@ export function createArrowClient(
         method,
         headers: buildHeaders({ ...extraHeaders, ...opts?.headers }),
         body: serialisedBody,
-        credentials: "include", // always include cookies
+        credentials: "include",
         signal: opts?.signal ?? controller.signal,
         ...opts,
       });
 
       if (!response.ok) {
-        let errorBody: unknown;
-        try {
-          errorBody = await response.json();
-        } catch {
-          errorBody = await response.text().catch(() => null);
-        }
-
-        const code = (errorBody as Record<string, string>)?.code ?? `HTTP_${response.status}`;
-        throw new ArrowClientError(
-          `Arrow API error: ${response.status} ${response.statusText}`,
-          response.status,
-          code,
-          errorBody
-        );
+        await parseErrorResponse(response);
       }
 
-      // Handle 204 No Content
       if (response.status === 204) {
         return undefined as T;
       }
@@ -182,11 +198,9 @@ export function createArrowClient(
       if (error instanceof ArrowClientError) {
         throw error;
       }
-
       if ((error as Error).name === "AbortError") {
         throw new ArrowClientError(`Request to ${path} timed out after ${timeout}ms`, 0, "TIMEOUT");
       }
-
       throw new ArrowClientError(`Network error: ${(error as Error).message}`, 0, "NETWORK_ERROR");
     } finally {
       clearTimeout(timeoutId);

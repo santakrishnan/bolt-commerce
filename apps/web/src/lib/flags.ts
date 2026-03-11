@@ -24,7 +24,6 @@ export {
 
 // Re-export SDK flags for convenience
 export {
-  carouselAnimationVariant,
   customerPreQualified,
   customerTestDriveScheduled,
   customerTradeInSubmitted,

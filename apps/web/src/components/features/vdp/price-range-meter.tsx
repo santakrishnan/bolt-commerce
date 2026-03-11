@@ -69,7 +69,7 @@ export function PriceRangeMeter({ currentPrice, avgPrice }: PriceRangeMeterProps
         try {
           const v = getComputedStyle(document.documentElement).getPropertyValue(name) || fallback;
           return Number.parseFloat(v);
-        } catch (e) {
+        } catch (_e) {
           return Number.parseFloat(fallback);
         }
       };

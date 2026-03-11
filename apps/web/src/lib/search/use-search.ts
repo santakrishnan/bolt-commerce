@@ -58,6 +58,46 @@ export interface UseSearchOptions {
   initialQuery?: SearchQuery;
 }
 
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+/** Build URLSearchParams from a SearchQuery */
+function buildSearchParams(query: SearchQuery): URLSearchParams {
+  const params = new URLSearchParams();
+
+  const stringFields: (keyof SearchQuery)[] = ["query", "sortBy", "sortOrder"];
+  for (const key of stringFields) {
+    const val = query[key];
+    if (val) {
+      params.set(key, String(val));
+    }
+  }
+
+  const numericFields: (keyof SearchQuery)[] = [
+    "page",
+    "pageSize",
+    "priceMin",
+    "priceMax",
+    "yearMin",
+    "yearMax",
+  ];
+  for (const key of numericFields) {
+    const val = query[key];
+    if (val != null) {
+      params.set(key, String(val));
+    }
+  }
+
+  const arrayFields: (keyof SearchQuery)[] = ["bodyStyles", "makes", "models", "fuelTypes"];
+  for (const key of arrayFields) {
+    const val = query[key] as string[] | undefined;
+    if (val?.length) {
+      params.set(key, val.join(","));
+    }
+  }
+
+  return params;
+}
+
 // ─── Hook ───────────────────────────────────────────────────────────────────
 
 export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
@@ -89,47 +129,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
       setState((prev) => ({ ...prev, isLoading: true, error: null, query }));
 
       try {
-        // Build query string from SearchQuery
-        const params = new URLSearchParams();
-        if (query.query) {
-          params.set("query", query.query);
-        }
-        if (query.page) {
-          params.set("page", String(query.page));
-        }
-        if (query.pageSize) {
-          params.set("pageSize", String(query.pageSize));
-        }
-        if (query.sortBy) {
-          params.set("sortBy", query.sortBy);
-        }
-        if (query.sortOrder) {
-          params.set("sortOrder", query.sortOrder);
-        }
-        if (query.priceMin != null) {
-          params.set("priceMin", String(query.priceMin));
-        }
-        if (query.priceMax != null) {
-          params.set("priceMax", String(query.priceMax));
-        }
-        if (query.yearMin != null) {
-          params.set("yearMin", String(query.yearMin));
-        }
-        if (query.yearMax != null) {
-          params.set("yearMax", String(query.yearMax));
-        }
-        if (query.bodyStyles?.length) {
-          params.set("bodyStyles", query.bodyStyles.join(","));
-        }
-        if (query.makes?.length) {
-          params.set("makes", query.makes.join(","));
-        }
-        if (query.models?.length) {
-          params.set("models", query.models.join(","));
-        }
-        if (query.fuelTypes?.length) {
-          params.set("fuelTypes", query.fuelTypes.join(","));
-        }
+        const params = buildSearchParams(query);
 
         const headers: Record<string, string> = {};
         if (sessionId) {

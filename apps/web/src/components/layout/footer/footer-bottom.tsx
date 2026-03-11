@@ -79,7 +79,6 @@ export function FooterBottom({ section }: { section: "contact" | "copyright" }) 
   return (
     <div className="flex flex-col gap-2 font-normal font-toyota text-[var(--states-inverse-muted-foreground)] text-sm leading-5 tracking-[-0.15px] sm:flex-row sm:items-center sm:justify-between">
       <p>&copy; 2026 Toyota Financial Services. All rights reserved.</p>
-      <p>Project ARROW (331) &bull; R1 Launch: March 31, 2026</p>
     </div>
   );
 }

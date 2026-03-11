@@ -20,10 +20,9 @@ interface HistoryTabProps {
 export function HistoryTab({ historyData }: HistoryTabProps) {
   return (
     <div className="rounded-lg pt-0">
-      {/* Header with VIN, Vehicle Description and View Report button */}
       <div className="mb-[var(--spacing-xl)] flex flex-col justify-between gap-[var(--spacing-lg)] md:flex-row md:px-[var(--spacing-xl)] lg:mb-[var(--spacing-2xl)] lg:items-stretch lg:gap-0 lg:border-b-0 lg:px-[var(--spacing-xl)] lg:pb-0">
         <div className="flex shrink-0 flex-col justify-centermd:pr-[var(--spacing-lg)]">
-          <h3 className="mb-[var(--spacing-2xs)] font-semibold text-[length:var(--font-size-lg)] text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-[var(--color-core-surface-foreground)] lg:leading-heading">
+          <h3 className="mb-[var(--spacing-2xs)] font-semibold text-[length:var(--font-size-lg)] text-[var(--color-core-surface-foreground)] text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:leading-heading">
             Vehicle History
           </h3>
           <p className="font-semibold text-[length:var(--font-size-sm)] text-[var(--color-states-muted-foreground)] capitalize leading-normal">
@@ -46,17 +45,14 @@ export function HistoryTab({ historyData }: HistoryTabProps) {
         <div className="flex shrink-0 items-center">
           <Button
             className={cn(
-              "flex items-center justify-center gap-2.5 rounded-full border border-[var(--color-actions-tertiary-border)] bg-[var(--color-core-surfaces-background)] px-[var(--spacing-xl)] py-0 text-center font-semibold text-[length:var(--font-size-sm)] text-[var(--color-core-surface-foreground)]"
+              "flex items-center justify-center gap-2.5 rounded-full border border-[var(--color-actions-tertiary-border)] bg-[var(--color-core-surfaces-background)] px-[var(--spacing-xl)] py-0 text-center font-semibold text-[length:var(--font-size-sm)] text-[var(--color-core-surface-foreground)] hover:bg-transparent hover:text-inherit focus:bg-transparent active:bg-transparent"
             )}
             variant="outline"
           >
             View Full Report
-            {/* <ExternalLink className="h-4 w-4" /> */}
           </Button>
         </div>
       </div>
-
-      {/* History Stats - Single Card */}
       <div className="md:px-[var(--spacing-md)] lg:px-0">
         <div className="mb-[var(--spacing-10)] rounded-xl bg-surface p-[var(--spacing-xl)] lg:mb-[var(--spacing-4xl)]">
           <div className="grid grid-cols-1 gap-x-[var(--spacing-4xl)] gap-y-[var(--spacing-xl)] md:grid-cols-2 lg:grid-cols-3">

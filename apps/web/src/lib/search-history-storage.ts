@@ -10,7 +10,11 @@
  *   - url: SRP URL with query parameters
  *   - timestamp: ISO string of when the search was performed
  *   - type: "nlp" (natural language) or "filter" (structured search)
+ *
+ * Uses cached cookie utility for optimal performance following Vercel best practices.
  */
+
+import { getCookie, setCookie } from "./cookie-cache";
 
 export interface SearchEntry {
   id: string;
@@ -27,15 +31,15 @@ const MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
 // ── helpers ──────────────────────────────────────────────────────────
 
 function parseCookie(): SearchEntry[] {
-  if (typeof document === "undefined") {
+  if (typeof window === "undefined") {
     return [];
   }
   try {
-    const match = document.cookie.split("; ").find((row) => row.startsWith(`${COOKIE_NAME}=`));
-    if (!match) {
+    const raw = getCookie(COOKIE_NAME);
+    if (!raw) {
       return [];
     }
-    const value = decodeURIComponent(match.split("=")[1] ?? "");
+    const value = decodeURIComponent(raw);
     const parsed: unknown = JSON.parse(value);
     return Array.isArray(parsed) ? (parsed as SearchEntry[]) : [];
   } catch {
@@ -44,13 +48,15 @@ function parseCookie(): SearchEntry[] {
 }
 
 function writeCookie(entries: SearchEntry[]): void {
-  if (typeof document === "undefined") {
+  if (typeof window === "undefined") {
     return;
   }
   const value = encodeURIComponent(JSON.stringify(entries));
-  const secure = window.location.protocol === "https:" ? ";Secure" : "";
-  // biome-ignore lint: direct cookie assignment is required for browser storage
-  document.cookie = `${COOKIE_NAME}=${value};path=/;max-age=${MAX_AGE_SECONDS};SameSite=Lax${secure}`;
+  setCookie(COOKIE_NAME, value, {
+    maxAge: MAX_AGE_SECONDS,
+    path: "/",
+    sameSite: "Lax",
+  });
 }
 
 // ── public API ───────────────────────────────────────────────────────

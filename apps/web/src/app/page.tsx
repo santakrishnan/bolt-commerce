@@ -1,16 +1,15 @@
 import {
-  ArrowInspectedSection,
+  ArrowInspectedSectionWrapper,
   BuyingProcess,
   CustomerJourneyCarousel,
   HomeHero,
   VehicleQuickLinksGrid,
-  VehicleTypeSelector,
+  VehicleTypeSelectorWrapper,
 } from "~/components/features/landing";
 import { MyGarageWrapper } from "~/components/layout/my-garage/my-garagewrapper";
 import { AnimatedSection } from "~/components/shared/animated-section";
 import knownUserData from "~/data/known-user.json";
 import {
-  carouselAnimationVariant,
   customerPreQualified,
   customerTestDriveScheduled,
   customerTradeInSubmitted,
@@ -39,27 +38,10 @@ export default async function HomePage() {
   // Fetch feature flags using Vercel Flags SDK
   // showPersonalizedHeroBanner: true = show "Welcome Back" personalized hero
   const showPersonalizedBanner = await showPersonalizedHeroBanner();
+  const isPreQualified = await customerPreQualified();
 
-  // If authenticated user and showPersonalizedBanner is true, show only the banner section
-  if (userInfo.isAuthenticated && showPersonalizedBanner) {
-    return (
-      <div className="bg-[var(--color-core-surfaces-background)]">
-        <AnimatedSection>
-          <HomeHero
-            knownUser={{
-              ...knownUserData,
-              userName: userInfo.firstName,
-              showCards: true,
-              showContinueShopping: true,
-            }}
-            showSearch={false}
-            showStats={false}
-            showSubtitle={true}
-          />
-        </AnimatedSection>
-      </div>
-    );
-  }
+  // Only hide sections if user is both authenticated AND prequalified
+  const shouldHideSections = userInfo.isAuthenticated && isPreQualified;
 
   // Default: normal landing page
   const knownUserOverrides = showPersonalizedBanner
@@ -73,7 +55,7 @@ export default async function HomePage() {
 
   return (
     <div className="bg-[var(--color-core-surfaces-background)]">
-      <AnimatedSection>
+      <AnimatedSection staggerChildren>
         <HomeHero
           knownUser={knownUserOverrides}
           showSearch={!showPersonalizedBanner}
@@ -81,21 +63,25 @@ export default async function HomePage() {
           showSubtitle={true}
         />
       </AnimatedSection>
-      <AnimatedSection delay={0.1}>
-        <VehicleTypeSelector />
-      </AnimatedSection>
-      <AnimatedSection delay={0.1}>
-        <BuyingProcess />
-      </AnimatedSection>
-      <AnimatedSection delay={0.1}>
-        <VehicleFinderQuickLinks />
-      </AnimatedSection>
-      <AnimatedSection delay={0.1}>
-        <CustomerJourneyCarouselSection />
-      </AnimatedSection>
-      <AnimatedSection delay={0.1}>
-        <ArrowInspectedSection />
-      </AnimatedSection>
+      {!shouldHideSections && (
+        <>
+          <AnimatedSection delay={0.1} staggerChildren>
+            <VehicleTypeSelectorWrapper />
+          </AnimatedSection>
+          <AnimatedSection delay={0.1} staggerChildren>
+            <BuyingProcess />
+          </AnimatedSection>
+          <AnimatedSection delay={0.1}>
+            <VehicleFinderQuickLinks />
+          </AnimatedSection>
+          <AnimatedSection delay={0.1} staggerChildren>
+            <CustomerJourneyCarouselSection />
+          </AnimatedSection>
+          <AnimatedSection delay={0.1}>
+            <ArrowInspectedSectionWrapper />
+          </AnimatedSection>
+        </>
+      )}
     </div>
   );
 }
@@ -120,8 +106,6 @@ async function CustomerJourneyCarouselSection() {
     showTradeInBanner: !(await customerTradeInSubmitted()),
   };
 
-  const animVariant = await carouselAnimationVariant();
-
   // If all journey steps are complete, don't show carousel
   if (
     !(
@@ -136,9 +120,7 @@ async function CustomerJourneyCarouselSection() {
   return (
     <section className="w-full bg-[var(--color-core-surfaces-background)] pb-[var(--spacing-2xl)] sm:pb-[var(--spacing-3xl)] lg:pb-[var(--spacing-4xl)]">
       <div className="container mx-auto max-w-[var(--container-2xl)] px-[var(--spacing-md)] sm:px-[var(--spacing-lg)] lg:px-[var(--spacing-4xl)]">
-        <CustomerJourneyCarousel
-          flags={{ ...promotionFlags, carouselAnimationVariant: animVariant }}
-        />
+        <CustomerJourneyCarousel flags={promotionFlags} />
       </div>
     </section>
   );

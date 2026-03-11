@@ -12,7 +12,7 @@ export const customerJourneySlides: CustomerJourneySlide[] = [
     image: "/images/prequalify-banner/carousel-image-1.png",
     title: "PREQUALIFY FOR YOUR NEXT TOYOTA",
     subtitle: "Get personalized rates with a soft credit check. Know your budget before you shop.",
-    ctaText: "Get my free estimate",
+    ctaText: "Get PreQualified",
   },
   {
     id: "trade-in",

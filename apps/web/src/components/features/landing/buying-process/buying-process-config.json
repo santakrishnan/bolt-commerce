@@ -1,0 +1,49 @@
+{
+  "heading": "How to buy your next Toyota",
+  "backgroundImages": {
+    "mobile": "/images/buying-process/buying_process_mobile.png",
+    "desktop": "/images/buying-process/buying-process-bg.png",
+    "altText": "Family with car"
+  },
+  "processSteps": [
+    {
+      "icon": "refresh",
+      "title": "Fast & Simple Process",
+      "description": "From browsing to booking a test drive, everything is seamless and quick.",
+      "linkText": "Find Out More",
+      "linkHref": "/used-cars"
+    },
+    {
+      "icon": "search",
+      "title": "Transparent from the Start",
+      "description": "Clear pricing, no hidden fees. See the full breakdown before you commit.",
+      "linkText": "Find Out More",
+      "linkHref": "/used-cars"
+    },
+    {
+      "icon": "shield",
+      "title": "Inspected by Toyota",
+      "description": "Backed by our rigorous 160-point quality standards and decades of expertise.",
+      "linkText": "Find Out More",
+      "linkHref": "/used-cars"
+    },
+    {
+      "icon": "clipboard",
+      "title": "Buy with Confidence",
+      "description": "Every listing includes a detailed condition report and full history.",
+      "linkText": "Find Out More",
+      "linkHref": "/used-cars"
+    }
+  ],
+  "iconPaths": {
+    "refresh": "/images/buying-process/Subtract.svg",
+    "search": "/images/buying-process/SearchIcon.png",
+    "shield": "/images/buying-process/ShieldCheck.png",
+    "clipboard": "/images/buying-process/ClipBoard.png"
+  },
+  "carousel": {
+    "minSwipeDistance": 50,
+    "cardWidthPercentage": 0.9,
+    "gapSize": 16
+  }
+}

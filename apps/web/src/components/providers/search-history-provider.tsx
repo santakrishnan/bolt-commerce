@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   addSearchEntry,
@@ -32,7 +31,6 @@ const SearchHistoryContext = createContext<SearchHistoryContextValue | null>(nul
 export function SearchHistoryProvider({ children }: { children: React.ReactNode }) {
   const [searches, setSearches] = useState<SearchEntry[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const pathname = usePathname();
 
   // Hydrate from cookie on mount
   useEffect(() => {
@@ -47,7 +45,7 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
     if (isLoaded) {
       setSearches(getSearchHistory());
     }
-  }, [pathname, isLoaded]);
+  }, [isLoaded]);
 
   const handleAdd = useCallback((query: string, url: string, type: "nlp" | "filter" = "nlp") => {
     const added = addSearchEntry(query, url, type);

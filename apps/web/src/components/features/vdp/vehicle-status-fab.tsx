@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { getCookie, setCookie } from "~/lib/cookie-cache";
 import type { VehicleStatusData } from "~/lib/data/vehicle";
 import {
   VDP_DEFAULT_SCENARIO_ID,
@@ -44,15 +45,10 @@ export function VehicleStatusFAB({ onStatusChange }: VehicleStatusFABProps) {
 
   // Hydrate from cookie on mount (mirrors FeatureFlagDebug pattern)
   useEffect(() => {
-    const cookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(`${VDP_FLAG_COOKIE_NAME}=`));
-    if (cookie) {
-      const value = cookie.split("=")[1];
-      if (value && vdpScenarios[value]) {
-        setActiveScenarioId(value);
-        localStorage.setItem(VDP_FLAG_COOKIE_NAME, value);
-      }
+    const value = getCookie(VDP_FLAG_COOKIE_NAME);
+    if (value && vdpScenarios[value]) {
+      setActiveScenarioId(value);
+      localStorage.setItem(VDP_FLAG_COOKIE_NAME, value);
     }
   }, []);
 
@@ -62,18 +58,12 @@ export function VehicleStatusFAB({ onStatusChange }: VehicleStatusFABProps) {
       return;
     }
 
-    // Persist to cookie
-    if ("cookieStore" in window) {
-      (window as Window & { cookieStore: { set: (opts: object) => void } }).cookieStore.set({
-        name: VDP_FLAG_COOKIE_NAME,
-        value: scenarioId,
-        path: "/",
-        expires: Date.now() + 86_400 * 1000,
-      });
-    } else {
-      // biome-ignore lint/suspicious/noDocumentCookie: Fallback for browsers without Cookie Store API
-      document.cookie = `${VDP_FLAG_COOKIE_NAME}=${scenarioId}; path=/; max-age=86400`;
-    }
+    // Persist to cookie using cached utility
+    setCookie(VDP_FLAG_COOKIE_NAME, scenarioId, {
+      maxAge: 86_400,
+      path: "/",
+      sameSite: "Lax",
+    });
 
     // Sync to localStorage for client reads
     localStorage.setItem(VDP_FLAG_COOKIE_NAME, scenarioId);

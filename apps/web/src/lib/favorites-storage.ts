@@ -4,7 +4,11 @@
  * Cookie Name : "saved_vehicles"
  * Cookie Value: JSON-stringified array of VIN strings
  * Example     : ["JTDEPMAE5PJ100001","2T3P1RFV8NW100002"]
+ *
+ * Uses cached cookie utility for optimal performance following Vercel best practices.
  */
+
+import { getCookie, setCookie } from "./cookie-cache";
 
 const COOKIE_NAME = "saved_vehicles";
 const MAX_SAVED = 30;
@@ -13,15 +17,15 @@ const MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
 // ── helpers ──────────────────────────────────────────────────────────
 
 function parseCookie(): string[] {
-  if (typeof document === "undefined") {
+  if (typeof window === "undefined") {
     return [];
   }
   try {
-    const match = document.cookie.split("; ").find((row) => row.startsWith(`${COOKIE_NAME}=`));
-    if (!match) {
+    const raw = getCookie(COOKIE_NAME);
+    if (!raw) {
       return [];
     }
-    const value = decodeURIComponent(match.split("=")[1] ?? "");
+    const value = decodeURIComponent(raw);
     const parsed: unknown = JSON.parse(value);
     return Array.isArray(parsed) ? (parsed as string[]) : [];
   } catch {
@@ -30,13 +34,15 @@ function parseCookie(): string[] {
 }
 
 function writeCookie(vins: string[]): void {
-  if (typeof document === "undefined") {
+  if (typeof window === "undefined") {
     return;
   }
   const value = encodeURIComponent(JSON.stringify(vins));
-  const secure = window.location.protocol === "https:" ? ";Secure" : "";
-  // biome-ignore lint: direct cookie assignment is required for browser storage
-  document.cookie = `${COOKIE_NAME}=${value};path=/;max-age=${MAX_AGE_SECONDS};SameSite=Lax${secure}`;
+  setCookie(COOKIE_NAME, value, {
+    maxAge: MAX_AGE_SECONDS,
+    path: "/",
+    sameSite: "Lax",
+  });
 }
 
 // ── public API ───────────────────────────────────────────────────────

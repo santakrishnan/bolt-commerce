@@ -1,13 +1,29 @@
 // Scrollable cards for My Garage
 
-import { ScrollArea } from "@tfs-ucmp/ui";
+import { Button, ScrollArea } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import { type FC, Fragment, type ReactNode } from "react";
 
 import { GarageInfoCard } from "~/components/features/card/garage-info-card";
 
 export type { GarageInfoCardProps } from "~/components/features/card/garage-info-card";
+
+// ─── Utility (module-level for performance) ─────────────────────────────────
+
+/** Splits search text into two lines if longer than 8 words */
+function renderSearchText(text: string): ReactNode {
+  const words = text.split(" ");
+  if (words.length <= 8) {
+    return text;
+  }
+  return (
+    <>
+      <span className="block">{words.slice(0, 8).join(" ")}</span>
+      <span className="block">{words.slice(8).join(" ")}</span>
+    </>
+  );
+}
 
 export interface SavedVehicleCardProps {
   id: number | string;
@@ -18,7 +34,7 @@ export interface SavedVehicleCardProps {
   onRemove?: () => void;
 }
 
-export const SavedVehicleCard: React.FC<SavedVehicleCardProps> = ({
+export const SavedVehicleCard: FC<SavedVehicleCardProps> = ({
   imageUrl,
   title,
   price,
@@ -38,11 +54,12 @@ export const SavedVehicleCard: React.FC<SavedVehicleCardProps> = ({
       <span className="text-icon-primary text-xs">{price}</span>
       <span className="text-gray-500 text-xs">{miles}</span>
     </div>
-    <button
+    <Button
       aria-label="Remove saved vehicle"
-      className="ml-2 flex h-10 w-10 items-center justify-center rounded-full text-black transition-colors hover:text-icon-primary focus:outline-none"
+      className="ml-2 h-10 w-10 rounded-full text-black hover:text-icon-primary"
       onClick={onRemove}
-      type="button"
+      size="icon"
+      variant="ghost"
     >
       <picture>
         <source srcSet="/images/garage/cross.svg" type="image/svg+xml" />
@@ -54,7 +71,7 @@ export const SavedVehicleCard: React.FC<SavedVehicleCardProps> = ({
           width={10}
         />
       </picture>
-    </button>
+    </Button>
   </div>
 );
 
@@ -67,7 +84,7 @@ export interface RecentSearchCardProps {
   onRemove?: () => void;
 }
 
-export const RecentSearchCard: React.FC<RecentSearchCardProps> = ({
+export const RecentSearchCard: FC<RecentSearchCardProps> = ({
   search,
   url,
   highlighted,
@@ -88,29 +105,19 @@ export const RecentSearchCard: React.FC<RecentSearchCardProps> = ({
         href={url}
         title={isTruncated ? search : undefined}
       >
-        {(() => {
-          const words = truncated.split(" ");
-          if (words.length <= 8) {
-            return truncated;
-          }
-          return (
-            <>
-              <span className="block">{words.slice(0, 8).join(" ")}</span>
-              <span className="block">{words.slice(8).join(" ")}</span>
-            </>
-          );
-        })()}
+        {renderSearchText(truncated)}
       </Link>
       {!disabled && (
-        <button
+        <Button
           aria-label="Remove recent search"
-          className="ml-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-700 focus:outline-none"
+          className="ml-2 h-10 w-10 shrink-0 rounded-full text-gray-400 hover:text-gray-700"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onRemove?.();
           }}
-          type="button"
+          size="icon"
+          variant="ghost"
         >
           <picture>
             <source srcSet="/images/garage/cross.svg" type="image/svg+xml" />
@@ -122,7 +129,7 @@ export const RecentSearchCard: React.FC<RecentSearchCardProps> = ({
               width={10}
             />
           </picture>
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -135,47 +142,85 @@ export interface FinancingCardProps {
   onGetPrequalified?: () => void;
 }
 
-export const FinancingCard: React.FC<FinancingCardProps> = ({
+export const FinancingCard: FC<FinancingCardProps> = ({
   prequalified,
-  daysRemaining = 27,
+  daysRemaining = 30,
   onBuyOnline,
   onGetPrequalified,
 }) => {
+  // Calculate progress percentage for circular indicator
+  const percentage = (daysRemaining / 30) * 100;
+  const circumference = 2 * Math.PI * 18; // radius = 18
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
   // If customer is already prequalified, show the "Your Financing" card
   if (prequalified) {
-    // Calculate color based on days remaining (out of 30)
-    const percentage = (daysRemaining / 30) * 100;
-    let circleColor = "bg-green-600"; // > 50% (15+ days)
-    if (percentage <= 33) {
-      circleColor = "bg-red-600"; // <= 33% (10 or fewer days)
-    } else if (percentage <= 50) {
-      circleColor = "bg-yellow-500"; // <= 50% (11-15 days)
-    }
-
     return (
       <GarageInfoCard
         badge={
-          <span className="rounded bg-green-100 px-2 py-1 text-green-700 text-xs">
+          <span className="flex items-center justify-center rounded bg-[var(--color-badge-success-bg,#078843)] px-2 py-[5px] text-center font-semibold text-[length:10px] text-[var(--color-badge-text,#FFF)] leading-normal [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
             Pre-qualified
           </span>
         }
         ctaLabel="Buy Online"
-        heading="Your Financing"
+        ctaVariant="primary"
+        heading={
+          <div className="flex items-center gap-[var(--spacing-sm,8px)]">
+            <Image alt="Dollar icon" height={16} src="/images/garage/Dollar-icon.svg" width={16} />
+            <span className="font-semibold text-[length:var(--font-size-md,16px)] text-[var(--color-text-primary,#111)] leading-[130%] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
+              Your Financing
+            </span>
+          </div>
+        }
         onCtaClick={onBuyOnline}
       >
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col items-center">
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-full ${circleColor}`}
+        <div className="flex items-center gap-[var(--spacing-md,16px)]">
+          <div className="relative flex flex-col items-center">
+            <svg
+              aria-label="Financing days remaining progress indicator"
+              className="h-12 w-12 -rotate-90 transform"
+              viewBox="0 0 40 40"
             >
-              <span className="font-bold text-white text-xl leading-none">{daysRemaining}</span>
+              <title>Financing days remaining progress indicator</title>
+              {/* Background circle */}
+              <circle
+                className="text-[#ECECEC]"
+                cx="20"
+                cy="20"
+                fill="transparent"
+                r="18"
+                stroke="currentColor"
+                strokeWidth="3"
+              />
+              {/* Progress circle */}
+              <circle
+                className="text-[var(--color-accent-primary,#EB0D1C)] transition-all duration-300"
+                cx="20"
+                cy="20"
+                fill="transparent"
+                r="18"
+                stroke="currentColor"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                strokeWidth="3"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-center font-semibold text-[length:var(--font-size-sm,14px)] text-[var(--color-text-primary,#000)] leading-[130%] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
+                {daysRemaining}
+              </span>
+              <span className="text-center font-semibold text-[#8A8A8A] text-[length:8px] uppercase leading-normal [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
+                DAYS
+              </span>
             </div>
-            <span className="mt-1 text-2xs text-gray-500 uppercase">DAYS</span>
           </div>
-          <span className="text-xs">
-            <span className="block font-semibold">You are pre-qualified</span>
-            <span className="block text-gray-600">See real monthly payments on every vehicle</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="font-semibold text-[length:var(--font-size-md,16px)] text-[var(--color-text-primary,#111)] leading-[130%] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
+              You are pre-qualified
+            </span>
+            <span className="text-gray-600">See real monthly payments on every vehicle</span>
+          </div>
         </div>
       </GarageInfoCard>
     );
@@ -185,39 +230,18 @@ export const FinancingCard: React.FC<FinancingCardProps> = ({
   return (
     <GarageInfoCard
       ctaLabel="Get Started"
+      ctaVariant="primary"
       heading={
         <>
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-600">
-            <svg
-              aria-hidden="true"
-              className="h-3.5 w-3.5 text-white"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z" />
-            </svg>
-          </div>
-          <span>Know Your Buying Power</span>
+          <Image alt="Dollar icon" height={16} src="/images/garage/Dollar-icon.svg" width={16} />
+          <span className="text-[length:var(--text-body-lg,18px)]">Know Your Buying Power</span>
         </>
       }
       onCtaClick={onGetPrequalified}
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-600">
-          <svg
-            aria-hidden="true"
-            className="h-5 w-5 text-white"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={3}
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <span className="text-xs">
+      <div className="flex items-center gap-[var(--spacing-md,16px)]">
+        <Image alt="Verified" height={40} src="/images/garage/verified-icon.svg" width={40} />
+        <span>
           <span className="block">Unlock your buying power with no credit impact</span>
         </span>
       </div>
@@ -236,7 +260,7 @@ export interface TradeOfferCardProps {
   onGetEstimate?: () => void;
 }
 
-export const TradeOfferCard: React.FC<TradeOfferCardProps> = ({
+export const TradeOfferCard: FC<TradeOfferCardProps> = ({
   imageUrl,
   title,
   price,
@@ -251,27 +275,44 @@ export const TradeOfferCard: React.FC<TradeOfferCardProps> = ({
     return (
       <GarageInfoCard
         badge={
-          <span className="rounded bg-gray-200 px-2 py-1 text-gray-700 text-xs">
+          <span className="flex items-center justify-center rounded bg-[var(--color-badge-default-bg,#565656)] px-2 py-[5px] text-center font-semibold text-[length:10px] text-[var(--color-badge-text,#FFF)] leading-normal [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
             Expires in {expiresIn}
           </span>
         }
         ctaLabel="Shop With Your Trade-In"
-        heading="Sell/Trade Offer"
+        ctaVariant="primary"
+        heading={
+          <div className="flex items-center gap-[var(--spacing-sm,8px)]">
+            <Image alt="Car icon" height={16} src="/images/garage/car.svg" width={16} />
+            <span className="text-[length:var(--text-body-lg,18px)]">Sell/Trade Offer</span>
+          </div>
+        }
         onCtaClick={onShopWithTradeIn}
       >
-        <div className="flex items-center gap-2">
-          <Image
-            alt={title}
-            className="h-10 w-16 rounded object-cover"
-            height={40}
-            src={imageUrl}
-            width={64}
-          />
-          <div className="flex flex-col">
-            <span className="font-semibold text-xs">{title}</span>
-            <span className="text-icon-primary text-xs">{price}</span>
-            <span className="text-gray-500 text-xs">{miles}</span>
+        <div className="flex flex-col gap-[var(--spacing-md,16px)]">
+          <div className="flex items-center justify-between gap-[var(--spacing-lg,24px)]">
+            <Image
+              alt={title}
+              className="rounded object-cover"
+              height={61}
+              src={imageUrl}
+              style={{ aspectRatio: "156/61" }}
+              width={156}
+            />
+            <div className="flex flex-1 flex-col">
+              <span className="font-semibold text-[length:var(--font-size-sm,14px)] text-[var(--color-text-primary,#111)] leading-[130%]">
+                {title}
+              </span>
+              <span className="font-semibold text-[length:var(--font-size-sm,14px)] text-[var(--color-card-price)] leading-normal">
+                {price}
+              </span>
+              <span className="font-semibold text-[length:var(--font-size-sm,14px)] text-[var(--color-text-primary,#111)] leading-[130%]">
+                {miles}
+              </span>
+            </div>
+            <Image alt="Arrow icon" height={12} src="/images/garage/Union.svg" width={12} />
           </div>
+          <div className="h-px w-full bg-black opacity-10" />
         </div>
       </GarageInfoCard>
     );
@@ -282,27 +323,79 @@ export const TradeOfferCard: React.FC<TradeOfferCardProps> = ({
     <GarageInfoCard
       ctaLabel="See My Offer"
       ctaVariant="secondary"
-      heading="What's Your Car Worth?"
+      heading={
+        <span className="text-[length:var(--text-body-lg,18px)]">What's Your Car Worth?</span>
+      }
       onCtaClick={onGetEstimate}
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100">
-          <svg
-            aria-hidden="true"
-            className="h-5 w-5 text-red-600"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-        <span className="text-xs">
+      <div className="flex items-center gap-[var(--spacing-md,16px)]">
+        <Image alt="Growth" height={40} src="/images/garage/growth-icon.svg" width={40} />
+        <span>
           <span className="block">
             Get a free estimate in minutes and apply it toward your next vehicle.
           </span>
+        </span>
+      </div>
+    </GarageInfoCard>
+  );
+};
+
+export interface TestDriveCardProps {
+  scheduled: boolean;
+  dealershipName?: string;
+  onBookAppointment?: () => void;
+  onScheduleTestDrive?: () => void;
+}
+
+export const TestDriveCard: React.FC<TestDriveCardProps> = ({
+  scheduled,
+  dealershipName = "Toyota of Fort Worth",
+  onBookAppointment,
+  onScheduleTestDrive,
+}) => {
+  // If test drive is already scheduled, show "Ready to Drive it?" card
+  if (scheduled) {
+    return (
+      <GarageInfoCard
+        ctaLabel="Schedule a Test Drive"
+        ctaVariant="secondary"
+        heading={
+          <>
+            <Image alt="Car" height={16} src="/images/garage/car.svg" width={18} />
+            <span className="text-[length:var(--font-size-lg,18px)]">Ready to Drive it?</span>
+          </>
+        }
+        onCtaClick={onScheduleTestDrive}
+      >
+        <div className="flex items-center gap-[var(--spacing-md,16px)]">
+          <Image alt="Toyota" height={40} src="/images/garage/toyota.svg" width={40} />
+          <span>
+            <span className="block">Experience this vehicle firsthand at {dealershipName}</span>
+          </span>
+        </div>
+      </GarageInfoCard>
+    );
+  }
+
+  // If test drive is NOT scheduled, show "Schedule a Test drive today" card
+  return (
+    <GarageInfoCard
+      ctaLabel="Book an Appointment"
+      ctaVariant="secondary"
+      heading={
+        <>
+          <Image alt="Car" height={16} src="/images/garage/car.svg" width={18} />
+          <span className="text-[length:var(--text-body-lg,18px)]">
+            Schedule a Test drive today.
+          </span>
+        </>
+      }
+      onCtaClick={onBookAppointment}
+    >
+      <div className="flex items-center gap-[var(--spacing-md,16px)]">
+        <Image alt="Toyota" height={40} src="/images/garage/toyota.svg" width={40} />
+        <span>
+          <span className="block">Test drive today. Schedule a test drive at {dealershipName}</span>
         </span>
       </div>
     </GarageInfoCard>
@@ -314,9 +407,10 @@ export interface MyGarageCardsProps {
   recentSearches: RecentSearchCardProps[];
   financing: FinancingCardProps;
   tradeOffer: TradeOfferCardProps;
+  testDrive?: TestDriveCardProps;
 }
 
-export const MyGarageCards: React.FC<
+export const MyGarageCards: FC<
   MyGarageCardsProps & {
     onRemoveSavedVehicle?: (id: number | string) => void;
     onRemoveSearch?: (id: string) => void;
@@ -327,6 +421,7 @@ export const MyGarageCards: React.FC<
   recentSearches,
   financing,
   tradeOffer,
+  testDrive,
   onRemoveSavedVehicle,
   onRemoveSearch,
   onClearAllSearches,
@@ -346,12 +441,12 @@ export const MyGarageCards: React.FC<
             Saved Vehicles ({savedVehicles.length})
           </span>
         </div>
-        <button
-          className="font-normal text-[length:var(--Font-Size-Scale---font-size-sm,14px)] text-[var(--Core-surfaces-foreground,#0A0A0A)] not-italic leading-[125%] tracking-[-0.14px] underline decoration-solid [font-family:var(--font-family)] [leading-trim:both] [text-decoration-skip-ink:auto] [text-decoration-thickness:auto] [text-edge:cap] [text-underline-offset:auto] [text-underline-position:from-font]"
-          type="button"
+        <Button
+          className="h-auto p-0 font-normal text-[length:var(--font-size-sm,14px)] text-[var(--Core-surfaces-foreground,#0A0A0A)] leading-[125%] tracking-[-0.14px] underline [font-family:var(--font-family)]"
+          variant="link"
         >
           View All
-        </button>
+        </Button>
       </div>
       <div className="mx-4 mt-[23px] h-px bg-black opacity-10" />
       <div className="py-2">
@@ -363,7 +458,7 @@ export const MyGarageCards: React.FC<
               </div>
             ) : (
               savedVehicles.map((props, idx) => (
-                <React.Fragment key={props.id}>
+                <Fragment key={props.id}>
                   <SavedVehicleCard
                     {...props}
                     onRemove={
@@ -373,7 +468,7 @@ export const MyGarageCards: React.FC<
                   {idx !== savedVehicles.length - 1 && (
                     <div className="h-px w-full bg-black opacity-10" />
                   )}
-                </React.Fragment>
+                </Fragment>
               ))
             )}
           </ScrollArea>
@@ -400,13 +495,13 @@ export const MyGarageCards: React.FC<
           </span>
         </div>
         {recentSearches.length > 0 && onClearAllSearches && (
-          <button
-            className="font-normal text-[length:var(--Font-Size-Scale---font-size-sm,14px)] text-[var(--Core-surfaces-foreground,#0A0A0A)] not-italic leading-[125%] tracking-[-0.14px] underline decoration-solid [font-family:var(--font-family)] [leading-trim:both] [text-decoration-skip-ink:auto] [text-decoration-thickness:auto] [text-edge:cap] [text-underline-offset:auto] [text-underline-position:from-font]"
+          <Button
+            className="h-auto p-0 font-normal text-[length:var(--Font-Size-Scale---font-size-sm,14px)] text-[var(--Core-surfaces-foreground,#0A0A0A)] leading-[125%] tracking-[-0.14px] underline [font-family:var(--font-family)]"
             onClick={onClearAllSearches}
-            type="button"
+            variant="link"
           >
             Clear All
-          </button>
+          </Button>
         )}
       </div>
       <div className="mx-4 mt-[23px] h-px bg-black opacity-10" />
@@ -419,7 +514,7 @@ export const MyGarageCards: React.FC<
               </div>
             ) : (
               recentSearches.map((props, idx) => (
-                <React.Fragment key={props.id}>
+                <Fragment key={props.id}>
                   <RecentSearchCard
                     {...props}
                     onRemove={onRemoveSearch ? () => onRemoveSearch(props.id) : undefined}
@@ -427,7 +522,7 @@ export const MyGarageCards: React.FC<
                   {idx !== recentSearches.length - 1 && (
                     <div className="h-px w-full bg-black opacity-10" />
                   )}
-                </React.Fragment>
+                </Fragment>
               ))
             )}
           </ScrollArea>
@@ -442,6 +537,7 @@ export const MyGarageCards: React.FC<
     <div className="flex min-w-65 flex-1 flex-col gap-4">
       <FinancingCard {...financing} />
       <TradeOfferCard {...tradeOffer} />
+      {testDrive && <TestDriveCard {...testDrive} />}
     </div>
   </div>
 );

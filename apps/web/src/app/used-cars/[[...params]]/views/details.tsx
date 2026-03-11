@@ -1,4 +1,4 @@
-import type { VdpPageData } from "~/lib/data/vehicle";
+import type { VehicleData, VinData } from "~/lib/data/vehicle";
 import { buildVdpPath, type VdpParams } from "~/lib/routes";
 import { VehicleDetailClient } from "./vehicle-detail-client";
 
@@ -8,7 +8,8 @@ interface UsedCarsDetailsProps {
   trim: string;
   year: number;
   vin: string;
-  pageData: VdpPageData;
+  vinData: VinData;
+  vehicleData: VehicleData;
 }
 
 /**
@@ -18,7 +19,15 @@ interface UsedCarsDetailsProps {
  *
  * Reuses the existing VehicleDetailClient component.
  */
-export function UsedCarsDetails({ make, model, trim, year, vin, pageData }: UsedCarsDetailsProps) {
+export function UsedCarsDetails({
+  make,
+  model,
+  trim,
+  year,
+  vin,
+  vinData,
+  vehicleData,
+}: UsedCarsDetailsProps) {
   // Map to the VdpParams shape expected by VehicleDetailClient
   const vehicle: VdpParams = {
     make,
@@ -31,5 +40,12 @@ export function UsedCarsDetails({ make, model, trim, year, vin, pageData }: Used
   // Canonical VDP URL: /used-cars/details/[make]/[model]/[trim]/[year]/[vin]
   const vdpUrl = buildVdpPath(vehicle);
 
-  return <VehicleDetailClient pageData={pageData} vdpUrl={vdpUrl} vehicle={vehicle} />;
+  return (
+    <VehicleDetailClient
+      vdpUrl={vdpUrl}
+      vehicle={vehicle}
+      vehicleData={vehicleData}
+      vinData={vinData}
+    />
+  );
 }

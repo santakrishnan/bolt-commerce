@@ -9,6 +9,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ARROW_COOKIE } from "~/lib/arrow/constants";
 import { POST } from "../route";
 
+const UUID_V4_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const PROF_MOCK_REGEX = /^prof_mock_/;
+
 // Mock environment variables
 const mockEnv = {
   USE_MOCK_PROFILE: "true",
@@ -59,11 +62,9 @@ describe("Session API", () => {
       expect(data).toHaveProperty("fingerprintMetadata");
 
       // Check ID formats
-      expect(data.sessionId).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-      );
+      expect(data.sessionId).toMatch(UUID_V4_REGEX);
       expect(data.fingerprintId).toBe("fp_mock_test123");
-      expect(data.profileId).toMatch(/^prof_mock_/);
+      expect(data.profileId).toMatch(PROF_MOCK_REGEX);
     });
 
     it("should preserve fingerprint metadata from client", async () => {
@@ -193,7 +194,7 @@ describe("Session API", () => {
       const data = await response.json();
 
       // Mock profile service should return IDs with specific prefix
-      expect(data.profileId).toMatch(/^prof_mock_/);
+      expect(data.profileId).toMatch(PROF_MOCK_REGEX);
     });
 
     it("should use mock profile service when PROFILE_SERVICE_URL is not configured", async () => {

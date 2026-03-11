@@ -5,39 +5,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 
-export interface SavedVehicle {
-  year: number;
-  make: string;
-  model: string;
-  price: number;
-  image?: string;
-  vin?: string;
-  mileage?: number;
-  stockNumber?: string;
-}
+// Re-export so existing consumers importing from this file continue to work
+export type { HomeHeroKnownUserContentProps, SavedVehicle, TradeInOffer } from "./types";
 
-export interface TradeInOffer {
-  year: number;
-  make: string;
-  model: string;
-  offerAmount: number;
-  expiresInDays: number;
-}
-
-export interface HomeHeroKnownUserContentProps {
-  userName: string;
-  isPreQualified?: boolean;
-  savedVehicle?: SavedVehicle;
-  preQualifiedVehicle?: SavedVehicle;
-  tradeInOffer?: TradeInOffer;
-  onBuyOnline?: () => void;
-  onScheduleTestDrive?: () => void;
-  onAcceptOffer?: () => void;
-  onContinueShopping?: () => void;
-  showCards?: boolean;
-  showSubtitle?: boolean;
-  showContinueShopping?: boolean;
-}
+import type { HomeHeroKnownUserContentProps } from "./types";
 
 export function HomeHeroKnownUserContent({
   userName,
@@ -320,13 +291,13 @@ export function HomeHeroKnownUserContent({
           })()}
 
         {showContinueShopping && (
-          <div className="flex w-full justify-center pt-[var(--spacing-md)] lg:pt-[var(--spacing-md)]">
+          <div className="flex w-full justify-center pt-[var(--spacing-lg)]">
             <div className="w-full md:w-1/3">
               <Button
-                className="h-9 w-full rounded-full border border-none bg-white text-[length:var(--font-size-sm)] text-black backdrop-blur-sm lg:h-10 lg:text-[length:var(--font-size-sm)]"
+                className="h-9 w-full rounded-full border border-actions-tertiary-border bg-white font-semibold text-[length:var(--font-size-sm)] text-actions-tertiary-foreground backdrop-blur-sm hover:border-actions-tertiary-border hover:bg-actions-tertiary-hover hover:text-actions-tertiary-foreground lg:h-10 lg:text-[length:var(--font-size-sm)]"
                 onClick={() => {
                   onContinueShopping?.();
-                  router.push("/used-cars/search");
+                  router.push("/used-cards/search");
                 }}
                 variant="outline"
               >

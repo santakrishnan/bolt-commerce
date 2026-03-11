@@ -21,6 +21,9 @@ const COLLAPSE_RE = /[\s-]+/g;
 // e.g. "-word-" → "word", "word-" → "word"
 const EDGE_HYPHEN_RE = /^-+|-+$/g;
 
+// Truncate regex — matches trailing partial word after truncation
+const TRUNCATE_WORD_BOUNDARY_RE = /-[^-]*$/;
+
 /**
  * Common English stop words to optionally strip from slugs.
  *
@@ -129,7 +132,7 @@ export function slugify(text: string, options: SlugifyOptions = {}): string {
 
   // Truncate at word boundary — never cut mid-word
   if (slug.length > maxLength) {
-    slug = slug.slice(0, maxLength).replace(/-[^-]*$/, "");
+    slug = slug.slice(0, maxLength).replace(TRUNCATE_WORD_BOUNDARY_RE, "");
   }
 
   return slug;

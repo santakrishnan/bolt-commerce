@@ -1,28 +1,327 @@
 {
   "defaultState": "TX",
+  "backgroundImages": {
+    "southwest": {
+      "desktop": "/images/heroes/regions/southwest/desktop.png",
+      "mobile": "/images/heroes/regions/southwest/mobile.png"
+    },
+    "southeast": {
+      "desktop": "/images/heroes/regions/southeast/desktop.png",
+      "mobile": "/images/heroes/regions/southeast/mobile.png"
+    },
+    "west": {
+      "desktop": "/images/heroes/regions/west/desktop.png",
+      "mobile": "/images/heroes/regions/west/mobile.png"
+    }
+  },
   "zipPrefixes": {
-    "TX": { "min": 750, "max": 799 },
+    "AL": { "min": 350, "max": 369 },
+    "AK": { "min": 995, "max": 999 },
+    "AZ": { "min": 850, "max": 865 },
+    "AR": { "min": 716, "max": 729 },
+    "CA": { "min": 900, "max": 961 },
+    "CO": { "min": 800, "max": 816 },
+    "CT": { "min": 60, "max": 69 },
+    "DE": { "min": 197, "max": 199 },
     "FL": { "min": 320, "max": 349 },
-    "CA": { "min": 900, "max": 961 }
+    "GA": { "min": 300, "max": 319 },
+    "HI": { "min": 967, "max": 968 },
+    "ID": { "min": 832, "max": 838 },
+    "IL": { "min": 600, "max": 629 },
+    "IN": { "min": 460, "max": 479 },
+    "IA": { "min": 500, "max": 528 },
+    "KS": { "min": 660, "max": 679 },
+    "KY": { "min": 400, "max": 427 },
+    "LA": { "min": 700, "max": 714 },
+    "ME": { "min": 39, "max": 49 },
+    "MD": { "min": 206, "max": 219 },
+    "MA": { "min": 10, "max": 27 },
+    "MI": { "min": 480, "max": 499 },
+    "MN": { "min": 550, "max": 567 },
+    "MS": { "min": 386, "max": 397 },
+    "MO": { "min": 630, "max": 658 },
+    "MT": { "min": 590, "max": 599 },
+    "NE": { "min": 680, "max": 693 },
+    "NV": { "min": 889, "max": 898 },
+    "NH": { "min": 30, "max": 38 },
+    "NJ": { "min": 70, "max": 89 },
+    "NM": { "min": 870, "max": 884 },
+    "NY": { "min": 100, "max": 149 },
+    "NC": { "min": 270, "max": 289 },
+    "ND": { "min": 580, "max": 588 },
+    "OH": { "min": 430, "max": 459 },
+    "OK": { "min": 730, "max": 749 },
+    "OR": { "min": 970, "max": 979 },
+    "PA": { "min": 150, "max": 196 },
+    "RI": { "min": 28, "max": 29 },
+    "SC": { "min": 290, "max": 299 },
+    "SD": { "min": 570, "max": 577 },
+    "TN": { "min": 370, "max": 385 },
+    "TX": { "min": 750, "max": 799 },
+    "UT": { "min": 840, "max": 847 },
+    "VT": { "min": 50, "max": 59 },
+    "VA": { "min": 220, "max": 246 },
+    "WA": { "min": 980, "max": 994 },
+    "WV": { "min": 247, "max": 268 },
+    "WI": { "min": 530, "max": 549 },
+    "WY": { "min": 820, "max": 831 },
+    "DC": { "min": 200, "max": 205 }
   },
   "states": {
-    "TX": {
-      "backgroundImage": "/images/heroes/Carousel-image-1.png",
-      "mobileBackgroundImage": "/images/hero-mobile/car-1.png",
-      "zipCode": "75001",
-      "description": "Plano, TX 75001"
+    "AL": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "35203",
+      "description": "Birmingham, AL"
     },
-    "FL": {
-      "backgroundImage": "/images/heroes/Carousel-image-2.png",
-      "mobileBackgroundImage": "/images/hero-mobile/car-2.png",
-      "zipCode": "33101",
-      "description": "Miami, FL 33101"
+    "AK": {
+      "backgroundImageKey": "west",
+      "zipCode": "99501",
+      "description": "Anchorage, AK"
+    },
+    "AZ": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "85001",
+      "description": "Phoenix, AZ"
+    },
+    "AR": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "72201",
+      "description": "Little Rock, AR"
     },
     "CA": {
-      "backgroundImage": "/images/heroes/Carousel-image-3.png",
-      "mobileBackgroundImage": "/images/hero-mobile/car-3.png",
+      "backgroundImageKey": "west",
       "zipCode": "90001",
-      "description": "Los Angeles, CA 90001"
+      "description": "Los Angeles, CA"
+    },
+    "CO": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "80202",
+      "description": "Denver, CO"
+    },
+    "CT": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "06103",
+      "description": "Hartford, CT"
+    },
+    "DE": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "19901",
+      "description": "Dover, DE"
+    },
+    "FL": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "33101",
+      "description": "Miami, FL"
+    },
+    "GA": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "30303",
+      "description": "Atlanta, GA"
+    },
+    "HI": {
+      "backgroundImageKey": "west",
+      "zipCode": "96813",
+      "description": "Honolulu, HI"
+    },
+    "ID": {
+      "backgroundImageKey": "west",
+      "zipCode": "83702",
+      "description": "Boise, ID"
+    },
+    "IL": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "60601",
+      "description": "Chicago, IL"
+    },
+    "IN": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "46204",
+      "description": "Indianapolis, IN"
+    },
+    "IA": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "50309",
+      "description": "Des Moines, IA"
+    },
+    "KS": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "66603",
+      "description": "Topeka, KS"
+    },
+    "KY": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "40601",
+      "description": "Frankfort, KY"
+    },
+    "LA": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "70112",
+      "description": "New Orleans, LA"
+    },
+    "ME": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "04330",
+      "description": "Augusta, ME"
+    },
+    "MD": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "21201",
+      "description": "Baltimore, MD"
+    },
+    "MA": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "02108",
+      "description": "Boston, MA"
+    },
+    "MI": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "48226",
+      "description": "Detroit, MI"
+    },
+    "MN": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "55401",
+      "description": "Minneapolis, MN"
+    },
+    "MS": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "39201",
+      "description": "Jackson, MS"
+    },
+    "MO": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "63101",
+      "description": "St. Louis, MO"
+    },
+    "MT": {
+      "backgroundImageKey": "west",
+      "zipCode": "59601",
+      "description": "Helena, MT"
+    },
+    "NE": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "68102",
+      "description": "Omaha, NE"
+    },
+    "NV": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "89101",
+      "description": "Las Vegas, NV"
+    },
+    "NH": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "03301",
+      "description": "Concord, NH"
+    },
+    "NJ": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "07102",
+      "description": "Newark, NJ"
+    },
+    "NM": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "87102",
+      "description": "Albuquerque, NM"
+    },
+    "NY": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "10001",
+      "description": "New York, NY"
+    },
+    "NC": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "27601",
+      "description": "Raleigh, NC"
+    },
+    "ND": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "58501",
+      "description": "Bismarck, ND"
+    },
+    "OH": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "43215",
+      "description": "Columbus, OH"
+    },
+    "OK": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "73102",
+      "description": "Oklahoma City, OK"
+    },
+    "OR": {
+      "backgroundImageKey": "west",
+      "zipCode": "97201",
+      "description": "Portland, OR"
+    },
+    "PA": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "19019",
+      "description": "Philadelphia, PA"
+    },
+    "RI": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "02903",
+      "description": "Providence, RI"
+    },
+    "SC": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "29201",
+      "description": "Columbia, SC"
+    },
+    "SD": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "57501",
+      "description": "Pierre, SD"
+    },
+    "TN": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "37203",
+      "description": "Nashville, TN"
+    },
+    "TX": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "75001",
+      "description": "Plano, TX"
+    },
+    "UT": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "84101",
+      "description": "Salt Lake City, UT"
+    },
+    "VT": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "05601",
+      "description": "Montpelier, VT"
+    },
+    "VA": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "23219",
+      "description": "Richmond, VA"
+    },
+    "WA": {
+      "backgroundImageKey": "west",
+      "zipCode": "98101",
+      "description": "Seattle, WA"
+    },
+    "WV": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "25301",
+      "description": "Charleston, WV"
+    },
+    "WI": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "53703",
+      "description": "Madison, WI"
+    },
+    "WY": {
+      "backgroundImageKey": "southwest",
+      "zipCode": "82001",
+      "description": "Cheyenne, WY"
+    },
+    "DC": {
+      "backgroundImageKey": "southeast",
+      "zipCode": "20001",
+      "description": "Washington, DC"
     }
   }
 }

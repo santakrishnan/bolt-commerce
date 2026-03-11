@@ -8,10 +8,7 @@ export {
   type SavedVehicle,
   type TradeInOffer,
 } from "./home-hero-known-user-content";
-export {
-  HomeHeroSearchWrapper,
-  HomeHeroSearchWrapper as HomeHeroSearch,
-} from "./home-hero-search-wrapper";
+export { HomeHeroSearch } from "./home-hero-search";
 export { HomeHeroStatic } from "./home-hero-static";
 export { HomeHeroStats } from "./home-hero-stats";
 export { HomeHeroTitle } from "./home-hero-title";

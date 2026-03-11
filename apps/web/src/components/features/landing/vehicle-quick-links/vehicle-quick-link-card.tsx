@@ -1,10 +1,9 @@
 import { Card, CardContent, cn } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatedCounter } from "~/components/shared/animated-counter";
 import type { VehicleFinderOption } from "./data";
 
-interface VehicleQuickLinkCardProps {
+export interface VehicleQuickLinkCardProps {
   option: VehicleFinderOption;
   className?: string;
   backgroundColor?: string;
@@ -17,20 +16,24 @@ const iconMap = {
   speedometer: "/images/find-vehicle/icon-low-miles.svg",
 };
 
+const WHITESPACE_REGEX = /\s+/g;
+
 export function VehicleQuickLinkCard({
   option,
   className,
   backgroundColor,
 }: VehicleQuickLinkCardProps) {
   const iconSrc = iconMap[option.icon];
+  const searchQuery = encodeURIComponent(option.title.replace(WHITESPACE_REGEX, "-"));
+  const href = `/used-cars?q=${searchQuery}`;
 
   return (
-    <Link href={`/used-cars?q=${option.title.replace(/\s+/g, "-")}`}>
+    <Link href={href}>
       <Card
         className={cn(
           "min-h-35 rounded-[var(--spacing-xs)] border-border-subtle shadow-none transition-all duration-200 sm:min-h-40",
           "cursor-pointer hover:border-border-subtle-hover hover:shadow-md",
-          backgroundColor || "bg--white/70",
+          backgroundColor || "bg-white/70",
           className
         )}
       >
@@ -47,7 +50,7 @@ export function VehicleQuickLinkCard({
               {option.title}
             </h3>
             <p className="text-center font-semibold text-base leading-[110%] tracking-[-0.64px]">
-              <AnimatedCounter className="text-primary" value={option.vehicleCount} />{" "}
+              <span className="text-primary">{option.vehicleCount.toLocaleString()}</span>{" "}
               <span className="text-black">vehicles</span>
             </p>
           </div>

@@ -1,14 +1,11 @@
 import { cacheLife } from "next/cache";
 
-export async function getHeroData() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.hero;
-}
-
-export async function getVehiclesAvailable() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.hero.features[0];
-}
+export type {
+  VehicleFinderOption,
+  VehicleFinderOptionStatic,
+} from "~/components/features/landing/vehicle-quick-links/data";
+export type { InspectionFeature } from "~/data/inspection/features";
+export type { VehicleType } from "~/data/vehicles/vehicle-types";
 
 export async function getVehicleCount(): Promise<number> {
   "use cache";
@@ -24,6 +21,25 @@ export async function getVehicleCount(): Promise<number> {
   // return data.count
 
   return await Promise.resolve(20_847);
+}
+
+export interface HeroStat {
+  id: string;
+  value: string;
+  label: string;
+  icon: string;
+}
+
+export async function getHeroStats(): Promise<HeroStat[]> {
+  "use cache";
+  cacheLife({
+    stale: 900,
+    revalidate: 900,
+    expire: 3600,
+  });
+
+  const data = await import("~/data/landing-data.json");
+  return data.default.hero.features;
 }
 
 export interface VehicleFinderCounts {
@@ -54,27 +70,29 @@ export async function getVehicleFinderCounts(): Promise<VehicleFinderCounts> {
   });
 }
 
+export async function getVehicleFinderOptions() {
+  try {
+    const module = await import("~/components/features/landing/vehicle-quick-links/data");
+    return module.vehicleFinderOptions;
+  } catch (_error) {
+    return [];
+  }
+}
+
 export async function getVehicleTypes() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.vehicleTypes;
+  try {
+    const module = await import("~/data/vehicles/vehicle-types");
+    return module.vehicleTypes;
+  } catch (_error) {
+    return [];
+  }
 }
 
-export async function getHowToBuy() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.howToBuy;
-}
-
-export async function getFindVehicle() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.findVehicle;
-}
-
-export async function getPrequalify() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.prequalify;
-}
-
-export async function getArrowInspected() {
-  const data = await import("~/data/landing-data.json");
-  return data.default.arrowInspected;
+export async function getInspectionFeatures() {
+  try {
+    const module = await import("~/data/inspection/features");
+    return module.inspectionFeatures;
+  } catch (_error) {
+    return [];
+  }
 }

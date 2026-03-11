@@ -260,7 +260,7 @@ describe("round-trip: parse → build → parse", () => {
     const parsed = parseUsedCarsParams(segments.length ? segments : undefined);
     expect(parsed).not.toBeNull();
 
-    const path = buildUsedCarsPath(parsed!);
+    const path = buildUsedCarsPath(parsed as NonNullable<typeof parsed>);
     // Remove the "/used-cars" prefix and split back into segments
     const rebuiltSegments = path.replace(USED_CARS_PREFIX_REGEX, "").split("/").filter(Boolean);
 

@@ -3,6 +3,7 @@
   /* Spacing Scale */
   --spacing-2xs: 4px;
   --spacing-xs: 8px;
+  --spacing-3: 10px; /* 2.5 × 4px — between xs and sm */
   --spacing-sm: 12px;
   --spacing-sd: 14px; /* 3.5 × 4px — highlight section gap */
   --spacing-md: 16px;

@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@tfs-ucmp/ui";
+import { Badge, Button } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import { XIcon } from "@/components/assets/icons";
 import { cn } from "@/lib/utils";
+import { useFavorites } from "~/components/providers/favorites-provider";
 import { getUsedCarsSrpNoResultsMessage } from "~/lib/messages/used-cars";
 import { getVehicleEstimation, type Vehicle } from "~/lib/search/mock-vehicles";
 import CarCard from "../card/car-card";
@@ -43,7 +44,6 @@ function vehicleToCarCardProps(vehicle: Vehicle) {
     dealerName,
     distance,
     badge,
-    wasLiked: !!vehicle.oldPrice,
     owners: vehicle.owners,
     estimation,
   };
@@ -53,6 +53,7 @@ export interface ActiveFilter {
   label: string;
   type: string;
   value: string;
+  isRefineSearch?: boolean;
 }
 
 export interface VehicleResultsProps {
@@ -62,6 +63,7 @@ export interface VehicleResultsProps {
   onToggleFilter: () => void;
   onRemoveFilter: (type: string, value: string) => void;
   onReset: () => void;
+  onApplyRefineFilters?: (filters: { id: string; label: string }[]) => void;
   currentPage: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
@@ -75,11 +77,13 @@ export function VehicleResults({
   onToggleFilter,
   onRemoveFilter,
   onReset,
+  onApplyRefineFilters,
   currentPage,
   itemsPerPage,
   onPageChange,
   isProgressVisible,
 }: VehicleResultsProps) {
+  const { isVehicleSaved, toggleVehicle } = useFavorites();
   const activeFilterCount = activeFilters.length;
   const filteredVehicles = vehicles.filter((vehicle) => {
     if (!searchQuery.trim()) {
@@ -114,7 +118,7 @@ export function VehicleResults({
               )}
               onClick={onToggleFilter}
               type="button"
-              variant="ghost"
+              variant="search"
             >
               <Image
                 alt="Filter"
@@ -132,7 +136,7 @@ export function VehicleResults({
               )}
               onClick={onReset}
               type="button"
-              variant="ghost"
+              variant="search"
             >
               Reset
             </Button>
@@ -141,34 +145,35 @@ export function VehicleResults({
         {activeFilterCount > 0 && (
           <div className="flex flex-col gap-[var(--spacing-lg)] bg-[var(--color-core-surfaces-background)] py-[var(--spacing-lg)] md:top-[375.5px] md:flex-row md:items-start">
             <div className="flex shrink-0 items-center gap-[var(--spacing-sm)]">
-              <button
-                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-red-500 transition-colors hover:bg-red-600"
+              <Button
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[var(--color-brand-red)] transition-colors hover:bg-red-600"
                 onClick={onToggleFilter}
                 type="button"
+                variant="search"
               >
                 <Image
                   alt="Filter"
-                  className="h-4 w-4"
+                  className="h-4 w-4 max-w-none"
                   height={16}
                   src="/images/filter_one.svg"
                   width={16}
                 />
-              </button>
-              <div className="flex flex-row items-center gap-[var(--spacing-sm)] md:flex-col md:items-start md:gap-0">
-                <div className="var(--font-size-xs)] var(--font-size-md)] font-bold text-[length: text-[var(--color-card-title)] leading-normal md:text-[length:">
+              </Button>
+              <div className="mx-auto flex flex-row items-center gap-[var(--spacing-sm)] md:mx-0 md:flex-col md:items-start md:gap-0">
+                <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal md:text-[length:var(--font-size-md)]">
                   {vehicleCount} vehicles found
                 </div>
-                <span className="my-[var(--spacing-2xs)] text-[#ccc] md:hidden">|</span>
-                <div className="var(--font-size-xs)] font-semibold text-[length: text-[var(--color-core-surfaces-foreground)] leading-normal">
+                <span className="mb-[var(--spacing-2xs)] text-[#ccc] md:hidden">|</span>
+                <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal md:text-[length:var(--font-size-md)]">
                   Sort by:{" "}
                   <button
-                    className="inline-flex items-center gap-[var(--spacing-2xs)] font-medium text-black hover:underline"
+                    className="inline-flex items-center gap-[var(--spacing-sm)] font-medium text-black hover:underline"
                     type="button"
                   >
                     Recommended{" "}
                     <Image
                       alt="Dropdown"
-                      className="mt-[3%] h-1.75 w-[var(--spacing-sm)]"
+                      className="mt-[1.5%] h-1.75 w-[var(--spacing-sm)]"
                       height={7}
                       src="/images/dropdown-arrow.svg"
                       width={12}
@@ -181,27 +186,40 @@ export function VehicleResults({
             <div className="flex-1">
               <div className="flex flex-wrap items-center justify-center gap-[var(--spacing-xs)] md:justify-end">
                 {activeFilters.map((filter) => (
-                  <span
-                    className="flex h-7.25 items-center gap-[var(--spacing-xs)] rounded-large border border-[var(--color-structure-interaction-border-two)] bg-transparent px-[var(--spacing-xs)] py-[var(--spacing-sm)] pt-[var(--spacing-xs)] text-black text-xs"
+                  <Badge
+                    className={cn(
+                      "h-[var(--spacing-xl)] gap-[var(--spacing-xs)] rounded-full border p-[var(--spacing-sm)] text-xs",
+                      filter.isRefineSearch
+                        ? "border-[var(--color-destructive)] bg-[var(--color-destructive)] text-[var(--color-destructive-foreground)]"
+                        : "border-[var(--color-states-muted)] bg-transparent text-[var(--color-brand-text)]"
+                    )}
                     key={`${filter.type}-${filter.value}`}
+                    text={filter.label}
+                    variant="outline"
                   >
-                    {filter.label}
-                    <button
-                      className="h-[var(--spacing-xs)] w-[var(--spacing-xs)] pb-2.5 text-black transition-colors hover:text-red-500"
+                    <Button
+                      className={cn(
+                        "h-[var(--spacing-xs)] w-[var(--spacing-xs)] p-[0px] transition-colors hover:text-[var(--color-destructive)]",
+                        filter.isRefineSearch
+                          ? "text-[var(--color-destructive-foreground)]"
+                          : "text-[var(--color-brand-text)]"
+                      )}
                       onClick={() => onRemoveFilter(filter.type, filter.value)}
                       type="button"
+                      variant="search"
                     >
                       <XIcon className="h-3 w-3" />
-                    </button>
-                  </span>
+                    </Button>
+                  </Badge>
                 ))}
-                <button
-                  className="var(--font-size-xs)] flex h-7.25 w-[var(--spacing-3xl)] items-center justify-center gap-[var(--spacing-xs)] rounded-large bg-black px-[var(--spacing-xs)] py-[var(--spacing-sm)] pt-[var(--spacing-xs)] text-center font-normal text-[length: text-white leading-normal"
+                <Button
+                  className="flex h-[var(--spacing-xl)] items-center justify-center gap-[var(--spacing-xs)] rounded-full bg-[var(--color-brand-text)] px-[var(--spacing-lg)] text-center font-normal text-[length:var(--font-size-xs)] text-[var(--color-brand-text-foreground)] leading-normal"
                   onClick={onReset}
                   type="button"
+                  variant="search"
                 >
                   Reset
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -213,7 +231,13 @@ export function VehicleResults({
 
           {!isProgressVisible &&
             paginatedVehicles.map((vehicle) => (
-              <CarCard key={vehicle.id} {...vehicleToCarCardProps(vehicle)} />
+              <CarCard
+                key={vehicle.id}
+                {...vehicleToCarCardProps(vehicle)}
+                onApplyRefineFilters={onApplyRefineFilters}
+                onFavoriteToggle={() => toggleVehicle(vehicle.vin)}
+                wasLiked={isVehicleSaved(vehicle.vin)}
+              />
             ))}
         </div>
 
@@ -311,10 +335,10 @@ export function VehicleResults({
 
         {filteredVehicles.length === 0 && (
           <div className="py-[var(--spacing-2xl)] text-center">
-            <p className="text-[length:var(--font-size-lg)] text-gray-500">
+            <p className="text-[length:var(--font-size-lg)] text-[var(--color-brand-text-secondary)]">
               {noResultsMessage.title}
             </p>
-            <p className="mt-[var(--spacing-xs)] text-[length:var(--font-size-sm)] text-gray-400">
+            <p className="mt-[var(--spacing-xs)] text-[length:var(--font-size-sm)] text-[var(--color-brand-text-tertiary)]">
               {noResultsMessage.hint}
             </p>
           </div>

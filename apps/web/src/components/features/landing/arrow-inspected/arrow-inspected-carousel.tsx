@@ -2,10 +2,14 @@
 
 import { Carousel, CarouselContent, CarouselItem } from "@tfs-ucmp/ui";
 import Autoplay from "embla-carousel-autoplay";
-import { inspectionFeatures } from "../../../../data/inspection/features";
+import type { InspectionFeature } from "~/lib/data";
 import { InspectionFeatureCard } from "./inspection-feature-card";
 
-export function ArrowInspectedCarousel() {
+export interface ArrowInspectedCarouselProps {
+  inspectionFeatures: InspectionFeature[];
+}
+
+export function ArrowInspectedCarousel({ inspectionFeatures }: ArrowInspectedCarouselProps) {
   return (
     <Carousel
       opts={{

@@ -9,7 +9,7 @@ export default defineConfig(
     },
     resolve: {
       alias: {
-        "@": path.resolve(import.meta.dirname, "./src"),
+        "@": path.resolve(import.meta.dirname, "../../packages/ui/src"),
         "~": path.resolve(import.meta.dirname, "./src"),
         ui: path.resolve(import.meta.dirname, "../../packages/ui/src"),
       },

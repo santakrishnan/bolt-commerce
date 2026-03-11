@@ -127,15 +127,18 @@ interface NextFetchRequestConfig {
 // ─── Error class ────────────────────────────────────────────────────────────
 
 export class ArrowServerError extends Error {
-  constructor(
-    message: string,
-    public readonly status: number,
-    public readonly code: string,
-    public readonly service: string,
-    public readonly body?: unknown
-  ) {
+  readonly status: number;
+  readonly code: string;
+  readonly service: string;
+  readonly body?: unknown;
+
+  constructor(message: string, status: number, code: string, service: string, body?: unknown) {
     super(message);
     this.name = "ArrowServerError";
+    this.status = status;
+    this.code = code;
+    this.service = service;
+    this.body = body;
   }
 
   /** Is this a retryable error? (5xx or network) */
@@ -322,6 +325,121 @@ export function createArrowServerClient(config: ArrowServerClientConfig): ArrowS
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  /** Parse an error response into an ArrowServerError */
+  async function parseErrorResponse(
+    response: Response,
+    method: string,
+    path: string
+  ): Promise<ArrowServerError> {
+    let errorBody: unknown;
+    try {
+      errorBody = await response.json();
+    } catch {
+      errorBody = await response.text().catch(() => null);
+    }
+    const code = (errorBody as Record<string, string>)?.code ?? `HTTP_${response.status}`;
+    return new ArrowServerError(
+      `${serviceName} API error: ${response.status} ${response.statusText} — ${method} ${path}`,
+      response.status,
+      code,
+      serviceName,
+      errorBody
+    );
+  }
+
+  /** Wrap a caught error as an ArrowServerError */
+  function wrapCaughtError(error: unknown, path: string, reqTimeout: number): ArrowServerError {
+    if ((error as Error).name === "AbortError") {
+      return new ArrowServerError(
+        `${serviceName} request to ${path} timed out after ${reqTimeout}ms`,
+        0,
+        "TIMEOUT",
+        serviceName
+      );
+    }
+    return new ArrowServerError(
+      `${serviceName} network error: ${(error as Error).message}`,
+      0,
+      "NETWORK_ERROR",
+      serviceName
+    );
+  }
+
+  /** Check if error is retryable and if so, wait and signal to continue */
+  async function shouldRetry(error: ArrowServerError, attempt: number): Promise<boolean> {
+    if (error.isRetryable && attempt < retries) {
+      if (isDev) {
+        console.warn(`${logPrefix} Retryable error, retrying in ${retryDelay * 2 ** attempt}ms...`);
+      }
+      await sleep(retryDelay * 2 ** attempt);
+      return true;
+    }
+    return false;
+  }
+
+  /** Build the fetch init object for a single request */
+  function buildFetchInit(
+    method: string,
+    body: unknown,
+    signal: AbortSignal,
+    opts?: ArrowServerRequestOptions
+  ): RequestInit & { next?: NextFetchRequestConfig } {
+    const fetchInit: RequestInit & { next?: NextFetchRequestConfig } = {
+      method,
+      headers: buildHeaders(opts?.ids, opts?.headers),
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      signal,
+    };
+    if (opts?.next) {
+      fetchInit.next = opts.next;
+    }
+    return fetchInit;
+  }
+
+  /** Execute a single fetch attempt and return the parsed result */
+  async function executeSingleAttempt<T>(
+    url: string,
+    method: string,
+    path: string,
+    body: unknown,
+    reqTimeout: number,
+    opts?: ArrowServerRequestOptions
+  ): Promise<{ data: T } | { error: ArrowServerError }> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), reqTimeout);
+
+    try {
+      if (isDev) {
+        console.log(`${logPrefix} ${method} ${path}`);
+      }
+
+      const response = await fetch(url, buildFetchInit(method, body, controller.signal, opts));
+
+      if (!response.ok) {
+        return { error: await parseErrorResponse(response, method, path) };
+      }
+
+      if (response.status === 204) {
+        return { data: undefined as T };
+      }
+
+      const data = (await response.json()) as T;
+
+      if (isDev) {
+        console.log(`${logPrefix} ${method} ${path} → ${response.status}`);
+      }
+
+      return { data };
+    } catch (error) {
+      if (error instanceof ArrowServerError) {
+        return { error };
+      }
+      return { error: wrapCaughtError(error, path, reqTimeout) };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
   /** Core fetch with timeout, retries, and error handling */
   async function request<T>(
     method: string,
@@ -334,106 +452,19 @@ export function createArrowServerClient(config: ArrowServerClientConfig): ArrowS
     let lastError: ArrowServerError | null = null;
 
     for (let attempt = 0; attempt <= retries; attempt++) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), reqTimeout);
+      const result = await executeSingleAttempt<T>(url, method, path, body, reqTimeout, opts);
 
-      try {
-        if (isDev) {
-          console.log(`${logPrefix} ${method} ${path}`, attempt > 0 ? `(retry ${attempt})` : "");
-        }
-
-        const fetchInit: RequestInit & { next?: NextFetchRequestConfig } = {
-          method,
-          headers: buildHeaders(opts?.ids, opts?.headers),
-          body: body !== undefined ? JSON.stringify(body) : undefined,
-          signal: controller.signal,
-        };
-
-        if (opts?.next) {
-          fetchInit.next = opts.next;
-        }
-
-        const response = await fetch(url, fetchInit);
-
-        if (!response.ok) {
-          let errorBody: unknown;
-          try {
-            errorBody = await response.json();
-          } catch {
-            errorBody = await response.text().catch(() => null);
-          }
-
-          const code = (errorBody as Record<string, string>)?.code ?? `HTTP_${response.status}`;
-
-          lastError = new ArrowServerError(
-            `${serviceName} API error: ${response.status} ${response.statusText} — ${method} ${path}`,
-            response.status,
-            code,
-            serviceName,
-            errorBody
-          );
-
-          // Retry on 5xx
-          if (lastError.isRetryable && attempt < retries) {
-            if (isDev) {
-              console.warn(
-                `${logPrefix} Retryable error ${response.status}, retrying in ${retryDelay * 2 ** attempt}ms...`
-              );
-            }
-            await sleep(retryDelay * 2 ** attempt);
-            continue;
-          }
-
-          throw lastError;
-        }
-
-        // 204 No Content
-        if (response.status === 204) {
-          return undefined as T;
-        }
-
-        const data = (await response.json()) as T;
-
-        if (isDev) {
-          console.log(`${logPrefix} ${method} ${path} → ${response.status}`);
-        }
-
-        return data;
-      } catch (error) {
-        if (error instanceof ArrowServerError) {
-          throw error;
-        }
-
-        if ((error as Error).name === "AbortError") {
-          lastError = new ArrowServerError(
-            `${serviceName} request to ${path} timed out after ${reqTimeout}ms`,
-            0,
-            "TIMEOUT",
-            serviceName
-          );
-        } else {
-          lastError = new ArrowServerError(
-            `${serviceName} network error: ${(error as Error).message}`,
-            0,
-            "NETWORK_ERROR",
-            serviceName
-          );
-        }
-
-        if (lastError.isRetryable && attempt < retries) {
-          if (isDev) {
-            console.warn(
-              `${logPrefix} Network error, retrying in ${retryDelay * 2 ** attempt}ms...`
-            );
-          }
-          await sleep(retryDelay * 2 ** attempt);
-          continue;
-        }
-
-        throw lastError;
-      } finally {
-        clearTimeout(timeoutId);
+      if ("data" in result) {
+        return result.data;
       }
+
+      lastError = result.error;
+
+      if (await shouldRetry(lastError, attempt)) {
+        continue;
+      }
+
+      throw lastError;
     }
 
     // Should never reach here, but TypeScript wants a return

@@ -153,6 +153,21 @@ export function VisitorProfileProvider({
   // Ref to track the current version — incremented on invalidation
   const version = useRef(0);
 
+  /** Build tracking headers for profile fetch */
+  const buildProfileHeaders = useCallback((): Record<string, string> => {
+    const headers: Record<string, string> = {};
+    if (sessionId) {
+      headers[ARROW_HEADER.SESSION_ID] = sessionId;
+    }
+    if (fingerprintId) {
+      headers[ARROW_HEADER.FP_ID] = fingerprintId;
+    }
+    if (profileId) {
+      headers[ARROW_HEADER.PROFILE_ID] = profileId;
+    }
+    return headers;
+  }, [sessionId, fingerprintId, profileId]);
+
   /**
    * Fetch the visitor profile from the BFF.
    * Respects cache TTL unless `force` is true.
@@ -180,21 +195,10 @@ export function VisitorProfileProvider({
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       try {
-        const headers: Record<string, string> = {};
-        if (sessionId) {
-          headers[ARROW_HEADER.SESSION_ID] = sessionId;
-        }
-        if (fingerprintId) {
-          headers[ARROW_HEADER.FP_ID] = fingerprintId;
-        }
-        if (profileId) {
-          headers[ARROW_HEADER.PROFILE_ID] = profileId;
-        }
-
         const url = `${config.profileEndpoint}?visitorId=${encodeURIComponent(fingerprintId)}`;
         const res = await fetch(url, {
           method: "GET",
-          headers,
+          headers: buildProfileHeaders(),
           credentials: "include",
         });
 
@@ -241,7 +245,7 @@ export function VisitorProfileProvider({
         fetchInFlight.current = false;
       }
     },
-    [sessionId, fingerprintId, profileId, config, state.lastFetchedAt]
+    [fingerprintId, profileId, config, state.lastFetchedAt, buildProfileHeaders]
   );
 
   /**
@@ -264,8 +268,7 @@ export function VisitorProfileProvider({
     if (config.autoFetch && fingerprintId) {
       fetchProfile();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fingerprintId, config.autoFetch]);
+  }, [fingerprintId, config.autoFetch, fetchProfile]);
 
   const value: VisitorProfileContextValue = useMemo(
     () => ({

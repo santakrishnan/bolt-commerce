@@ -64,16 +64,20 @@ async function getMockResults(query: SearchQuery): Promise<SearchResult> {
   }
 
   if (query.priceMin != null) {
-    vehicles = vehicles.filter((v) => v.price >= query.priceMin!);
+    const min = query.priceMin;
+    vehicles = vehicles.filter((v) => v.price >= min);
   }
   if (query.priceMax != null) {
-    vehicles = vehicles.filter((v) => v.price <= query.priceMax!);
+    const max = query.priceMax;
+    vehicles = vehicles.filter((v) => v.price <= max);
   }
   if (query.yearMin != null) {
-    vehicles = vehicles.filter((v) => v.year >= query.yearMin!);
+    const min = query.yearMin;
+    vehicles = vehicles.filter((v) => v.year >= min);
   }
   if (query.yearMax != null) {
-    vehicles = vehicles.filter((v) => v.year <= query.yearMax!);
+    const max = query.yearMax;
+    vehicles = vehicles.filter((v) => v.year <= max);
   }
 
   // Sorting

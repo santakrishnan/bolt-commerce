@@ -1,21 +1,24 @@
 "use client";
 
+import { cn } from "@tfs-ucmp/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { vehicleTypes } from "~/data/vehicles/vehicle-types";
 import { useEventTracking } from "~/lib/arrow";
+import type { VehicleType } from "~/lib/data";
 import { VehicleTypeCard } from "./vehicle-type-card";
 
-interface VehicleTypeSelectorProps {
+export interface VehicleTypeSelectorProps {
+  vehicleTypes: VehicleType[];
   onSelect?: (vehicleId: string) => void;
   defaultSelected?: string;
   className?: string;
 }
 
 export function VehicleTypeSelector({
+  vehicleTypes,
   onSelect,
   defaultSelected,
-  className: _className,
+  className,
 }: VehicleTypeSelectorProps) {
   const [selected, setSelected] = useState<string | null>(defaultSelected || null);
   const { trackEvent } = useEventTracking();
@@ -36,7 +39,12 @@ export function VehicleTypeSelector({
   };
 
   return (
-    <section className="flex w-full flex-col gap-[var(--spacing-2xl)] self-stretch bg-[var(--color-core-surfaces-background)] py-[var(--spacing-2xl)] sm:py-[var(--spacing-3xl)] lg:min-h-screen lg:items-center lg:justify-center lg:p-[var(--spacing-4xl)]">
+    <section
+      className={cn(
+        "flex min-h-[var(--vh-section-mobile)] w-full flex-col gap-[var(--spacing-2xl)] self-stretch bg-[var(--color-core-surfaces-background)] py-[var(--spacing-2xl)] sm:min-h-[var(--vh-section-desktop)] sm:py-[var(--spacing-3xl)] lg:min-h-[var(--vh-section-desktop)] lg:items-center lg:justify-center lg:p-[var(--spacing-4xl)]",
+        className
+      )}
+    >
       <div className="container mx-auto w-full max-w-[var(--container-2xl)]">
         <h2 className="mb-[var(--spacing-lg)] text-center font-semibold text-[length:var(--font-size-xl)] text-foreground sm:mb-[var(--spacing-xl)] lg:text-[length:var(--font-size-2xl)]">
           What type of vehicle?

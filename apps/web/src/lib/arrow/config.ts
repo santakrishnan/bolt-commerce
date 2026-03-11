@@ -35,10 +35,10 @@ export interface TrackingConfig {
  * Validation error for missing or invalid environment variables
  */
 export class ConfigValidationError extends Error {
-  constructor(
-    public readonly missingVars: string[],
-    public readonly invalidVars: string[]
-  ) {
+  readonly missingVars: string[];
+  readonly invalidVars: string[];
+
+  constructor(missingVars: string[], invalidVars: string[]) {
     const messages: string[] = [];
 
     if (missingVars.length > 0) {
@@ -51,6 +51,8 @@ export class ConfigValidationError extends Error {
 
     super(messages.join("; "));
     this.name = "ConfigValidationError";
+    this.missingVars = missingVars;
+    this.invalidVars = invalidVars;
   }
 }
 
@@ -113,9 +115,10 @@ export function validateServerConfig(): ServerConfig {
     throw new ConfigValidationError(missingVars, invalidVars);
   }
 
+  // At this point, both variables are validated as non-empty strings
   return {
-    fingerprintServiceUrl: fingerprintServiceUrl!,
-    fingerprintApiKey: fingerprintApiKey!,
+    fingerprintServiceUrl: fingerprintServiceUrl as string,
+    fingerprintApiKey: fingerprintApiKey as string,
   };
 }
 

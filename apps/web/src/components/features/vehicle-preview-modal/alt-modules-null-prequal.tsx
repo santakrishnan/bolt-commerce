@@ -26,7 +26,7 @@ const AltModulesNullPrequel = () => {
           </div>
         </div>
         <div className="bg-white pb-5 lg:block lg:pb-0">
-          <Button className="flex h-10 w-full items-center justify-center gap-2.5 rounded-full bg-[#EB0A1E] px-8 py-2.5 text-white hover:bg-red-700">
+          <Button className="flex h-10 w-full items-center justify-center gap-2.5 rounded-full bg-actions-primary px-8 py-2.5 text-white hover:bg-red-700">
             Get started
           </Button>
         </div>
@@ -52,7 +52,7 @@ const AltModulesNullPrequel = () => {
           </div>
         </div>
         <div className="bg-white pb-5 lg:block lg:pb-0">
-          <Button className="flex h-10 w-full items-center justify-center gap-2.5 rounded-full bg-[#000000] px-8 py-2.5 text-white hover:bg-red-700">
+          <Button className="flex h-10 w-full items-center justify-center gap-2.5 rounded-full bg-brand-text-primary px-8 py-2.5 text-white hover:bg-red-700">
             Accept My Trade-In Offer
           </Button>
         </div>

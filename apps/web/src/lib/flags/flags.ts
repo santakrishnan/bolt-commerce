@@ -117,19 +117,6 @@ export const customerTradeInSubmitted = flag({
 // ============================================================================
 
 /**
- * Carousel animation variant (0-6)
- * Returns a number to select animation style
- */
-export const carouselAnimationVariant = flag({
-  key: "carouselAnimationVariant",
-  description: "Carousel animation variant (0-6)",
-  decide: async () => {
-    const user = await getCurrentUserFromCookie();
-    return user.flags.carouselAnimationVariant ?? 0;
-  },
-});
-
-/**
  * Redirect to My Garage
  * When true: Redirect to /my-garage instead of showing landing page
  */

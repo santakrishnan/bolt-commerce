@@ -10,32 +10,25 @@ import {
   VehicleStatusFAB,
 } from "~/components/features/vdp";
 import { sampleDealerNotes } from "~/lib/data/dealer/dealer-data";
-import type { VdpPageData, VehicleStatusData } from "~/lib/data/vehicle";
+import type { VehicleData, VehicleStatusData, VinData } from "~/lib/data/vehicle";
 import { getVehicleStatusFromFlagsSync } from "~/lib/flags/vdp-client";
 import { capitalize } from "~/lib/formatters";
 import type { VdpParams } from "~/lib/routes";
 
 interface VehicleDetailClientProps {
   vehicle: VdpParams;
-  pageData: VdpPageData;
+  vinData: VinData;
+  vehicleData: VehicleData;
   vdpUrl: string;
 }
 
-export function VehicleDetailClient({ vehicle, pageData }: VehicleDetailClientProps) {
-  const {
-    vehicle: vehicleData,
-    specs,
-    features,
-    featuresInitialCount,
-    pricing,
-    priceHistory,
-    history,
-    rating,
-    vehicleStatus,
-  } = pageData;
+export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDetailClientProps) {
+  const { vehicle: vehicleInfo, pricing, priceHistory, history } = vinData;
+
+  const { specs, features, featuresInitialCount, rating, vehicleStatus } = vehicleData;
 
   // Initialise from the persisted VDP flag cookie (localStorage). Falls back to
-  // pageData.vehicleStatus when no scenario has been selected by the debug FAB.
+  // vinData.vehicleStatus when no scenario has been selected by the debug FAB.
   const [activeVehicleStatus, setActiveVehicleStatus] = useState<VehicleStatusData>(() => {
     const fromFlag = getVehicleStatusFromFlagsSync();
     const hasActiveFlag = Object.values(fromFlag).some(Boolean);
@@ -51,7 +44,7 @@ export function VehicleDetailClient({ vehicle, pageData }: VehicleDetailClientPr
         <div className="mx-auto max-w-[var(--container-2xl)] px-4 py-12 sm:px-6 lg:px-20">
           <VehiclePDP
             slugParams={vehicle}
-            vehicle={vehicleData}
+            vehicle={vehicleInfo}
             vehicleStatus={activeVehicleStatus}
           />
         </div>

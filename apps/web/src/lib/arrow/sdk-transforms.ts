@@ -35,8 +35,7 @@ export interface SdkV4Result {
  * Checks for the presence of `sealedResult` or the absence of legacy
  * v3-only fields (`browserName`, `ipLocation`).
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isSdkV4Result(result: any): result is SdkV4Result {
+export function isSdkV4Result(result: Record<string, unknown>): result is SdkV4Result {
   return "sealedResult" in result || !("browserName" in result || "ipLocation" in result);
 }
 
@@ -47,8 +46,7 @@ export function isSdkV4Result(result: any): result is SdkV4Result {
  *
  * @returns The sealed result string, or `undefined` if not v4 or missing.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function extractSealedResult(fpData: any): string | undefined {
+export function extractSealedResult(fpData: Record<string, unknown>): string | undefined {
   if (isSdkV4Result(fpData)) {
     return fpData.sealedResult;
   }

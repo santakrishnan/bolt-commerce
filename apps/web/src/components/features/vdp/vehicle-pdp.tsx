@@ -16,6 +16,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lockBodyScroll, unlockBodyScroll } from "~/lib/body-scroll-lock";
 import type { VehicleDetail, VehicleStatusData } from "~/lib/data/vehicle";
 import { capitalize } from "~/lib/formatters";
 import type { VdpParams } from "~/lib/routes";
@@ -166,12 +167,11 @@ export const VehiclePDP: React.FC<VehiclePDPProps> = ({ vehicle, slugParams, veh
         setPreviewIndex((p) => (p + 1) % vehicle.images.length);
       }
     };
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    lockBodyScroll();
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
+      unlockBodyScroll();
     };
   }, [isPreviewOpen, vehicle.images.length]);
 

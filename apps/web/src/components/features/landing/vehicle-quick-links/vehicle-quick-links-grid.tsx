@@ -1,9 +1,8 @@
 import { cn } from "@tfs-ucmp/ui";
-import { getVehicleFinderCounts, type VehicleFinderCounts } from "~/lib/data";
-import { vehicleFinderOptions } from "./data";
+import { getVehicleFinderCounts, getVehicleFinderOptions } from "~/lib/data";
 import { VehicleQuickLinkCard } from "./vehicle-quick-link-card";
 
-interface VehicleQuickLinksGridProps {
+export interface VehicleQuickLinksGridProps {
   className?: string;
   cardBackgroundColor?: string;
 }
@@ -12,7 +11,12 @@ export async function VehicleQuickLinksGrid({
   className,
   cardBackgroundColor,
 }: VehicleQuickLinksGridProps) {
+  const vehicleFinderOptions = await getVehicleFinderOptions();
   const counts = await getVehicleFinderCounts();
+
+  if (!vehicleFinderOptions || vehicleFinderOptions.length === 0 || !counts) {
+    return null;
+  }
 
   return (
     <div
@@ -27,7 +31,7 @@ export async function VehicleQuickLinksGrid({
           key={option.id}
           option={{
             ...option,
-            vehicleCount: counts[option.id as keyof VehicleFinderCounts],
+            vehicleCount: counts[option.id as keyof typeof counts],
           }}
         />
       ))}

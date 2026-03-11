@@ -36,6 +36,33 @@ interface SearchClientProps {
   initialFilterPreset?: FilterPreset;
 }
 
+// Regex for detecting numbers with K suffix (e.g., 35k)
+const NUMBER_WITH_K_REGEX = /^\d+k$/i;
+
+// Convert slugified query back to human-readable format
+// e.g., "suv-under-35k-with-low-miles" -> "SUV under 35K with Low Miles"
+function deslugify(slug: string): string {
+  if (!slug) {
+    return "";
+  }
+  return slug
+    .split("-")
+    .map((word) => {
+      // Capitalize common acronyms
+      const upper = word.toUpperCase();
+      if (["SUV", "AWD", "FWD", "RWD", "4WD"].includes(upper)) {
+        return upper;
+      }
+      // Handle numbers with K suffix (35k -> 35K)
+      if (NUMBER_WITH_K_REGEX.test(word)) {
+        return `${word.slice(0, -1)}K`;
+      }
+      // Capitalize first letter of other words
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 export function SearchClient({
   vehicles,
   initialBodyStyles = [],
@@ -45,10 +72,14 @@ export function SearchClient({
   const { navigate } = useSearchNavigation({ mode: "replace", scroll: false });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-  const searchQueryRef = useRef(initialSearchQuery);
+
+  const [searchQuery, setSearchQuery] = useState(deslugify(initialSearchQuery));
+  const searchQueryRef = useRef(deslugify(initialSearchQuery));
   // Background label filter — filters by vehicle.labels without touching the search box
   const [labelFilter, setLabelFilter] = useState(initialFilterPreset?.labelFilter ?? "");
+  const [refineSearchFilters, setRefineSearchFilters] = useState<{ id: string; label: string }[]>(
+    []
+  );
   const [progress, setProgress] = useState(0);
   const [isProgressVisible, setIsProgressVisible] = useState(false);
   const progressTimers = useRef<number[]>([]);
@@ -119,7 +150,7 @@ export function SearchClient({
   };
 
   const getActiveFilters = () => {
-    const filters: { label: string; type: string; value: string }[] = [];
+    const filters: { label: string; type: string; value: string; isRefineSearch?: boolean }[] = [];
     addSingleFilter(filters, filterState.selectedPriceQuick, "price");
     addSingleFilter(filters, filterState.selectedYearQuick, "year");
     addSingleFilter(filters, filterState.selectedMileage, "mileage");
@@ -142,6 +173,10 @@ export function SearchClient({
     // Dynamic chip for label-based presets (no sidebar equivalent)
     if (labelFilter) {
       filters.push({ label: labelFilter, type: "label", value: labelFilter });
+    }
+    // Refine search filters (red background badges)
+    for (const rf of refineSearchFilters) {
+      filters.push({ label: rf.label, type: "refineSearch", value: rf.id, isRefineSearch: true });
     }
     return filters;
   };
@@ -243,6 +278,9 @@ export function SearchClient({
       case "label":
         setLabelFilter("");
         break;
+      case "refineSearch":
+        setRefineSearchFilters((prev) => prev.filter((f) => f.id !== value));
+        break;
       default:
         break;
     }
@@ -252,6 +290,11 @@ export function SearchClient({
   const resetFilters = () => {
     setFilterState(defaultFilterState);
     setLabelFilter("");
+    setRefineSearchFilters([]);
+  };
+
+  const applyRefineFilters = (filters: { id: string; label: string }[]) => {
+    setRefineSearchFilters(filters);
   };
 
   const handleSearch = () => {
@@ -318,7 +361,7 @@ export function SearchClient({
           <div className="relative h-[1px] overflow-hidden bg-[var(--color-structure-interaction-subtle-border)]">
             <div
               aria-hidden
-              className="absolute top-0 left-0 h-full bg-[#EB0A1E]"
+              className="absolute top-0 left-0 h-full bg-actions-primary"
               style={{
                 width: `${progress}%`,
                 opacity: isProgressVisible ? 1 : 0,
@@ -332,6 +375,7 @@ export function SearchClient({
           currentPage={currentPage}
           isProgressVisible={isProgressVisible}
           itemsPerPage={itemsPerPage}
+          onApplyRefineFilters={applyRefineFilters}
           onPageChange={setCurrentPage}
           onRemoveFilter={removeFilter}
           onReset={resetFilters}

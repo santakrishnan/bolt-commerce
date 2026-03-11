@@ -151,7 +151,7 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
             </label>
             <input
               autoComplete="postal-code"
-              className="w-full rounded bg-[#F5F5F5] px-3 py-2 text-sm outline-none"
+              className="w-full rounded bg-core-surfaces-background px-3 py-2 text-sm outline-none"
               id="location-zip"
               inputMode="numeric"
               maxLength={5}

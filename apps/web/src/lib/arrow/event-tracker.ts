@@ -46,7 +46,7 @@ export function createEventTracker(): EventTracker {
       // Encrypt body when key is available
       const isEncrypted = !!encryptionKey;
       const body = isEncrypted
-        ? await encryptPayload(payload, encryptionKey!)
+        ? await encryptPayload(payload, encryptionKey as string)
         : JSON.stringify(payload);
 
       const headers: Record<string, string> = {

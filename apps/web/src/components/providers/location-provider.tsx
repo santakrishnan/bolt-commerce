@@ -3,8 +3,10 @@
 import { createContext, use, useCallback, useEffect, useMemo, useState } from "react";
 import stateConfig from "~/data/state-hero-config.json";
 import { useArrow } from "~/lib/arrow";
+import { useArrowClient } from "~/lib/arrow/client-api";
 
 type StateKey = keyof typeof stateConfig.states;
+type BackgroundImageKey = keyof typeof stateConfig.backgroundImages;
 
 /** Validates a 5-digit US zip code */
 const ZIP_RE = /^\d{5}$/;
@@ -130,6 +132,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   const defaultZip = stateConfig.states[defaultState].zipCode;
 
   const { fingerprintData, isReady: arrowReady } = useArrow();
+  const api = useArrowClient();
 
   /** User's manual zip override from cookie */
   const [manualZip, setManualZip] = useState<string | null>(null);
@@ -156,23 +159,69 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Override zip and save to cookie.
+   * Fires a tracking event when zip code is changed.
    */
-  const setZip = useCallback((zip: string) => {
-    const clean = zip.trim();
-    if (!(clean && ZIP_RE.test(clean))) {
-      return;
-    }
-    setManualZip(clean);
-    saveManualZipToCookie(clean);
-  }, []);
+  const setZip = useCallback(
+    (zip: string) => {
+      const clean = zip.trim();
+      if (!(clean && ZIP_RE.test(clean))) {
+        return;
+      }
+      const previousZip = manualZip ?? fpZip;
+      const heroState = resolveHeroState(clean);
+
+      setManualZip(clean);
+      saveManualZipToCookie(clean);
+
+      // Track zip code change event
+      api
+        .post("/api/events/track", {
+          event: "location_zip_changed",
+          properties: {
+            previousZip,
+            newZip: clean,
+            heroState,
+            isManualOverride: true,
+          },
+          timestamp: Date.now(),
+        })
+        .catch((error: unknown) => {
+          console.error("[LocationProvider] Failed to track zip change event:", error);
+        });
+    },
+    [manualZip, fpZip, api]
+  );
 
   /**
    * Clear manual zip override and revert to fingerprint data.
+   * Fires a tracking event when reverting to fingerprint location.
    */
   const clearManualZip = useCallback(() => {
+    const previousZip = manualZip;
+    const revertedZip = ZIP_RE.test(fpZip) ? fpZip : defaultZip;
+    const heroState = resolveHeroState(revertedZip);
+
     setManualZip(null);
     clearManualZipCookie();
-  }, []);
+
+    // Track revert to fingerprint location event
+    if (previousZip) {
+      api
+        .post("/api/events/track", {
+          event: "location_zip_cleared",
+          properties: {
+            previousZip,
+            revertedZip,
+            heroState,
+            revertedToFingerprint: ZIP_RE.test(fpZip),
+          },
+          timestamp: Date.now(),
+        })
+        .catch((error: unknown) => {
+          console.error("[LocationProvider] Failed to track zip clear event:", error);
+        });
+    }
+  }, [manualZip, fpZip, defaultZip, api]);
 
   const heroState = resolveHeroState(displayZip);
   const heroData = stateConfig.states[heroState];
@@ -181,6 +230,11 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   // Get description from hero data when using manual zip
   const description = isManualZip ? heroData?.description : undefined;
 
+  // Resolve background images via backgroundImageKey
+  const imageKey = (heroData?.backgroundImageKey ??
+    defaultHeroData.backgroundImageKey) as BackgroundImageKey;
+  const imageSet = stateConfig.backgroundImages[imageKey];
+
   const value: LocationContextValue = useMemo(
     () => ({
       state: {
@@ -188,9 +242,8 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         displayCity,
         displayState,
         heroState,
-        backgroundImage: heroData?.backgroundImage ?? defaultHeroData.backgroundImage,
-        mobileBackgroundImage:
-          heroData?.mobileBackgroundImage ?? defaultHeroData.mobileBackgroundImage,
+        backgroundImage: imageSet?.desktop ?? "",
+        mobileBackgroundImage: imageSet?.mobile ?? "",
         isManualZip,
         description,
       },
@@ -202,8 +255,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       displayCity,
       displayState,
       heroState,
-      heroData,
-      defaultHeroData,
+      imageSet,
       isManualZip,
       description,
       setZip,

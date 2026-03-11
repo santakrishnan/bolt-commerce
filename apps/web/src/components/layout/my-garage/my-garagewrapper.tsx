@@ -19,8 +19,8 @@ export async function MyGarageWrapper({
   const isPreQualified = await customerPreQualified();
   const hasTradeInSubmitted = await customerTradeInSubmitted();
 
-  // Get days remaining for prequalification offer (defaults to 27 if not set)
-  const daysRemaining = userInfo.daysRemaining ?? 27;
+  // Default days remaining for prequalification offer
+  const daysRemaining = 27;
 
   // Always provide knownUser so HomeHero uses the correct known-user background
   // image and layout. showCards defaults to false unless overridden by the caller.

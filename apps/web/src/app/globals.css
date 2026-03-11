@@ -48,6 +48,14 @@
     --ring: hsl(354 91% 48%);
 
     --radius: 0.5rem;
+
+    /* ============================================
+       Viewport Heights for Sections
+       Accounts for fixed header height
+       ============================================ */
+    --vh-full: 100vh; /* Full viewport - for sections with transparent/overlaid header */
+    --vh-section-mobile: calc(100vh - 4rem); /* Mobile: 100vh - 64px header */
+    --vh-section-desktop: calc(100vh - 5rem); /* Desktop: 100vh - 80px header */
   }
 }
 /*
@@ -109,4 +117,25 @@
    ========================================== */
 .embla-fade [aria-roledescription="slide"] {
   transition: opacity 0.5s ease-in-out;
+}
+
+/* ==========================================
+   Smooth Scroll Behavior
+   ========================================== */
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
+}
+
+/* Respect user preferences */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

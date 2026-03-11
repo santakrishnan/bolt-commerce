@@ -1,5 +1,9 @@
 // Arrow Inspected
-export { ArrowInspectedSection, InspectionFeatureCard } from "./arrow-inspected";
+export {
+  ArrowInspectedSection,
+  ArrowInspectedSectionWrapper,
+  InspectionFeatureCard,
+} from "./arrow-inspected";
 // Buying Process
 export { BuyingProcess, BuyingProcessCarousel } from "./buying-process";
 // Cart Drawer
@@ -33,4 +37,8 @@ export { SearchBar } from "./search-bar";
 export { VehicleQuickLinkCard, VehicleQuickLinksGrid } from "./vehicle-quick-links";
 
 // Vehicle Type Selector
-export { VehicleTypeCard, VehicleTypeSelector } from "./vehicle-type-selector";
+export {
+  VehicleTypeCard,
+  VehicleTypeSelector,
+  VehicleTypeSelectorWrapper,
+} from "./vehicle-type-selector";

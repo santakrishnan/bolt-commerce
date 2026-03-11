@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getCookie } from "~/lib/cookie-cache";
 import { type FeatureFlags, FLAG_COOKIE_NAME, mockUsers } from "~/lib/flags/config";
 
 /**
@@ -59,16 +60,11 @@ export function FeatureFlagDebug() {
 
   // Read current user from cookie on mount
   useEffect(() => {
-    const cookie = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(`${FLAG_COOKIE_NAME}=`));
-    if (cookie) {
-      const value = cookie.split("=")[1];
-      if (value && mockUsers[value]) {
-        setCurrentUser(value);
-        // Also sync to localStorage for client components
-        localStorage.setItem(FLAG_COOKIE_NAME, value);
-      }
+    const value = getCookie(FLAG_COOKIE_NAME);
+    if (value && mockUsers[value]) {
+      setCurrentUser(value);
+      // Also sync to localStorage for client components
+      localStorage.setItem(FLAG_COOKIE_NAME, value);
     }
   }, []);
 
@@ -80,8 +76,13 @@ export function FeatureFlagDebug() {
   const handleUserChange = (userType: string) => {
     // Set cookie (expires in 1 day = 86400 seconds) using Cookie Store API
     if ("cookieStore" in window) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).cookieStore.set({
+      (
+        window as {
+          cookieStore: {
+            set: (options: { name: string; value: string; path: string; expires: number }) => void;
+          };
+        }
+      ).cookieStore.set({
         name: FLAG_COOKIE_NAME,
         value: userType,
         path: "/",

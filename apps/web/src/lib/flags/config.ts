@@ -29,9 +29,6 @@ export interface FeatureFlags {
 
   // Navigation & Redirect
   redirectToMyGarage: boolean;
-
-  // UI Variants
-  carouselAnimationVariant?: number;
 }
 
 export interface MockUser {
@@ -67,7 +64,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: false,
       customerTradeInSubmitted: false,
       redirectToMyGarage: false,
-      carouselAnimationVariant: 6,
     },
     lastVisit: undefined,
     isAuthenticated: false,
@@ -88,7 +84,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: true,
       customerTradeInSubmitted: true,
       redirectToMyGarage: true,
-      carouselAnimationVariant: 3,
     },
     lastVisit: Date.now() - 4 * 60 * 60 * 1000, // 4 hours ago
     isAuthenticated: false,
@@ -110,7 +105,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: true,
       customerTradeInSubmitted: true,
       redirectToMyGarage: false,
-      carouselAnimationVariant: 4,
     },
     lastVisit: Date.now() - 5 * 60 * 60 * 1000, // 5 hours ago
     isAuthenticated: true,
@@ -131,7 +125,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: false,
       customerTradeInSubmitted: false,
       redirectToMyGarage: true,
-      carouselAnimationVariant: 1,
     },
     lastVisit: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
     isAuthenticated: true,
@@ -151,7 +144,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: false,
       customerTradeInSubmitted: false,
       redirectToMyGarage: true,
-      carouselAnimationVariant: 2,
     },
     lastVisit: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
     isAuthenticated: true,
@@ -172,7 +164,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: false,
       customerTradeInSubmitted: true,
       redirectToMyGarage: true,
-      carouselAnimationVariant: 5,
     },
     lastVisit: Date.now() - 3 * 60 * 60 * 1000, // 3 hours ago
     isAuthenticated: true,
@@ -192,7 +183,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: false,
       customerTradeInSubmitted: true,
       redirectToMyGarage: true,
-      carouselAnimationVariant: 0,
     },
     lastVisit: Date.now() - 8 * 60 * 60 * 1000, // 8 hours ago
     isAuthenticated: false,
@@ -213,7 +203,6 @@ export const mockUsers: Record<string, MockUser> = {
       customerTestDriveScheduled: false,
       customerTradeInSubmitted: false,
       redirectToMyGarage: true,
-      carouselAnimationVariant: 7,
     },
     lastVisit: Date.now() - 10 * 60 * 60 * 1000, // 10 hours ago
     isAuthenticated: false,
@@ -244,6 +233,5 @@ export const DEFAULT_USER: MockUser = {
     customerTestDriveScheduled: false,
     customerTradeInSubmitted: false,
     redirectToMyGarage: false,
-    carouselAnimationVariant: 0,
   },
 };

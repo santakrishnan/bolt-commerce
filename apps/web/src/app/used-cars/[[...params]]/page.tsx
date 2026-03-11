@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { SearchWrapper } from "~/components/layout/search";
-import { getVdpPageData } from "~/lib/data/vehicle";
+import { getVehicleData, getVinData } from "~/lib/data/vehicle";
 import { getUsedCarsPageMetadata } from "~/lib/messages/used-cars";
 import { buildUsedCarsPath, parseUsedCarsParams, type UsedCarsRoute } from "~/lib/routes/used-cars";
 import { UsedCarsDetails } from "./views/details";
@@ -45,14 +45,16 @@ export default async function UsedCarsPage({ params, searchParams }: Props) {
 
   // ── Details (VDP) ──
   if (route.type === "details") {
-    const pageData = await getVdpPageData(route.vin);
+    const vinData = await getVinData(route.vin);
+    const vehicleData = await getVehicleData(vinData.vehicle.id);
     return (
       <UsedCarsDetails
         make={route.make}
         model={route.model}
-        pageData={pageData}
         trim={route.trim}
+        vehicleData={vehicleData}
         vin={route.vin}
+        vinData={vinData}
         year={route.year}
       />
     );

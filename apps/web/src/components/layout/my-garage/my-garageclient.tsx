@@ -1,12 +1,14 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { type ReactNode, useCallback, useMemo } from "react";
 import CarCard from "~/components/features/card/car-card";
 import { MyGarageCards } from "~/components/features/mygarage/my-garage-cards";
 import { TestDriveBanner } from "~/components/features/mygarage/test-drive-banner";
 import { useFavorites } from "~/components/providers/favorites-provider";
 import { useSearchHistory } from "~/components/providers/search-history-provider";
 import { getVehicleEstimation, type Vehicle } from "~/lib/search/mock-vehicles";
+
+// ─── Utility Functions (hoisted outside component for performance) ──────────
 
 /** Parse dealer name and distance from the miles field (e.g. "Toyota of Fort Worth - 6.1mi") */
 function parseDealerInfo(miles: string) {
@@ -15,6 +17,22 @@ function parseDealerInfo(miles: string) {
     dealerName: parts[0] ?? miles,
     distance: parts[1] ?? "",
   };
+}
+
+/** Compute badge type from label string */
+function getBadgeType(
+  label: string | undefined
+): "excellent" | "priceDrop" | "available" | undefined {
+  if (!label) {
+    return undefined;
+  }
+  if (label === "Excellent Price") {
+    return "excellent";
+  }
+  if (label === "Price Drop") {
+    return "priceDrop";
+  }
+  return "available";
 }
 
 interface MyGarageClientProps {
@@ -38,32 +56,50 @@ export function MyGarageClient({
   const { savedVins, toggleVehicle, isVehicleSaved, removeVehicle } = useFavorites();
   const { searches, removeSearch, clearAll: clearAllSearches } = useSearchHistory();
 
-  // Map search entries to the format expected by MyGarageCards
-  const recentSearchCards = searches.map((entry) => ({
-    id: entry.id,
-    search: entry.query,
-    url: entry.url,
-  }));
+  // Memoize derived state to avoid recomputation on every render
+  const recentSearchCards = useMemo(
+    () =>
+      searches.map((entry) => ({
+        id: entry.id,
+        search: entry.query,
+        url: entry.url,
+      })),
+    [searches]
+  );
 
-  // Derive saved-vehicle cards by matching VINs against the cars prop
-  const savedVehicles = savedVins
-    .map((vin) => cars.find((c) => c.vin === vin))
-    .filter((car): car is Vehicle => car !== undefined)
-    .map((car) => ({
-      id: car.vin,
-      imageUrl: Array.isArray(car.image) ? (car.image[0] ?? "") : car.image,
-      title: car.title,
-      price: `$${car.price.toLocaleString()}`,
-      miles: car.odometer,
-    }));
+  // Memoize saved vehicles lookup
+  const savedVehicles = useMemo(
+    () =>
+      savedVins
+        .map((vin) => cars.find((c) => c.vin === vin))
+        .filter((car): car is Vehicle => car !== undefined)
+        .map((car) => ({
+          id: car.vin,
+          imageUrl: Array.isArray(car.image) ? (car.image[0] ?? "") : car.image,
+          title: car.title,
+          price: `$${car.price.toLocaleString()}`,
+          miles: car.odometer,
+        })),
+    [savedVins, cars]
+  );
 
-  const handleRemoveSavedVehicle = (id: number | string) => {
-    removeVehicle(String(id));
-  };
+  // Memoize cars with price drops for recent price drop section
+  const priceDropCars = useMemo(() => cars.filter((car) => car.oldPrice), [cars]);
 
-  const handleFavoriteToggle = (car: Vehicle) => {
-    toggleVehicle(car.vin);
-  };
+  // Use useCallback for stable event handler references
+  const handleRemoveSavedVehicle = useCallback(
+    (id: number | string) => {
+      removeVehicle(String(id));
+    },
+    [removeVehicle]
+  );
+
+  const handleFavoriteToggle = useCallback(
+    (vin: string) => {
+      toggleVehicle(vin);
+    },
+    [toggleVehicle]
+  );
 
   return (
     <div className="relative min-h-screen">
@@ -86,7 +122,7 @@ export function MyGarageClient({
         }}
       />
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-0">
         <h2 className="mx-auto mb-8 w-full max-w-[var(--container-2xl)] px-4 pt-8 text-left font-semibold text-lg sm:px-6 lg:px-20">
           My Garage
         </h2>
@@ -120,15 +156,7 @@ export function MyGarageClient({
             const firstLabel = car.labels[0];
             const { dealerName, distance } = parseDealerInfo(car.miles);
             const estimation = getVehicleEstimation(car);
-
-            let badgeType: "excellent" | "priceDrop" | "available" | undefined;
-            if (firstLabel === "Excellent Price") {
-              badgeType = "excellent";
-            } else if (firstLabel === "Price Drop") {
-              badgeType = "priceDrop";
-            } else if (firstLabel) {
-              badgeType = "available";
-            }
+            const badgeType = getBadgeType(firstLabel);
 
             return (
               <CarCard
@@ -140,7 +168,7 @@ export function MyGarageClient({
                 estimatedPayment={`Est. ${estimation.estimatedMonthlyPayment}/mo`}
                 estimation={estimation}
                 exteriorColor="White"
-                exteriorColorSolid="#FFFFFF"
+                exteriorColorHex="#FFFFFF"
                 features={{ warranty: true, inspected: true, oneOwner: car.owners === 1 }}
                 interiorColor="Black"
                 interiorColorHex="#000000"
@@ -149,7 +177,7 @@ export function MyGarageClient({
                 matchPercentage={car.match > 0 ? car.match.toString() : undefined}
                 mileage={car.odometer}
                 model={car.model}
-                onFavoriteToggle={() => handleFavoriteToggle(car)}
+                onFavoriteToggle={() => handleFavoriteToggle(car.vin)}
                 owners={car.owners}
                 price={`$${car.price.toLocaleString()}`}
                 variant={car.variant}
@@ -176,15 +204,7 @@ export function MyGarageClient({
             const badgeLabel = car.labels[0];
             const { dealerName, distance } = parseDealerInfo(car.miles);
             const estimation = getVehicleEstimation(car);
-
-            let badgeType: "excellent" | "priceDrop" | "available" | undefined;
-            if (badgeLabel === "Excellent Price") {
-              badgeType = "excellent";
-            } else if (badgeLabel === "Price Drop") {
-              badgeType = "priceDrop";
-            } else if (badgeLabel) {
-              badgeType = "available";
-            }
+            const badgeType = getBadgeType(badgeLabel);
 
             return (
               <CarCard
@@ -203,7 +223,7 @@ export function MyGarageClient({
                 estimatedPayment={`Est. ${estimation.estimatedMonthlyPayment}/mo`}
                 estimation={estimation}
                 exteriorColor="White"
-                exteriorColorSolid="#FFFFFF"
+                exteriorColorHex="#FFFFFF"
                 features={{ warranty: true, inspected: true, oneOwner: car.owners === 1 }}
                 interiorColor="Black"
                 interiorColorHex="#000000"
@@ -212,7 +232,7 @@ export function MyGarageClient({
                 matchPercentage={car.match > 0 ? String(car.match) : undefined}
                 mileage={car.odometer}
                 model={car.model}
-                onFavoriteToggle={() => handleFavoriteToggle(car)}
+                onFavoriteToggle={() => handleFavoriteToggle(car.vin)}
                 owners={car.owners}
                 price={`$${car.price.toLocaleString()}`}
                 variant={car.variant}
@@ -230,43 +250,40 @@ export function MyGarageClient({
           Recent Price Drop
         </h2>
         <div className="mx-auto grid max-w-[var(--container-2xl)] grid-cols-1 gap-4 px-4 pb-16 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
-          {cars
-            .filter((car) => car.oldPrice)
-            .slice(0, 4)
-            .map((car) => {
-              const { dealerName, distance } = parseDealerInfo(car.miles);
-              const estimation = getVehicleEstimation(car);
+          {priceDropCars.slice(0, 4).map((car) => {
+            const { dealerName, distance } = parseDealerInfo(car.miles);
+            const estimation = getVehicleEstimation(car);
 
-              return (
-                <CarCard
-                  badge={{ type: "priceDrop", text: "Price Drop" }}
-                  carImage={car.image}
-                  carName={car.title}
-                  dealerName={dealerName}
-                  distance={distance}
-                  estimatedPayment={`Est. ${estimation.estimatedMonthlyPayment}/mo`}
-                  estimation={estimation}
-                  exteriorColor="White"
-                  exteriorColorSolid="#FFFFFF"
-                  features={{ warranty: true, inspected: true, oneOwner: car.owners === 1 }}
-                  interiorColor="Black"
-                  interiorColorHex="#000000"
-                  key={car.id}
-                  make={car.make}
-                  matchPercentage={car.match > 0 ? String(car.match) : undefined}
-                  mileage={car.odometer}
-                  model={car.model}
-                  onFavoriteToggle={() => handleFavoriteToggle(car)}
-                  owners={car.owners}
-                  price={`$${car.price.toLocaleString()}`}
-                  variant={car.variant}
-                  vin={car.vin}
-                  wasLiked={isVehicleSaved(car.vin)}
-                  wasPrice={`$${car.oldPrice?.toLocaleString()}`}
-                  year={car.year}
-                />
-              );
-            })}
+            return (
+              <CarCard
+                badge={{ type: "priceDrop", text: "Price Drop" }}
+                carImage={car.image}
+                carName={car.title}
+                dealerName={dealerName}
+                distance={distance}
+                estimatedPayment={`Est. ${estimation.estimatedMonthlyPayment}/mo`}
+                estimation={estimation}
+                exteriorColor="White"
+                exteriorColorHex="#FFFFFF"
+                features={{ warranty: true, inspected: true, oneOwner: car.owners === 1 }}
+                interiorColor="Black"
+                interiorColorHex="#000000"
+                key={car.id}
+                make={car.make}
+                matchPercentage={car.match > 0 ? String(car.match) : undefined}
+                mileage={car.odometer}
+                model={car.model}
+                onFavoriteToggle={() => handleFavoriteToggle(car.vin)}
+                owners={car.owners}
+                price={`$${car.price.toLocaleString()}`}
+                variant={car.variant}
+                vin={car.vin}
+                wasLiked={isVehicleSaved(car.vin)}
+                wasPrice={`$${car.oldPrice?.toLocaleString()}`}
+                year={car.year}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

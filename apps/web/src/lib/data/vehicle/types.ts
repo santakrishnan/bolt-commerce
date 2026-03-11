@@ -74,10 +74,8 @@ export interface PricingData {
 
 /** A single row in the price history table */
 export interface PriceHistoryEntry {
-  /** ISO date string e.g. "2026-02-20" */
   date: string;
   price: number;
-  /** Positive = price dropped (deal improved), negative = price increased */
   change: number;
 }
 
@@ -117,28 +115,31 @@ export interface RatingData {
 // ---------------------------------------------------------------------------
 
 export interface VehicleStatusData {
-  /** The vehicle is no longer available */
   noLongerAvailable: boolean;
-  /** Vehicle history report pending */
   historyReportPending: boolean;
-  /** 160-point inspection in progress */
   inspectionInProgress: boolean;
-  /** Limited photos */
   limitedPhotos: boolean;
 }
 
 // ---------------------------------------------------------------------------
-// Complete VDP page payload — everything needed to render the full page
+// VIN-based data (First API call)
 // ---------------------------------------------------------------------------
 
-export interface VdpPageData {
+export interface VinData {
   vehicle: VehicleDetail;
-  specs: VehicleSpecData[];
-  features: FeatureCategory[];
-  featuresInitialCount: number;
   pricing: PricingData;
   priceHistory: PriceHistoryEntry[];
   history: HistoryData;
+}
+
+// ---------------------------------------------------------------------------
+// ID-based data (Second API call)
+// ---------------------------------------------------------------------------
+
+export interface VehicleData {
+  specs: VehicleSpecData[];
+  features: FeatureCategory[];
+  featuresInitialCount: number;
   rating: RatingData;
   vehicleStatus: VehicleStatusData;
 }

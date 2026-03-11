@@ -18,7 +18,7 @@ export const VehicleStatCard: React.FC<VehicleStatCardProps> = ({
   onClick,
 }) => (
   <button
-    className="flex min-h-[140px] w-[308px] cursor-pointer flex-col items-center justify-center rounded-lg border border-[#E6E6E6] bg-white px-[56px] py-[32px] shadow-sm transition-shadow hover:shadow-md"
+    className="flex min-h-[140px] w-[308px] cursor-pointer flex-col items-center justify-center rounded-lg border border-brand-border-light bg-white px-[56px] py-[32px] shadow-sm transition-shadow hover:shadow-md"
     onClick={onClick}
     type="button"
   >
