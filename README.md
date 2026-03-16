@@ -2,6 +2,19 @@
 
 A modern, production-ready e-commerce monorepo built with Next.js 16, Turborepo, Tailwind CSS 4, shadcn/ui, PNPM, and Biome.
 
+NEXT_PUBLIC_FINGERPRINT_API_KEY=8ybvfOfueYzqJ45GWZYZ
+FINGERPRINT_SECRET_API_KEY=SM2UjIXc1ODIWr0eGXlk
+
+NEXT_PUBLIC_USE_FPJS_PROXY=false
+#FINGERPRINT_SECRET_API_KEY=AMw4u7U5JIFS6uwqaK3W
+#COOKIE_SECRET=Q3V1b1p6b3Z6b3p6b3p6b3p6b3p6b3p6b3p6b3p6b3o=
+#NEXT_PUBLIC_FINGERPRINT_API_KEY=vv8Kkm4TcirMPUb7r3W0
+
+# Node Environment
+NODE_ENV=development
+NEXT_PUBLIC_ARROW_ENCRYPTION_KEY=VG0bg2XBY3S1ovt8keZ5MH-xaXwhcK2y0mnkLm_Jl3w
+ARROW_ENCRYPTION_KEY=VG0bg2XBY3S1ovt8keZ5MH-xaXwhcK2y0mnkLm_Jl3w
+
 ## 🚀 Tech Stack
 
 - ⚡️ **Next.js 16** - React framework with App Router
