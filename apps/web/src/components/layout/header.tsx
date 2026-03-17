@@ -1,10 +1,11 @@
 "use client";
 
-import { Button, MapPinIcon, MenuIcon } from "@tfs-ucmp/ui";
+import { Button, MenuIcon } from "@tfs-ucmp/ui";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "~/components/providers/location-provider";
 import { lockBodyScroll, unlockBodyScroll } from "~/lib/body-scroll-lock";
 import { getCurrentUserSync } from "~/lib/flags/client";
 import { ROUTES } from "~/lib/routes/constants";
@@ -15,6 +16,9 @@ import { LocationBlock } from "./header/location-block";
 import { MobileMenu } from "./header/mobile-menu";
 
 export function Header() {
+  const {
+    state: { isResolved: locationReady },
+  } = useLocation();
   const pathname = usePathname();
   const isHomePage = pathname === ROUTES.HOME;
   const isMyGaragePage = pathname === ROUTES.MY_GARAGE;
@@ -105,7 +109,7 @@ export function Header() {
           <div className="flex flex-1 items-center justify-end">
             {/* Mobile right cluster: heart, user, hamburger */}
             <div className="flex items-center gap-3 lg:hidden">
-              <FavoritesButton useSolidStyles={useSolidStyles} />
+              {locationReady && <FavoritesButton useSolidStyles={useSolidStyles} />}
 
               <MobileUserButton
                 firstName={userFirstName}
@@ -137,20 +141,12 @@ export function Header() {
 
             {/* Desktop right cluster */}
             <div className="hidden items-center gap-6 lg:flex lg:gap-4">
-              <div className="hidden items-center gap-1 text-sm sm:flex">
-                <MapPinIcon
-                  className={cn(
-                    "h-4.5 w-4.5 transition-colors",
-                    useSolidStyles ? "text-icon-primary" : "text-white"
-                  )}
-                />
-                <LocationBlock
-                  onModalOpenChange={setLocationModalOpen}
-                  useSolidStyles={useSolidStyles}
-                />
-              </div>
+              <LocationBlock
+                onModalOpenChange={setLocationModalOpen}
+                useSolidStyles={useSolidStyles}
+              />
 
-              <FavoritesButton useSolidStyles={useSolidStyles} />
+              {locationReady && <FavoritesButton useSolidStyles={useSolidStyles} />}
 
               {showUserAvatar ? (
                 <AvatarButton firstName={userFirstName} useSolidStyles={useSolidStyles} />

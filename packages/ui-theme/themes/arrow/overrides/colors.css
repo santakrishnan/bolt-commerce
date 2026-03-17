@@ -17,6 +17,7 @@
   --color-brand-text: #111111;
   --color-brand-text-primary: #000000;
   --color-brand-text-secondary: #58595b;
+  --color-brand-text-disabled: #737373;
   --color-brand-text-dealer: #272727;
   --color-brand-surface: #f8f8f8;
   --color-brand-success: #12b45d;
@@ -34,11 +35,15 @@
   --color-core-surfaces-inverse-foreground: #f5f5f5;
   --color-actions-secondary-foreground: #fff;
   --color-actions-secondary: #0a0a0a;
+  --color-actions-secondary-hover: #171717;
   --color-actions-tertiary-hover: #e5e5e5;
+  --color-states-disabled: #e5e5e5;
+  --color-disabled-foreground: #737373;
   --color-actions-tertiary-foreground: #0a0a0a;
   --color-actions-tertiary-border: #525252;
   --color-actions-primary-foreground: #ffffff;
   --color-actions-primary: #eb0a1e;
+  --color-actions-primary-hover: #c1171b;
   --color-actions-accent: #eb0a1e;
   --color-structure-interaction-border: #d4d4d4;
   --color-structure-interaction-inverse-decorative: #f5f5f5;
@@ -58,4 +63,8 @@
   --color-badge-success-bg: #078843;
   --color-badge-default-bg: #565656;
   --color-badge-text: #ffffff;
+  --color-badge-good-price: #1c5730;
+  --color-badge-fair-price: #0e5b32;
+  --color-badge-matching-percentage: #0a0a0a;
+  --color-badge-price-drop-listed: #06c;
 }

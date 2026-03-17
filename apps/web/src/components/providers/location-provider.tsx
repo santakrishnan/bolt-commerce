@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, use, useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, use, useCallback, useMemo, useState } from "react";
 import stateConfig from "~/data/state-hero-config.json";
 import { useArrow } from "~/lib/arrow";
 import { useArrowClient } from "~/lib/arrow/client-api";
@@ -15,26 +15,6 @@ const ZIP_RE = /^\d{5}$/;
 /** Cookie key for storing manual zip override */
 const MANUAL_ZIP_COOKIE = "arrow_manual_zip";
 
-/**
- * Get manual zip from cookie
- */
-function getManualZipFromCookie(): string | null {
-  if (typeof document === "undefined") {
-    return null;
-  }
-  const cookies = document.cookie.split(";");
-  for (const cookie of cookies) {
-    const [key, value] = cookie.trim().split("=");
-    if (key === MANUAL_ZIP_COOKIE && value) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-}
-
-/**
- * Save manual zip to cookie (expires in 30 days)
- */
 /**
  * Save manual zip to cookie (expires in 30 days)
  */
@@ -95,6 +75,8 @@ export interface LocationContextValue {
     isManualZip: boolean;
     /** Description from state config (e.g., "Miami, FL 33101") - shown for manual zip */
     description?: string;
+    /** Whether location has been resolved from cookie or fingerprint (not just the default) */
+    isResolved: boolean;
   };
   actions: {
     /**
@@ -125,23 +107,23 @@ const LocationContext = createContext<LocationContextValue | null>(null);
  * Manual zip overrides are stored in a cookie and take precedence over
  * fingerprint data. The cookie persists for 30 days.
  */
-export function LocationProvider({ children }: { children: React.ReactNode }) {
+export function LocationProvider({
+  children,
+  initialZip = null,
+}: {
+  children: React.ReactNode;
+  /** Server-read cookie value — passed from layout.tsx so the first HTML paint is correct. */
+  initialZip?: string | null;
+}) {
   const defaultState = stateConfig.defaultState as StateKey;
   const defaultZip = stateConfig.states[defaultState].zipCode;
 
-  const { fingerprintData } = useArrow();
+  const { fingerprintData, isReady: arrowReady } = useArrow();
   const api = useArrowClient();
 
-  /** User's manual zip override from cookie */
-  const [manualZip, setManualZip] = useState<string | null>(null);
-
-  // Load manual zip from cookie on mount
-  useEffect(() => {
-    const savedZip = getManualZipFromCookie();
-    if (savedZip && ZIP_RE.test(savedZip)) {
-      setManualZip(savedZip);
-    }
-  }, []);
+  // initialZip is read from the cookie on the server (layout.tsx) and passed as a prop.
+  // This means the server-rendered HTML already contains the correct zip — zero flash.
+  const [manualZip, setManualZip] = useState<string | null>(initialZip);
 
   // Derive display values from fingerprint context + optional override
   const geo = fingerprintData?.geo;
@@ -153,7 +135,11 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   const displayZip = manualZip ?? (ZIP_RE.test(fpZip) ? fpZip : defaultZip);
   const displayCity = manualZip ? "" : fpCity; // clear city when user overrides
   const displayState = manualZip ? "" : fpState;
-  // loading state removed: consumers no longer need a loading flag
+
+  // Location is resolved when we have a saved zip OR the Arrow fingerprint system
+  // has finished initializing. Until resolved, consumers show a placeholder instead
+  // of the default "75001" zip — eliminating the flash of stale content.
+  const isResolved = manualZip !== null || arrowReady;
 
   /**
    * Override zip and save to cookie.
@@ -244,6 +230,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         mobileBackgroundImage: imageSet?.mobile ?? "",
         isManualZip,
         description,
+        isResolved,
       },
       actions: { setZip, clearManualZip },
     }),
@@ -255,6 +242,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       imageSet,
       isManualZip,
       description,
+      isResolved,
       setZip,
       clearManualZip,
     ]

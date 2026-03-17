@@ -19,7 +19,6 @@ export {
   AlertDialogTrigger,
 } from "./alert-dialog";
 export * from "./assets/icons";
-export * from "./assets/icons";
 export { Badge, badgeVariants } from "./badge";
 export {
   Breadcrumb,
@@ -31,6 +30,7 @@ export {
   BreadcrumbEllipsis,
 } from "./breadcrumb";
 export { Button, buttonVariants } from "./button";
+export { Chip, chipVariants } from "./chips";
 export {
   Card,
   CardContent,
@@ -61,6 +61,7 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./dialog";
+export { Heading, headingVariants } from "./heading";
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,

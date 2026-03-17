@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Suspense } from "react";
 import "./globals.css";
 import { ThemeProvider } from "@tfs-ucmp/shared/providers";
@@ -21,28 +22,48 @@ export const metadata: Metadata = {
 
 /**
  * Providers are applied outermost-first.
- * Order matters: ThemeProvider → ArrowProvider → LocationProvider →
+ * Order: ThemeProvider → ArrowProvider → LocationProvider →
  * QueryProvider → FavoritesProvider → SearchHistoryProvider → CartProvider
+ *
+ * LocationProvider is rendered via LocationInit (async Server Component)
+ * so cookies() is called inside the Suspense boundary, not at layout level.
  */
-const Providers = composeProviders(
-  ThemeProvider,
-  ArrowProvider,
-  LocationProvider,
+const OuterProviders = composeProviders(ThemeProvider, ArrowProvider);
+const InnerProviders = composeProviders(
   QueryProvider,
   FavoritesProvider,
   SearchHistoryProvider,
   CartProvider
 );
 
+const ZIP_RE = /^\d{5}$/;
+
+/**
+ * Async Server Component that reads the manual-zip cookie and passes it
+ * to the client LocationProvider. Rendered inside <Suspense> so the
+ * cookies() call doesn't block the entire layout.
+ */
+async function LocationInit({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const savedZip = cookieStore.get("arrow_manual_zip")?.value;
+  const initialZip = savedZip && ZIP_RE.test(savedZip) ? savedZip : null;
+
+  return <LocationProvider initialZip={initialZip}>{children}</LocationProvider>;
+}
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html className={toyotaType.variable} lang="en" suppressHydrationWarning>
       <body>
         <Suspense fallback={null}>
-          <Providers>
-            <Header />
-            {children}
-          </Providers>
+          <OuterProviders>
+            <LocationInit>
+              <InnerProviders>
+                <Header />
+                {children}
+              </InnerProviders>
+            </LocationInit>
+          </OuterProviders>
         </Suspense>
         {/* Footer is a Server Component with no provider dependencies — keep it outside */}
         <Footer />

@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@tfs-ucmp/ui";
+import { Button, MapPinIcon } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import { type JSX, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
 import { useLocation } from "~/components/providers/location-provider";
 
 /** Validates a 5-digit US zip code */
@@ -23,7 +24,8 @@ export function LocationBlock({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const { displayZip, displayCity, displayState, isManualZip, description } = locationState;
+  const { displayZip, displayCity, displayState, isManualZip, description, isResolved } =
+    locationState;
 
   // Notify parent when modal open state changes
   useEffect(() => {
@@ -89,9 +91,9 @@ export function LocationBlock({
     setModalOpen(false);
   }, [actions]);
 
-  // Hide the block until location data has arrived — no loading skeleton per component.
-  const hasData = Boolean(displayZip || displayCity || displayState || description);
-  if (!hasData) {
+  // Don't render anything until location has been resolved from a real source
+  // (cookie or fingerprint). This prevents flashing the default "75001" zip.
+  if (!isResolved) {
     return null;
   }
 
@@ -112,56 +114,63 @@ export function LocationBlock({
   }
 
   return (
-    <div className="relative inline-block" ref={containerRef}>
-      {/* Full-viewport backdrop rendered on <body> so it sits below the fixed header */}
-      {modalOpen &&
-        createPortal(
-          <div aria-hidden="true" className="fixed inset-0 z-[34] bg-black/40" />,
-          document.body
+    <div className="flex items-center gap-1 text-sm">
+      <MapPinIcon
+        className={cn(
+          "h-4.5 w-4.5 transition-colors",
+          useSolidStyles ? "text-icon-primary" : "text-white"
         )}
-      {/* Trigger button */}
-      <button
-        aria-expanded={modalOpen}
-        aria-haspopup="dialog"
-        className={`inline-flex cursor-pointer items-center gap-1.5 border-none bg-transparent font-normal text-sm leading-none outline-none hover:underline hover:underline-offset-4 ${
-          useSolidStyles ? "text-text-dark" : "text-white"
-        }`}
-        onClick={handleToggle}
-        type="button"
-      >
-        <span aria-live="polite">{triggerLabel}</span>
-        <Image
-          alt=""
-          className={`transition-transform ${modalOpen ? "rotate-180" : ""} ${useSolidStyles ? "[filter:brightness(0)]" : ""}`}
-          height={6}
-          src="/images/caret-location.svg"
-          width={10}
-        />
-      </button>
-
-      {/* Dialog */}
-      {modalOpen && (
-        <div
-          aria-labelledby="location-dialog-title"
-          aria-modal="true"
-          className="absolute top-full left-0 z-50 mt-10 w-[min(96vw,20rem)] rounded bg-white px-4 py-4 lg:left-1/2 lg:w-104 lg:-translate-x-1/2"
-          role="dialog"
+      />
+      <div className="relative inline-block" ref={containerRef}>
+        {/* Full-viewport backdrop rendered on <body> so it sits below the fixed header */}
+        {modalOpen &&
+          createPortal(
+            <div aria-hidden="true" className="fixed inset-0 z-[34] bg-black/40" />,
+            document.body
+          )}
+        {/* Trigger button */}
+        <button
+          aria-expanded={modalOpen}
+          aria-haspopup="dialog"
+          className={`inline-flex cursor-pointer items-center gap-1.5 border-none bg-transparent font-normal text-sm leading-none outline-none hover:underline hover:underline-offset-4 ${
+            useSolidStyles ? "text-text-dark" : "text-white"
+          }`}
+          onClick={handleToggle}
+          type="button"
         >
-          {/* Pointy edge */}
-          <div className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2">
-            <Image alt="" height={16} src="/images/triangle.svg" width={24} />
-          </div>
+          <span aria-live="polite">{triggerLabel}</span>
+          <Image
+            alt=""
+            className={`transition-transform ${modalOpen ? "rotate-180" : ""} ${useSolidStyles ? "[filter:brightness(0)]" : ""}`}
+            height={6}
+            src="/images/caret-location.svg"
+            width={10}
+          />
+        </button>
 
-          <div className="px-4 pt-4">
-            <h3
-              className="font-normal text-[length:var(--Font-Size-Scale---font-size-sm,14px)] text-[var(--color-states-muted-foreground,#525252)] leading-[125%] tracking-[-0.14px] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]"
-              id="location-dialog-title"
-            >
-              Update Your Location
-            </h3>
+        {/* Dialog */}
+        {modalOpen && (
+          <div
+            aria-labelledby="location-dialog-title"
+            aria-modal="true"
+            className="absolute top-full left-0 z-50 mt-10 w-[min(96vw,20rem)] rounded bg-white px-4 py-4 lg:left-1/2 lg:w-104 lg:-translate-x-1/2"
+            role="dialog"
+          >
+            {/* Pointy edge */}
+            <div className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2">
+              <Image alt="" height={16} src="/images/triangle.svg" width={24} />
+            </div>
 
-            {/* Current detected location (removed per request) */}
-            {/* {isManualZip && (
+            <div className="px-4 pt-4">
+              <h3
+                className="font-normal text-[length:var(--Font-Size-Scale---font-size-sm,14px)] text-[var(--color-states-muted-foreground,#525252)] leading-[125%] tracking-[-0.14px] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]"
+                id="location-dialog-title"
+              >
+                Update Your Location
+              </h3>
+
+              {/* Current detected location (removed per request) */}
+              {/* {isManualZip && (
               <div className="mt-1">
                 <p className="text-gray-400 text-xs">
                   Current: {description || displayZip} (manually set)
@@ -173,52 +182,53 @@ export function LocationBlock({
                 )}
               </div>
             )} */}
-          </div>
+            </div>
 
-          <div className="px-4 py-2">
-            <label className="sr-only" htmlFor="location-zip">
-              Enter zip code
-            </label>
-            <input
-              autoComplete="postal-code"
-              className="flex h-[var(--spacing-2xl,48px)] w-full items-center gap-[var(--spacing-xs,8px)] self-stretch rounded bg-core-surfaces-background px-[var(--spacing-md,16px)] text-[length:var(--Font-Size-Scale---font-size-sm,14px)] outline-none [font-family:var(--font-family)]"
-              id="location-zip"
-              inputMode="numeric"
-              maxLength={5}
-              onChange={(e) => {
-                setZipInput(e.target.value.replace(/\D/g, ""));
-                setZipError("");
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleUpdate();
-                }
-              }}
-              pattern="[0-9]{5}"
-              placeholder="Enter zip code"
-              ref={inputRef}
-              type="text"
-              value={zipInput}
-            />
-            {zipError && <p className="mt-1 text-red-500 text-xs">{zipError}</p>}
+            <div className="px-4 py-2">
+              <label className="sr-only" htmlFor="location-zip">
+                Enter zip code
+              </label>
+              <input
+                autoComplete="postal-code"
+                className="flex h-[var(--spacing-2xl,48px)] w-full items-center gap-[var(--spacing-xs,8px)] self-stretch rounded bg-core-surfaces-background px-[var(--spacing-md,16px)] text-[length:var(--Font-Size-Scale---font-size-sm,14px)] outline-none [font-family:var(--font-family)]"
+                id="location-zip"
+                inputMode="numeric"
+                maxLength={5}
+                onChange={(e) => {
+                  setZipInput(e.target.value.replace(/\D/g, ""));
+                  setZipError("");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleUpdate();
+                  }
+                }}
+                pattern="[0-9]{5}"
+                placeholder="Enter zip code"
+                ref={inputRef}
+                type="text"
+                value={zipInput}
+              />
+              {zipError && <p className="mt-1 text-red-500 text-xs">{zipError}</p>}
 
-            <Button className="mt-4 w-full rounded-full bg-primary" onClick={handleUpdate}>
-              Update
-            </Button>
-
-            {/* Use Device Location button - only show if manual zip is set */}
-            {isManualZip && (
-              <Button
-                className="mt-2 w-full rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                onClick={handleUseDeviceLocation}
-                variant="outline"
-              >
-                Use Device Location
+              <Button className="mt-4 w-full rounded-full bg-primary" onClick={handleUpdate}>
+                Update
               </Button>
-            )}
+
+              {/* Use Device Location button - only show if manual zip is set */}
+              {isManualZip && (
+                <Button
+                  className="mt-2 w-full rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  onClick={handleUseDeviceLocation}
+                  variant="outline"
+                >
+                  Use Device Location
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

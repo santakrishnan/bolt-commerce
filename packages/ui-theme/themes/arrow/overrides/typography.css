@@ -23,6 +23,8 @@
   --text-2xl: 32px;
   --text-3xl: 36px;
   --text-4xl: 40px;
+  --text-6xl: 60px;
+  --text-7xl: 72px;
 
   --font-size-xs: 12px;
   --font-size-sm: 14px;
@@ -36,6 +38,7 @@
   --font-weight-normal: 400;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
   --font-weight-black: 900;
 
   /* Line Heights — design-specific overrides */
