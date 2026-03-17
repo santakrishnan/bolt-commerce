@@ -24,6 +24,14 @@ export const ROUTES = {
   TEMP_SAMPLE_VDP: "/used-cars/toyota/camry/se/2024/1G1AF1F57A7192174",
 } as const;
 
+// ── Location ─────────────────────────────────────────────────────────
+
+/** Cookie name for the user's manual zip override (set in LocationProvider, read in layout) */
+export const MANUAL_ZIP_COOKIE = "arrow_manual_zip";
+
+/** Validates a 5-digit US zip code */
+export const ZIP_RE = /^\d{5}$/;
+
 // ── API Routes ───────────────────────────────────────────────────────
 
 export const API_ROUTES = {

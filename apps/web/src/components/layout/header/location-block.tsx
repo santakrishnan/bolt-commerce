@@ -6,9 +6,7 @@ import { type JSX, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useLocation } from "~/components/providers/location-provider";
-
-/** Validates a 5-digit US zip code */
-const ZIP_RE = /^\d{5}$/;
+import { ZIP_RE } from "~/lib/routes/constants";
 
 export function LocationBlock({
   useSolidStyles,

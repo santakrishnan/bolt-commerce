@@ -14,6 +14,7 @@ import { FeatureFlagDebug } from "~/components/shared/feature-flag-debug";
 import { ArrowProvider } from "~/lib/arrow";
 import { composeProviders } from "~/lib/compose-providers";
 import { toyotaType } from "~/lib/fonts";
+import { MANUAL_ZIP_COOKIE, ZIP_RE } from "~/lib/routes/constants";
 
 export const metadata: Metadata = {
   title: "Arrow - Modern E-commerce",
@@ -36,8 +37,6 @@ const InnerProviders = composeProviders(
   CartProvider
 );
 
-const ZIP_RE = /^\d{5}$/;
-
 /**
  * Async Server Component that reads the manual-zip cookie and passes it
  * to the client LocationProvider. Rendered inside <Suspense> so the
@@ -45,7 +44,7 @@ const ZIP_RE = /^\d{5}$/;
  */
 async function LocationInit({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const savedZip = cookieStore.get("arrow_manual_zip")?.value;
+  const savedZip = cookieStore.get(MANUAL_ZIP_COOKIE)?.value;
   const initialZip = savedZip && ZIP_RE.test(savedZip) ? savedZip : null;
 
   return <LocationProvider initialZip={initialZip}>{children}</LocationProvider>;

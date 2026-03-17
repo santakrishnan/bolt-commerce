@@ -4,16 +4,10 @@ import { createContext, use, useCallback, useMemo, useState } from "react";
 import stateConfig from "~/data/state-hero-config.json";
 import { useArrow } from "~/lib/arrow";
 import { useArrowClient } from "~/lib/arrow/client-api";
-import { API_ROUTES } from "~/lib/routes/constants";
+import { API_ROUTES, MANUAL_ZIP_COOKIE, ZIP_RE } from "~/lib/routes/constants";
 
 type StateKey = keyof typeof stateConfig.states;
 type BackgroundImageKey = keyof typeof stateConfig.backgroundImages;
-
-/** Validates a 5-digit US zip code */
-const ZIP_RE = /^\d{5}$/;
-
-/** Cookie key for storing manual zip override */
-const MANUAL_ZIP_COOKIE = "arrow_manual_zip";
 
 /**
  * Save manual zip to cookie (expires in 30 days)
