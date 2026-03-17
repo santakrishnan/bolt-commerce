@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { ROUTES } from "./constants";
 import {
   parseVehicleDetailsSegments,
   TRIM_PLACEHOLDER,
@@ -49,5 +50,5 @@ export function parseVdpSegments(segments: string[]): VdpParams {
  */
 export function buildVdpPath(params: VdpParams): string {
   const trim = params.trimSlug ?? TRIM_PLACEHOLDER;
-  return `/used-cars/details/${params.make}/${params.model}/${trim}/${params.year}/${params.vin}`;
+  return `${ROUTES.USED_CARS_DETAILS}/${params.make}/${params.model}/${trim}/${params.year}/${params.vin}`;
 }

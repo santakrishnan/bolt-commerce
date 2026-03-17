@@ -1,5 +1,3 @@
-"use client";
-
 import { cn } from "@tfs-ucmp/ui";
 import type { ReactNode } from "react";
 

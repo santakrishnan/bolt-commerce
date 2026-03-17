@@ -4,6 +4,7 @@ import { createContext, use, useCallback, useEffect, useMemo, useState } from "r
 import stateConfig from "~/data/state-hero-config.json";
 import { useArrow } from "~/lib/arrow";
 import { useArrowClient } from "~/lib/arrow/client-api";
+import { API_ROUTES } from "~/lib/routes/constants";
 
 type StateKey = keyof typeof stateConfig.states;
 type BackgroundImageKey = keyof typeof stateConfig.backgroundImages;
@@ -106,10 +107,7 @@ export interface LocationContextValue {
      */
     clearManualZip: () => void;
   };
-  meta: {
-    /** True while waiting for fingerprint data */
-    isLoading: boolean;
-  };
+  // meta removed — no loading flag exposed
 }
 
 const LocationContext = createContext<LocationContextValue | null>(null);
@@ -131,7 +129,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   const defaultState = stateConfig.defaultState as StateKey;
   const defaultZip = stateConfig.states[defaultState].zipCode;
 
-  const { fingerprintData, isReady: arrowReady } = useArrow();
+  const { fingerprintData } = useArrow();
   const api = useArrowClient();
 
   /** User's manual zip override from cookie */
@@ -155,7 +153,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   const displayZip = manualZip ?? (ZIP_RE.test(fpZip) ? fpZip : defaultZip);
   const displayCity = manualZip ? "" : fpCity; // clear city when user overrides
   const displayState = manualZip ? "" : fpState;
-  const isLoading = !arrowReady;
+  // loading state removed: consumers no longer need a loading flag
 
   /**
    * Override zip and save to cookie.
@@ -175,7 +173,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
       // Track zip code change event
       api
-        .post("/api/events/track", {
+        .post(API_ROUTES.EVENTS_TRACK, {
           event: "location_zip_changed",
           properties: {
             previousZip,
@@ -207,7 +205,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     // Track revert to fingerprint location event
     if (previousZip) {
       api
-        .post("/api/events/track", {
+        .post(API_ROUTES.EVENTS_TRACK, {
           event: "location_zip_cleared",
           properties: {
             previousZip,
@@ -248,7 +246,6 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         description,
       },
       actions: { setZip, clearManualZip },
-      meta: { isLoading },
     }),
     [
       displayZip,
@@ -260,7 +257,6 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       description,
       setZip,
       clearManualZip,
-      isLoading,
     ]
   );
 

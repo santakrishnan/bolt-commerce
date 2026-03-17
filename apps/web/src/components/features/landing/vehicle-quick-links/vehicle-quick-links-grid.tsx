@@ -11,8 +11,10 @@ export async function VehicleQuickLinksGrid({
   className,
   cardBackgroundColor,
 }: VehicleQuickLinksGridProps) {
-  const vehicleFinderOptions = await fetchVehicleFinderOptions();
-  const counts = await fetchVehicleFinderCounts();
+  const [vehicleFinderOptions, counts] = await Promise.all([
+    fetchVehicleFinderOptions(),
+    fetchVehicleFinderCounts(),
+  ]);
 
   if (!vehicleFinderOptions || vehicleFinderOptions.length === 0 || !counts) {
     return null;

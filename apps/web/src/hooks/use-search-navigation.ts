@@ -38,6 +38,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { toSearchUrl } from "utils";
 import { useSearchHistory } from "~/components/providers/search-history-provider";
+import { ROUTES } from "~/lib/routes/constants";
 
 export interface UseSearchNavigationOptions {
   /**
@@ -88,7 +89,7 @@ export function useSearchNavigation({
   mode = "push",
   scroll = true,
   recordHistory = false,
-  basePath = "/used-cars",
+  basePath = ROUTES.USED_CARS,
 }: UseSearchNavigationOptions = {}): UseSearchNavigationReturn {
   const router = useRouter();
   const { addSearch } = useSearchHistory();

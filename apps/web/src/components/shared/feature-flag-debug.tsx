@@ -1,9 +1,11 @@
 "use client";
 
+import { Heading } from "@tfs-ucmp/ui";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCookie } from "~/lib/cookie-cache";
 import { type FeatureFlags, FLAG_COOKIE_NAME, mockUsers } from "~/lib/flags/config";
+import { ROUTES } from "~/lib/routes/constants";
 
 /**
  * FeatureFlagDebug - A floating debug panel for testing feature flags
@@ -69,7 +71,7 @@ export function FeatureFlagDebug() {
   }, []);
 
   // Hide on VDP pages — VehicleStatusFAB handles flags there
-  if (pathname?.startsWith("/used-cars/")) {
+  if (pathname?.startsWith(`${ROUTES.USED_CARS}/`)) {
     return null;
   }
 
@@ -126,7 +128,9 @@ export function FeatureFlagDebug() {
       {isOpen && (
         <div className="absolute right-0 bottom-16 max-h-[600px] w-80 overflow-y-auto rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
           <div className="mb-3 flex items-center justify-between">
-            <h3 className="font-bold text-gray-900 text-sm">🚩 Feature Flags</h3>
+            <Heading className="text-gray-900 text-sm md:text-sm" level={3} weight="bold">
+              🚩 Feature Flags
+            </Heading>
             <button
               className="text-gray-400 hover:text-gray-600"
               onClick={() => setIsOpen(false)}

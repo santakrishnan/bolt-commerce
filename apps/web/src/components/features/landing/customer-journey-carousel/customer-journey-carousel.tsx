@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, cn } from "@tfs-ucmp/ui";
+import { cn, Heading } from "@tfs-ucmp/ui";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AppButton } from "~/components/shared/button";
 import { customerJourneySlides } from "./carousel-data";
 
 export interface PromotionFlags {
@@ -362,7 +363,7 @@ export function CustomerJourneyCarousel({ className, flags }: AnimatingCarouselP
 
   return (
     <motion.div
-      animate={{ opacity: isFullyVisible ? 1 : 0 }}
+      animate={{ opacity: 1 }}
       className={cn("relative w-full bg-black", className)}
       initial={{ opacity: 0 }}
       ref={carouselRef}
@@ -638,28 +639,50 @@ function TextContent({ slide }: TextContentProps) {
       <div className="flex h-full w-full flex-col sm:hidden">
         <div className="h-[200px] w-full shrink-0" />
         <div className="flex flex-1 flex-col justify-start px-6 pt-6 text-center text-white">
-          <h2 className="mb-3 font-bold text-xl uppercase will-change-transform">{slide.title}</h2>
+          <Heading
+            className="mb-3 text-xl uppercase will-change-transform md:text-xl"
+            level={2}
+            weight="bold"
+          >
+            {slide.title}
+          </Heading>
           <p className="mb-6 text-sm leading-relaxed will-change-transform">{slide.subtitle}</p>
           <div className="will-change-transform">
-            <Button className="w-full rounded-full px-8" size="lg">
+            <AppButton
+              onClick={() => {
+                // TODO: wire up slide CTA action
+              }}
+              size="md"
+              variant="primary"
+            >
               {slide.ctaText}
-            </Button>
+            </AppButton>
           </div>
         </div>
       </div>
 
       <div className="relative hidden h-full w-full sm:block">
         <div className="absolute inset-0 flex w-1/2 flex-col items-start justify-center gap-6 px-12 text-white lg:px-16 xl:w-[40%]">
-          <h2 className="font-bold text-3xl uppercase leading-tight will-change-transform lg:text-4xl">
+          <Heading
+            className="text-3xl uppercase leading-tight will-change-transform md:text-3xl lg:text-4xl"
+            level={2}
+            weight="bold"
+          >
             {slide.title}
-          </h2>
+          </Heading>
           <p className="font-semibold text-sm leading-relaxed will-change-transform lg:text-base">
             {slide.subtitle}
           </p>
           <div className="will-change-transform">
-            <Button className="rounded-full px-8" size="lg">
+            <AppButton
+              onClick={() => {
+                // TODO: wire up slide CTA action
+              }}
+              size="md"
+              variant="primary"
+            >
               {slide.ctaText}
-            </Button>
+            </AppButton>
           </div>
         </div>
       </div>

@@ -1,7 +1,9 @@
+import { Heading } from "@tfs-ucmp/ui";
 import { HomeHero } from "~/components/features/landing";
 import { VehicleQuickLinksGrid } from "~/components/features/landing/vehicle-quick-links";
 import { MyGarageClient } from "~/components/layout/my-garage/my-garageclient";
 import { customerPreQualified, customerTradeInSubmitted, getUserInfo } from "~/lib/flags/flags";
+import { fetchBecauseYouViewedCars } from "~/lib/my-garage/fetch-because-viewed-cars";
 import { fetchGarageCars } from "~/lib/my-garage/fetch-garage-cars";
 
 export async function MyGarageWrapper({
@@ -11,13 +13,16 @@ export async function MyGarageWrapper({
   showUserName?: boolean;
   knownUserOverrides?: { showCards?: boolean };
 } = {}) {
-  const cars = await fetchGarageCars();
-  const userInfo = await getUserInfo();
+  // Fetch all independent data in parallel
+  const [cars, becauseViewedCars, userInfo, isPreQualified, hasTradeInSubmitted] =
+    await Promise.all([
+      fetchGarageCars(),
+      fetchBecauseYouViewedCars(),
+      getUserInfo(),
+      customerPreQualified(),
+      customerTradeInSubmitted(),
+    ]);
   const userName = userInfo.firstName.toUpperCase();
-
-  // Get feature flags to determine which card variations to show
-  const isPreQualified = await customerPreQualified();
-  const hasTradeInSubmitted = await customerTradeInSubmitted();
 
   // Default days remaining for prequalification offer
   const daysRemaining = 27;
@@ -43,6 +48,7 @@ export async function MyGarageWrapper({
         useLocationBackground={true}
       />
       <MyGarageClient
+        becauseViewedCars={becauseViewedCars}
         cars={cars}
         daysRemaining={daysRemaining}
         hasTradeInSubmitted={hasTradeInSubmitted}
@@ -50,9 +56,13 @@ export async function MyGarageWrapper({
       >
         <section className="w-full bg-transparent py-[var(--spacing-2xl)] sm:py-[var(--spacing-3xl)] lg:py-[var(--spacing-4xl)]">
           <div className="container mx-auto max-w-[var(--container-2xl)] px-[var(--spacing-md)] sm:px-[var(--spacing-lg)] lg:px-[var(--spacing-4xl)]">
-            <h2 className="mb-[var(--spacing-xl)] text-center font-semibold text-[length:var(--text-xl)] sm:mb-[var(--spacing-10)] lg:text-[length:var(--text-2xl)]">
+            <Heading
+              className="mb-[var(--spacing-xl)] text-center font-semibold text-[length:var(--text-xl)] sm:mb-[var(--spacing-10)] md:text-[length:var(--text-xl)] lg:text-[length:var(--text-2xl)]"
+              level={2}
+              weight="semibold"
+            >
               Find your vehicle
-            </h2>
+            </Heading>
             <VehicleQuickLinksGrid cardBackgroundColor="bg-white" />
           </div>
         </section>

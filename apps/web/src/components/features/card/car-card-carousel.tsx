@@ -34,13 +34,19 @@ export function Carousel({ images, carName }: CarouselProps) {
 
   return (
     <div className="relative h-78 w-full">
-      <Image
-        alt={carName}
-        className="absolute inset-0 h-full max-h-78 w-full max-w-104 object-contain p-4"
-        height={312}
-        src={images[current] ?? ""}
-        width={416}
-      />
+      {/* All images stacked — crossfade via opacity to prevent white flash */}
+      {images.map((src, idx) => (
+        <Image
+          alt={`${carName} — image ${idx + 1}`}
+          className={`absolute inset-0 h-full max-h-78 w-full max-w-104 object-contain p-4 transition-opacity duration-300 ${
+            idx === current ? "opacity-100" : "opacity-0"
+          }`}
+          height={312}
+          key={src}
+          src={src}
+          width={416}
+        />
+      ))}
       <div className="absolute right-0 bottom-2 left-0 z-20 flex items-center justify-between px-4">
         <Button
           aria-label="Previous image"

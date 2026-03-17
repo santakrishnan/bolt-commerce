@@ -1,14 +1,16 @@
 "use client";
 
-import { Badge, Button } from "@tfs-ucmp/ui";
+import { Button } from "@tfs-ucmp/ui";
 import Image from "next/image";
-import { XIcon } from "@/components/assets/icons";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import { useFavorites } from "~/components/providers/favorites-provider";
+import { useSearchContext } from "~/components/layout/search/search-context";
+import { AppButton } from "~/components/shared/button";
+import { CustomChips } from "~/components/shared/custom-chips";
+import type { Vehicle } from "~/components/shared/types";
 import { getUsedCarsSrpNoResultsMessage } from "~/lib/messages/used-cars";
-import { getVehicleEstimation, type Vehicle } from "~/lib/search/mock-vehicles";
+import { getVehicleEstimation } from "~/lib/search/mock-vehicles";
 import CarCard from "../card/car-card";
-import CarCardSkeleton from "../card/car-card-skeleton";
 
 function vehicleToCarCardProps(vehicle: Vehicle) {
   const parts = vehicle.miles.split(" - ");
@@ -67,7 +69,6 @@ export interface VehicleResultsProps {
   currentPage: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
-  isProgressVisible: boolean;
 }
 
 export function VehicleResults({
@@ -81,26 +82,67 @@ export function VehicleResults({
   currentPage,
   itemsPerPage,
   onPageChange,
-  isProgressVisible,
 }: VehicleResultsProps) {
-  const { isVehicleSaved, toggleVehicle } = useFavorites();
   const activeFilterCount = activeFilters.length;
+  const { sortOption, setSortOption } = useSearchContext();
+
+  const sortLabels: Record<string, string> = {
+    recommended: "Recommended",
+    "low-high": "Low to High",
+    "high-low": "High to Low",
+  };
+  const selectRef = useRef<HTMLSelectElement>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Recompute select width when sortBy changes.
+  useEffect(() => {
+    if (!(measureRef.current && selectRef.current)) {
+      return;
+    }
+    const w = measureRef.current.offsetWidth;
+    if (w > 0) {
+      selectRef.current.style.width = `${w}px`;
+    }
+  }, [sortOption]);
+
   const filteredVehicles = vehicles.filter((vehicle) => {
     if (!searchQuery.trim()) {
       return true;
     }
     const query = searchQuery.toLowerCase();
+
+    // ── Quick-finder preset queries ──────────────────────────────────────────
+    if (query === "cars under $20,000") {
+      return vehicle.price < 20_000;
+    }
+    if (query === "shop excellent deals") {
+      return vehicle.labels.some((l) => l.toLowerCase().includes("excellent price"));
+    }
+    if (query === "low miles") {
+      return vehicle.mileage < 15_000;
+    }
+
     return (
       vehicle.title.toLowerCase().includes(query) ||
       vehicle.miles.toLowerCase().includes(query) ||
+      vehicle.bodyType.toLowerCase().includes(query) ||
       vehicle.labels.some((label) => label.toLowerCase().includes(query))
     );
   });
 
-  const vehicleCount = filteredVehicles.length;
+  const sortedVehicles = (() => {
+    if (sortOption === "low-high") {
+      return [...filteredVehicles].sort((a, b) => a.price - b.price);
+    }
+    if (sortOption === "high-low") {
+      return [...filteredVehicles].sort((a, b) => b.price - a.price);
+    }
+    return filteredVehicles;
+  })();
+
+  const vehicleCount = sortedVehicles.length;
   const totalPages = Math.ceil(vehicleCount / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedVehicles = filteredVehicles.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedVehicles = sortedVehicles.slice(startIndex, startIndex + itemsPerPage);
   const noResultsMessage = getUsedCarsSrpNoResultsMessage({
     query: searchQuery,
     hasActiveFilters: activeFilterCount > 0,
@@ -110,46 +152,36 @@ export function VehicleResults({
     <section className="bg-[var(--color-core-surfaces-background)]">
       <div className="mx-auto px-[var(--spacing-md)] sm:px-[var(--spacing-lg)] lg:px-[var(--spacing-4xl)] 2xl:max-w-(--container-2xl)">
         {activeFilterCount === 0 && (
-          <div className="flex items-center gap-[var(--spacing-sm)] bg-[var(--color-core-surfaces-background)] py-[var(--spacing-lg)]">
-            <Button
-              className={cn(
-                "var(--font-size-sm)] inline-flex h-10 cursor-pointer items-center gap-[var(--spacing-xs)] rounded-full bg-[var(--color-structure-interaction-border-hover)] px-[var(--spacing-md)] text-center font-semibold text-[length: text-white leading-normal",
-                "hover:bg-[var(--color-structure-interaction-border-hover)] hover:opacity-100"
-              )}
+          <div className="flex min-h-[100px] items-center gap-[var(--spacing-sm)] bg-[var(--color-core-surfaces-background)] py-[var(--spacing-lg)]">
+            <AppButton
+              className="px-[var(--spacing-md)]"
+              icon={
+                <Image
+                  alt="Filter"
+                  className="h-4 w-4"
+                  height={16}
+                  src="/images/filter_one.svg"
+                  width={16}
+                />
+              }
+              iconPosition="left"
               onClick={onToggleFilter}
-              type="button"
-              variant="search"
+              size="md"
+              variant="primary"
             >
-              <Image
-                alt="Filter"
-                className="h-4 w-4"
-                height={16}
-                src="/images/filter_one.svg"
-                width={16}
-              />
-              <span>Filter and Sort</span>
-            </Button>
-            <Button
-              className={cn(
-                "var(--font-size-sm)] inline-flex h-10 cursor-pointer items-center justify-center gap-[var(--spacing-xs)] rounded-full bg-black px-[var(--spacing-lg)] py-[var(--spacing-sm)] text-center font-semibold text-[length: text-white leading-normal",
-                "hover:bg-black hover:opacity-100"
-              )}
-              onClick={onReset}
-              type="button"
-              variant="search"
-            >
-              Reset
-            </Button>
+              Filter and Sort
+            </AppButton>
           </div>
         )}
         {activeFilterCount > 0 && (
-          <div className="flex flex-col gap-[var(--spacing-lg)] bg-[var(--color-core-surfaces-background)] py-[var(--spacing-lg)] md:top-[375.5px] md:flex-row md:items-start">
+          <div className="flex min-h-[100px] flex-col gap-[var(--spacing-lg)] bg-[var(--color-core-surfaces-background)] py-[var(--spacing-lg)] md:top-[375.5px] md:flex-row md:items-start">
             <div className="flex shrink-0 items-center gap-[var(--spacing-sm)]">
-              <Button
-                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-[var(--color-brand-red)] transition-colors hover:bg-red-600"
+              <AppButton
+                className="h-10 w-10"
                 onClick={onToggleFilter}
+                size="xs"
                 type="button"
-                variant="search"
+                variant="primary"
               >
                 <Image
                   alt="Filter"
@@ -158,7 +190,7 @@ export function VehicleResults({
                   src="/images/filter_one.svg"
                   width={16}
                 />
-              </Button>
+              </AppButton>
               <div className="mx-auto flex flex-row items-center gap-[var(--spacing-sm)] md:mx-0 md:flex-col md:items-start md:gap-0">
                 <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal md:text-[length:var(--font-size-md)]">
                   {vehicleCount} vehicles found
@@ -166,19 +198,35 @@ export function VehicleResults({
                 <span className="mb-[var(--spacing-2xs)] text-[#ccc] md:hidden">|</span>
                 <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal md:text-[length:var(--font-size-md)]">
                   Sort by:{" "}
-                  <button
-                    className="inline-flex items-center gap-[var(--spacing-sm)] font-medium text-black hover:underline"
-                    type="button"
-                  >
-                    Recommended{" "}
+                  <div className="inline-flex items-center gap-[var(--spacing-sm)]">
+                    {/* Hidden span to measure rendered text width of selected option */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none invisible absolute whitespace-nowrap font-medium"
+                      ref={measureRef}
+                    >
+                      {sortLabels[sortOption]}
+                    </span>
+                    <select
+                      className="cursor-pointer appearance-none border-none bg-transparent font-medium text-black outline-none"
+                      onChange={(e) =>
+                        setSortOption(e.target.value as "recommended" | "low-high" | "high-low")
+                      }
+                      ref={selectRef}
+                      value={sortOption}
+                    >
+                      <option value="recommended">Recommended</option>
+                      <option value="low-high">Low to High</option>
+                      <option value="high-low">High to Low</option>
+                    </select>
                     <Image
                       alt="Dropdown"
-                      className="mt-[1.5%] h-1.75 w-[var(--spacing-sm)]"
+                      className="mt-[3%] h-1.75 w-[var(--spacing-sm)]"
                       height={7}
                       src="/images/dropdown-arrow.svg"
                       width={12}
                     />
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -186,59 +234,30 @@ export function VehicleResults({
             <div className="flex-1">
               <div className="flex flex-wrap items-center justify-center gap-[var(--spacing-xs)] md:justify-end">
                 {activeFilters.map((filter) => (
-                  <Badge
-                    className={cn(
-                      "h-[var(--spacing-xl)] gap-[var(--spacing-xs)] rounded-full border p-[var(--spacing-sm)] text-xs",
-                      filter.isRefineSearch
-                        ? "border-[var(--color-destructive)] bg-[var(--color-destructive)] text-[var(--color-destructive-foreground)]"
-                        : "border-[var(--color-states-muted)] bg-transparent text-[var(--color-brand-text)]"
-                    )}
+                  <CustomChips
+                    isRefineSearch={filter.isRefineSearch}
                     key={`${filter.type}-${filter.value}`}
-                    text={filter.label}
-                    variant="outline"
-                  >
-                    <Button
-                      className={cn(
-                        "h-[var(--spacing-xs)] w-[var(--spacing-xs)] p-[0px] transition-colors hover:text-[var(--color-destructive)]",
-                        filter.isRefineSearch
-                          ? "text-[var(--color-destructive-foreground)]"
-                          : "text-[var(--color-brand-text)]"
-                      )}
-                      onClick={() => onRemoveFilter(filter.type, filter.value)}
-                      type="button"
-                      variant="search"
-                    >
-                      <XIcon className="h-3 w-3" />
-                    </Button>
-                  </Badge>
+                    label={filter.label}
+                    onRemove={() => onRemoveFilter(filter.type, filter.value)}
+                    type="applied"
+                  />
                 ))}
-                <Button
-                  className="flex h-[var(--spacing-xl)] items-center justify-center gap-[var(--spacing-xs)] rounded-full bg-[var(--color-brand-text)] px-[var(--spacing-lg)] text-center font-normal text-[length:var(--font-size-xs)] text-[var(--color-brand-text-foreground)] leading-normal"
-                  onClick={onReset}
-                  type="button"
-                  variant="search"
-                >
+                <AppButton onClick={onReset} size="sm" type="button" variant="secondary">
                   Reset
-                </Button>
+                </AppButton>
               </div>
             </div>
           </div>
         )}
 
         <div className="mb-[var(--spacing-3xl)] grid w-full grid-cols-1 gap-[var(--spacing-md)] sm:grid-cols-2 lg:grid-cols-3">
-          {isProgressVisible &&
-            Array.from({ length: 12 }).map((_, _i) => <CarCardSkeleton key={Math.random()} />)}
-
-          {!isProgressVisible &&
-            paginatedVehicles.map((vehicle) => (
-              <CarCard
-                key={vehicle.id}
-                {...vehicleToCarCardProps(vehicle)}
-                onApplyRefineFilters={onApplyRefineFilters}
-                onFavoriteToggle={() => toggleVehicle(vehicle.vin)}
-                wasLiked={isVehicleSaved(vehicle.vin)}
-              />
-            ))}
+          {paginatedVehicles.map((vehicle) => (
+            <CarCard
+              key={vehicle.id}
+              {...vehicleToCarCardProps(vehicle)}
+              onApplyRefineFilters={onApplyRefineFilters}
+            />
+          ))}
         </div>
 
         {totalPages > 1 && (

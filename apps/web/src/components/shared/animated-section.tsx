@@ -46,7 +46,7 @@ export function AnimatedSection({
         staggerChildren: staggerChildren ? 0.2 : 0,
         delayChildren: staggerChildren ? duration : 0,
       }}
-      viewport={{ once: false, amount: 0.15 }}
+      viewport={{ once: true, amount: 0.15 }}
       whileInView={{ opacity: 1, y: 0 }}
     >
       {children}

@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@tfs-ucmp/ui";
-import Image from "next/image";
 
 interface FilterSectionProps {
   title: string;
@@ -33,23 +32,27 @@ export const FilterSection = ({
           {title}
         </span>
         {isOpen ? (
-          <Image
-            alt="Collapse"
+          <svg
             aria-hidden="true"
             className="h-3 w-3"
-            height={12}
-            src="/images/search/minus.svg"
-            width={12}
-          />
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M5 12h14" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         ) : (
-          <Image
-            alt="Expand"
+          <svg
             aria-hidden="true"
             className="h-3 w-3"
-            height={12}
-            src="/images/search/plus.svg"
-            width={12}
-          />
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 5v14M5 12h14" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         )}
       </Button>
       {isOpen && <div className="px-4 pb-4">{children}</div>}

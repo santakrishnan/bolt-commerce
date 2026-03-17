@@ -1,12 +1,16 @@
 "use client";
 
-import { type ReactNode, useCallback, useMemo } from "react";
+import { Heading } from "@tfs-ucmp/ui";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import CarCard from "~/components/features/card/car-card";
 import { MyGarageCards } from "~/components/features/mygarage/my-garage-cards";
 import { TestDriveBanner } from "~/components/features/mygarage/test-drive-banner";
+import { VehiclePreviewModal } from "~/components/features/vehicle-preview-modal/vehicle-preview-modal";
 import { useFavorites } from "~/components/providers/favorites-provider";
 import { useSearchHistory } from "~/components/providers/search-history-provider";
-import { getVehicleEstimation, type Vehicle } from "~/lib/search/mock-vehicles";
+import type { Vehicle } from "~/components/shared/types";
+import { buildUsedCarsPath } from "~/lib/routes";
+import { getVehicleEstimation } from "~/lib/search/mock-vehicles";
 
 // ─── Utility Functions (hoisted outside component for performance) ──────────
 
@@ -37,6 +41,8 @@ function getBadgeType(
 
 interface MyGarageClientProps {
   cars: Vehicle[];
+  /** Cars specifically for the "Because You Viewed" section */
+  becauseViewedCars?: Vehicle[];
   children?: ReactNode;
   /** Customer prequalification status - determines which financing card variation to show */
   isPreQualified?: boolean;
@@ -48,13 +54,19 @@ interface MyGarageClientProps {
 
 export function MyGarageClient({
   cars,
+  becauseViewedCars,
   children,
   isPreQualified = false,
   hasTradeInSubmitted = false,
   daysRemaining = 27,
 }: MyGarageClientProps) {
-  const { savedVins, toggleVehicle, isVehicleSaved, removeVehicle } = useFavorites();
+  const [previewVin, setPreviewVin] = useState<string | null>(null);
+  const { savedVins, removeVehicle } = useFavorites();
   const { searches, removeSearch, clearAll: clearAllSearches } = useSearchHistory();
+
+  useEffect(() => {
+    setPreviewVin(null);
+  }, []);
 
   // Memoize derived state to avoid recomputation on every render
   const recentSearchCards = useMemo(
@@ -94,12 +106,8 @@ export function MyGarageClient({
     [removeVehicle]
   );
 
-  const handleFavoriteToggle = useCallback(
-    (vin: string) => {
-      toggleVehicle(vin);
-    },
-    [toggleVehicle]
-  );
+  // Find the selected vehicle for the modal
+  const selectedVehicle = previewVin ? cars.find((c) => c.vin === previewVin) : undefined;
 
   return (
     <div className="relative min-h-screen">
@@ -123,10 +131,14 @@ export function MyGarageClient({
       />
       {/* Content */}
       <div className="relative z-0">
-        <h2 className="mx-auto mb-8 w-full max-w-[var(--container-2xl)] px-4 pt-8 text-left font-semibold text-lg sm:px-6 lg:px-20">
+        <Heading
+          className="mx-auto mb-8 w-full max-w-(--container-2xl) px-4 pt-8 text-left text-lg sm:px-6 md:text-lg lg:px-20"
+          level={2}
+          weight="semibold"
+        >
           My Garage
-        </h2>
-        <div className="mx-auto mb-10 w-full max-w-[var(--container-2xl)] px-4 sm:px-6 lg:px-20">
+        </Heading>
+        <div className="mx-auto mb-10 w-full max-w-(--container-2xl) px-4 sm:px-6 lg:px-20">
           <MyGarageCards
             financing={{
               prequalified: isPreQualified,
@@ -135,6 +147,7 @@ export function MyGarageClient({
             onClearAllSearches={clearAllSearches}
             onRemoveSavedVehicle={handleRemoveSavedVehicle}
             onRemoveSearch={removeSearch}
+            onSavedVehicleClick={(id) => setPreviewVin(String(id))}
             recentSearches={recentSearchCards}
             savedVehicles={savedVehicles}
             tradeOffer={{
@@ -146,12 +159,70 @@ export function MyGarageClient({
               hasSubmittedTradeIn: hasTradeInSubmitted,
             }}
           />
+          {selectedVehicle &&
+            (() => {
+              const dealerInfo = parseDealerInfo(selectedVehicle.miles);
+              const vdpUrl =
+                selectedVehicle.make &&
+                selectedVehicle.model &&
+                selectedVehicle.variant &&
+                selectedVehicle.year &&
+                selectedVehicle.vin
+                  ? buildUsedCarsPath({
+                      type: "details",
+                      make: selectedVehicle.make,
+                      model: selectedVehicle.model,
+                      trim: selectedVehicle.variant,
+                      year: selectedVehicle.year,
+                      vin: selectedVehicle.vin,
+                    })
+                  : "#";
+
+              return (
+                <VehiclePreviewModal
+                  isOpen={!!previewVin}
+                  onClose={() => setPreviewVin(null)}
+                  vdpUrl={vdpUrl}
+                  vehicle={{
+                    year: selectedVehicle.year,
+                    make: selectedVehicle.make,
+                    model: selectedVehicle.model,
+                    price: selectedVehicle.price,
+                    originalPrice: selectedVehicle.oldPrice ?? 0,
+                    condition: selectedVehicle.labels[0] ?? "",
+                    warranty: false,
+                    inspected: false,
+                    miles: selectedVehicle.odometer,
+                    drivetrain: "",
+                    mpg: "",
+                    stock: "",
+                    vin: selectedVehicle.vin,
+                    exterior: selectedVehicle.extColorName,
+                    exteriorColorCode: selectedVehicle.extColorCode,
+                    interior: selectedVehicle.intColorName,
+                    interiorColorCode: selectedVehicle.intColorCode,
+                    dealer: dealerInfo.dealerName,
+                    location: dealerInfo.dealerName,
+                    distance: dealerInfo.distance,
+                    images: Array.isArray(selectedVehicle.image)
+                      ? selectedVehicle.image
+                      : [selectedVehicle.image],
+                    features: [],
+                  }}
+                  vin={selectedVehicle.vin}
+                />
+              );
+            })()}
         </div>
 
-        <h2 className="mx-auto mb-6 w-full max-w-[var(--container-2xl)] px-4 text-left font-semibold text-xl sm:px-6 lg:px-20">
+        <Heading
+          className="mx-auto mb-6 w-full max-w-(--container-2xl) px-4 text-left text-xl sm:px-6 md:text-xl lg:px-20"
+          level={2}
+          weight="semibold"
+        >
           Best Matches for you
-        </h2>
-        <div className="mx-auto grid max-w-[var(--container-2xl)] grid-cols-1 gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
+        </Heading>
+        <div className="mx-auto grid max-w-(--container-2xl) grid-cols-1 gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
           {cars.slice(0, 12).map((car) => {
             const firstLabel = car.labels[0];
             const { dealerName, distance } = parseDealerInfo(car.miles);
@@ -177,12 +248,10 @@ export function MyGarageClient({
                 matchPercentage={car.match > 0 ? car.match.toString() : undefined}
                 mileage={car.odometer}
                 model={car.model}
-                onFavoriteToggle={() => handleFavoriteToggle(car.vin)}
                 owners={car.owners}
                 price={`$${car.price.toLocaleString()}`}
                 variant={car.variant}
                 vin={car.vin}
-                wasLiked={isVehicleSaved(car.vin)}
                 wasPrice={car.oldPrice ? `$${car.oldPrice.toLocaleString()}` : undefined}
                 year={car.year}
               />
@@ -196,11 +265,15 @@ export function MyGarageClient({
           <TestDriveBanner />
         </div>
         {/* Because You Viewed Toyota Camry */}
-        <h2 className="mx-auto mb-8 w-full max-w-[var(--container-2xl)] px-4 text-left font-semibold text-xl sm:px-6 lg:px-20">
+        <Heading
+          className="mx-auto mb-8 w-full max-w-(--container-2xl) px-4 text-left text-xl sm:px-6 md:text-xl lg:px-20"
+          level={2}
+          weight="semibold"
+        >
           Because You Viewed Toyota Camry
-        </h2>
-        <div className="mx-auto mb-16 grid max-w-[var(--container-2xl)] grid-cols-1 gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
-          {cars.slice(0, 4).map((car) => {
+        </Heading>
+        <div className="mx-auto mb-16 grid max-w-(--container-2xl) grid-cols-1 gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
+          {(becauseViewedCars ?? cars).slice(0, 4).map((car) => {
             const badgeLabel = car.labels[0];
             const { dealerName, distance } = parseDealerInfo(car.miles);
             const estimation = getVehicleEstimation(car);
@@ -232,12 +305,10 @@ export function MyGarageClient({
                 matchPercentage={car.match > 0 ? String(car.match) : undefined}
                 mileage={car.odometer}
                 model={car.model}
-                onFavoriteToggle={() => handleFavoriteToggle(car.vin)}
                 owners={car.owners}
                 price={`$${car.price.toLocaleString()}`}
                 variant={car.variant}
                 vin={car.vin}
-                wasLiked={isVehicleSaved(car.vin)}
                 wasPrice={car.oldPrice ? `$${car.oldPrice.toLocaleString()}` : undefined}
                 year={car.year}
               />
@@ -246,10 +317,14 @@ export function MyGarageClient({
         </div>
 
         {/* Recent Price Drop - only cars with oldPrice */}
-        <h2 className="mx-auto mb-8 w-full max-w-[var(--container-2xl)] px-4 text-left font-semibold text-xl sm:px-6 lg:px-20">
+        <Heading
+          className="mx-auto mb-8 w-full max-w-(--container-2xl) px-4 text-left text-xl sm:px-6 md:text-xl lg:px-20"
+          level={2}
+          weight="semibold"
+        >
           Recent Price Drop
-        </h2>
-        <div className="mx-auto grid max-w-[var(--container-2xl)] grid-cols-1 gap-4 px-4 pb-16 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
+        </Heading>
+        <div className="mx-auto grid max-w-(--container-2xl) grid-cols-1 gap-4 px-4 pb-16 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:px-20 xl:grid-cols-4">
           {priceDropCars.slice(0, 4).map((car) => {
             const { dealerName, distance } = parseDealerInfo(car.miles);
             const estimation = getVehicleEstimation(car);
@@ -273,12 +348,10 @@ export function MyGarageClient({
                 matchPercentage={car.match > 0 ? String(car.match) : undefined}
                 mileage={car.odometer}
                 model={car.model}
-                onFavoriteToggle={() => handleFavoriteToggle(car.vin)}
                 owners={car.owners}
                 price={`$${car.price.toLocaleString()}`}
                 variant={car.variant}
                 vin={car.vin}
-                wasLiked={isVehicleSaved(car.vin)}
                 wasPrice={`$${car.oldPrice?.toLocaleString()}`}
                 year={car.year}
               />

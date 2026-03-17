@@ -12,7 +12,6 @@ import {
 import { sampleDealerNotes } from "~/lib/data/dealer/dealer-data";
 import type { VehicleData, VehicleStatusData, VinData } from "~/lib/data/vehicle";
 import { getVehicleStatusFromFlagsSync } from "~/lib/flags/vdp-client";
-import { capitalize } from "~/lib/formatters";
 import type { VdpParams } from "~/lib/routes";
 
 interface VehicleDetailClientProps {
@@ -35,13 +34,11 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
     return hasActiveFlag ? fromFlag : vehicleStatus;
   });
 
-  console.log("trim slug value in client component", vehicle.trimSlug); // Debug log to verify trim value
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <main className="flex-1">
         {/* Vehicle PDP Section */}
-        <div className="mx-auto max-w-[var(--container-2xl)] px-4 py-12 sm:px-6 lg:px-20">
+        <div className="mx-auto max-w-(--container-2xl) px-4 py-12 sm:px-6 lg:px-20">
           <VehiclePDP
             slugParams={vehicle}
             vehicle={vehicleInfo}
@@ -50,8 +47,8 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
         </div>
 
         {/* Tabs, Rating and Dealer section - full width grey background */}
-        <div className="w-full bg-gray-100 pt-4 pb-10 lg:py-[var(--spacing-4xl)]">
-          <div className="mx-auto max-w-[var(--container-2xl)] px-6 sm:px-6 lg:px-20">
+        <div className="w-full bg-gray-100 pt-4 pb-10 lg:py-(--spacing-4xl)">
+          <div className="mx-auto max-w-(--container-2xl) px-6 sm:px-6 lg:px-20">
             <VehicleDetailsTabs
               features={features}
               featuresInitialCount={featuresInitialCount}
@@ -61,6 +58,8 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
               pricingData={pricing}
               showInspectionSection={true}
               specs={specs}
+              vehicle={vehicleInfo}
+              vehicleStatus={activeVehicleStatus}
             />
 
             {/* Rating Section */}
@@ -69,26 +68,19 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
                 distribution={rating.distribution}
                 rating={rating.rating}
                 reviewCount={rating.reviewCount}
-                title={`${vehicle.year} ${capitalize(vehicle.make)} ${capitalize(vehicle.model)} ${vehicle.trimSlug?.toUpperCase()}`}
+                title={vehicleInfo.title ?? ""}
               />
             </div>
 
             {/* Dealer Notes Section */}
             <div className="mt-6">
-              <DealerNotesSection
-                onReviewsClick={() => {
-                  // TODO: implement reviews navigation
-                }}
-                onTestDriveClick={() => {
-                  // TODO: implement test drive scheduling
-                }}
-              />
+              <DealerNotesSection />
             </div>
           </div>
         </div>
 
         {/* Dealer Info Section - white background, no gap before footer */}
-        <div className="mx-auto max-w-[var(--container-2xl)] px-6 sm:px-6 lg:px-[var(--spacing-4xl)]">
+        <div className="mx-auto max-w-(--container-2xl) px-6 sm:px-6 lg:px-(--spacing-4xl)">
           <DealerInfoCard
             dealer={sampleDealerNotes.dealer}
             onReviewsClick={() => {

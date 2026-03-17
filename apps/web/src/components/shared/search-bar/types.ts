@@ -2,6 +2,7 @@
  * TypeScript interfaces for the unified search component
  * @module search-bar/types
  */
+import type { ReactNode } from "react";
 
 /**
  * Configuration options for the SearchBar component
@@ -33,6 +34,9 @@ export interface SearchBarConfig {
 
   /** Custom placeholder text */
   placeholder?: string;
+
+  /** Custom placeholder node for styled/rich placeholder content (e.g. partial bold) */
+  customPlaceholder?: ReactNode;
 
   /** Show search button (desktop: "Search" text, mobile: icon) */
   showSearchButton?: boolean;

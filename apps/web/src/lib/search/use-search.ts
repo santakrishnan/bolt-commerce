@@ -22,6 +22,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { ARROW_HEADER } from "~/lib/arrow/constants";
+import { API_ROUTES } from "~/lib/routes/constants";
 import type { SearchPagination, SearchQuery, SearchResult, SearchVehicle } from "~/services/search";
 
 // ─── State ──────────────────────────────────────────────────────────────────
@@ -105,7 +106,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
     sessionId,
     fingerprintId,
     profileId,
-    endpoint = "/api/search",
+    endpoint = API_ROUTES.SEARCH,
     initialQuery = {},
   } = options;
 

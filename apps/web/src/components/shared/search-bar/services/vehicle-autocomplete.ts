@@ -3,32 +3,8 @@
  * @module search-bar/services/vehicle-autocomplete
  */
 
+import type { Vehicle } from "~/components/shared/types";
 import type { AutocompleteService, Suggestion } from "../types";
-
-/**
- * Vehicle interface matching the structure from mock-vehicles.ts
- */
-export interface Vehicle {
-  id: number;
-  title: string;
-  make: string;
-  model: string;
-  variant: string;
-  year: number;
-  vin: string;
-  price: number;
-  oldPrice?: number;
-  image: string | string[];
-  miles: string;
-  odometer: string;
-  match: number;
-  labels: string[];
-  owners: number;
-  extColorName: string;
-  extColorCode: string;
-  intColorName: string;
-  intColorCode: string;
-}
 
 /**
  * Production implementation of AutocompleteService using vehicle data.

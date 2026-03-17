@@ -1,10 +1,11 @@
 "use client";
 
-import { cn } from "@tfs-ucmp/ui";
+import { cn, Heading } from "@tfs-ucmp/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useEventTracking } from "~/lib/arrow";
 import type { VehicleType } from "~/lib/data";
+import { ROUTES } from "~/lib/routes/constants";
 import { VehicleTypeCard } from "./vehicle-type-card";
 
 export interface VehicleTypeSelectorProps {
@@ -35,7 +36,7 @@ export function VehicleTypeSelector({
       section: "landing_vehicle_type_selector",
     });
 
-    router.push(`/used-cars/${vehicleId}`);
+    router.push(`${ROUTES.USED_CARS}?q=${vehicleId}`);
   };
 
   return (
@@ -46,9 +47,13 @@ export function VehicleTypeSelector({
       )}
     >
       <div className="container mx-auto w-full max-w-[var(--container-2xl)]">
-        <h2 className="mb-[var(--spacing-lg)] text-center font-semibold text-[length:var(--font-size-xl)] text-foreground sm:mb-[var(--spacing-xl)] lg:text-[length:var(--font-size-2xl)]">
+        <Heading
+          className="mb-[var(--spacing-lg)] text-center text-[length:var(--font-size-xl)] text-foreground sm:mb-[var(--spacing-xl)] md:text-[length:var(--font-size-xl)] lg:text-[length:var(--font-size-2xl)]"
+          level={2}
+          weight="semibold"
+        >
           What type of vehicle?
-        </h2>
+        </Heading>
         <div className="grid grid-cols-2 gap-[var(--spacing-sm)] lg:grid-cols-4">
           {vehicleTypes.map((vehicle) => (
             <VehicleTypeCard

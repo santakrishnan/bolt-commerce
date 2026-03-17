@@ -178,23 +178,19 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   /**
    * Handle search submission
    * - Call onSubmit callback
-   * - Add to search history if enabled
+   * - Add to search history if enabled (only for non-empty queries)
    * - Close suggestions
    */
   const handleSubmit = useCallback(() => {
-    if (!value.trim()) {
-      return;
-    }
-
-    // Add to search history if enabled
-    if (config.enableSearchHistory) {
+    // Add to search history if enabled and query is non-empty
+    if (config.enableSearchHistory && value.trim()) {
       addSearch(value, `/search?q=${encodeURIComponent(value)}`, "nlp");
     }
 
     // Close suggestions
     closeSuggestions();
 
-    // Call parent's onSubmit
+    // Call parent's onSubmit (allow empty submissions)
     onSubmit();
   }, [value, config.enableSearchHistory, addSearch, closeSuggestions, onSubmit]);
 
@@ -316,6 +312,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           ariaActiveDescendant={activeDescendantId}
           ariaControls={suggestionsId}
           ariaExpanded={showSuggestions}
+          customPlaceholder={config.customPlaceholder}
           enableVoiceRecognition={config.enableVoiceRecognition}
           inputRef={inputRef as React.RefObject<HTMLInputElement>}
           isListening={isListening}
@@ -352,7 +349,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
       {/* Dropdown suggestions (below input) */}
       {config.displayMode === "dropdown" && showSuggestions && (
-        <div className="absolute top-full right-0 left-0 z-50">
+        <div className="absolute top-1/2 right-0 left-0 z-40">
           <SuggestionDisplay
             isAnimating={isAnimating}
             mode="dropdown"

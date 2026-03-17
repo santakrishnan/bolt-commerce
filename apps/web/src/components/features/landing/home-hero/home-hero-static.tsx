@@ -28,8 +28,8 @@ export function HomeHeroStatic({
       className={cn(
         "absolute inset-0",
         effectiveKnownUser
-          ? "bg-[var(--color-inverse-background)] lg:bg-transparent"
-          : "bg-[var(--color-inverse-background)] md:bg-transparent"
+          ? "bg-[var(--color-inverse-background)]"
+          : "bg-[var(--color-inverse-background)]"
       )}
     >
       <div className="absolute inset-0 h-full w-full">
@@ -55,6 +55,7 @@ export function HomeHeroStatic({
               alt="Hero background"
               className="object-cover object-top"
               fill
+              priority
               sizes="100vw"
               src={activeMobileBg}
             />
@@ -76,6 +77,7 @@ export function HomeHeroStatic({
               effectiveKnownUser ? "lg:block" : "md:block"
             )}
             fill
+            priority
             sizes="100vw"
             src={activeBg}
           />

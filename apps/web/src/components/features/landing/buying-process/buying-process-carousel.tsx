@@ -1,11 +1,12 @@
 "use client";
 
-import { Card, CardContent, cn } from "@tfs-ucmp/ui";
+import { Card, CardContent, cn, Heading } from "@tfs-ucmp/ui";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ROUTES } from "~/lib/routes/constants";
 import config from "./buying-process-config.json";
 import { getCarouselTransform } from "./carousel-transform";
 import type { ProcessStep } from "./types";
@@ -110,20 +111,30 @@ export function BuyingProcessCarousel({ steps }: BuyingProcessCarouselProps): Re
                           width={36}
                         />
                       </div>
-                      <h3 className="mb-[var(--spacing-sm)] font-semibold text-[var(--color-core-surfaces-foreground)] text-base">
+                      <Heading
+                        className="mb-[var(--spacing-sm)] text-[var(--color-core-surfaces-foreground)] text-base md:text-base"
+                        level={3}
+                        weight="semibold"
+                      >
                         {step.title}
-                      </h3>
+                      </Heading>
                       <p className="text-[length:var(--font-size-sm)] text-[var(--color-core-surfaces-foreground)] leading-relaxed">
                         {step.description}
                       </p>
-                      {step.linkText && step.linkHref && (
-                        <Link
-                          className="mt-auto pt-[var(--spacing-sm)] font-semibold text-[length:var(--font-size-sm)] text-primary underline underline-offset-4 hover:text-primary-hover"
-                          href={step.linkHref}
-                        >
-                          {step.linkText}
-                        </Link>
-                      )}
+                      {step.linkText &&
+                        step.linkHref &&
+                        (() => {
+                          const href =
+                            step.linkHref === "/used-cars" ? ROUTES.USED_CARS : step.linkHref;
+                          return (
+                            <Link
+                              className="mt-auto pt-[var(--spacing-sm)] font-semibold text-[length:var(--font-size-sm)] text-primary underline underline-offset-4 hover:text-primary-hover"
+                              href={href}
+                            >
+                              {step.linkText}
+                            </Link>
+                          );
+                        })()}
                     </CardContent>
                   </Card>
                 </div>

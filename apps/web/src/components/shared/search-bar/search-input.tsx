@@ -3,11 +3,10 @@
  * Handles keyboard events and applies conditional styling
  * @module search-bar/search-input
  */
-
-import { Button } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import type React from "react";
 import { cn } from "@/lib/utils";
+import { AppButton } from "../button";
 
 /**
  * Props for the SearchInput component
@@ -33,6 +32,9 @@ export interface SearchInputProps {
 
   /** Placeholder text */
   placeholder?: string;
+
+  /** Custom placeholder node for styled/rich placeholder content (e.g. partial bold) */
+  customPlaceholder?: React.ReactNode;
 
   /** Whether suggestions are currently open */
   suggestionsOpen: boolean;
@@ -102,6 +104,9 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onArrowDown,
   onArrowUp,
   placeholder = "Try: SUV under 35k with heated seats near San Francisco",
+  customPlaceholder,
+  suggestionsOpen: _suggestionsOpen,
+  keepRounded: _keepRounded = false,
   withBorder = false,
   enableVoiceRecognition = true,
   isListening = false,
@@ -174,31 +179,41 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       />
 
       {/* Input field */}
-      <input
-        aria-activedescendant={ariaActiveDescendant}
-        aria-autocomplete="list"
-        aria-controls={ariaControls}
-        aria-expanded={ariaExpanded ?? false}
-        aria-label="Search for vehicles"
-        autoComplete="off"
-        className={cn(
-          // Base styles
-          "flex-1 bg-transparent outline-none",
-          // Text styles
-          "text-[length:var(--font-size-sm)]",
-          "font-[var(--font-family)]",
-          "text-[var(--color-core-surfaces-foreground)]",
-          // Placeholder styles
-          "placeholder:text-[var(--color-core-surfaces-foreground-muted)]"
+      <div className="relative flex-1">
+        {customPlaceholder && !value && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 left-0 flex items-center font-[var(--font-family)] text-[length:var(--font-size-sm)] text-[var(--color-core-surfaces-foreground-muted)]"
+          >
+            <span>{customPlaceholder}</span>
+          </div>
         )}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        ref={inputRef}
-        role="combobox"
-        type="text"
-        value={value}
-      />
+        <input
+          aria-activedescendant={ariaActiveDescendant}
+          aria-autocomplete="list"
+          aria-controls={ariaControls}
+          aria-expanded={ariaExpanded ?? false}
+          aria-label="Search for vehicles"
+          autoComplete="off"
+          className={cn(
+            // Base styles
+            "w-full bg-transparent outline-none",
+            // Text styles
+            "text-[length:var(--font-size-sm)]",
+            "font-[var(--font-family)]",
+            "text-[var(--color-core-surfaces-foreground)]",
+            // Placeholder styles (only when no customPlaceholder)
+            !customPlaceholder && "placeholder:text-[var(--color-core-surfaces-foreground-muted)]"
+          )}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={customPlaceholder ? undefined : placeholder}
+          ref={inputRef}
+          role="combobox"
+          type="text"
+          value={value}
+        />
+      </div>
 
       {/* Voice button (microphone) */}
       {enableVoiceRecognition && (
@@ -233,20 +248,22 @@ export const SearchInput: React.FC<SearchInputProps> = ({
       {showSearchButton && (
         <>
           {/* Desktop: Text button */}
-          <Button
-            className="hidden h-[var(--spacing-10)] w-[var(--spacing-5xl)] cursor-pointer rounded-full bg-[var(--color-brand-red)] text-[length:var(--font-size-sm)] text-[var(--color-actions-primary-foreground)] transition-colors hover:bg-red-600 lg:block"
+          <AppButton
+            className="hidden h-[var(--spacing-10)] w-[var(--spacing-5xl)] text-[length:var(--font-size-sm)] text-[var(--color-actions-primary-foreground)] transition-colors lg:block"
             onClick={onSubmit}
+            size="sm"
             type="button"
-            variant="search"
+            variant="primary"
           >
             Search
-          </Button>
+          </AppButton>
           {/* Mobile: Icon button */}
-          <Button
+          <AppButton
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-red)] p-xs lg:hidden"
             onClick={onSubmit}
+            size="xs"
             type="button"
-            variant="search"
+            variant="primary"
           >
             <Image
               alt="Search"
@@ -255,7 +272,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
               src="/images/search/vlp_search.svg"
               width={16}
             />
-          </Button>
+          </AppButton>
         </>
       )}
     </div>

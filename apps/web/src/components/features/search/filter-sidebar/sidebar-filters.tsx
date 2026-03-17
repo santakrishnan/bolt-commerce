@@ -1,10 +1,41 @@
 "use client";
 
-import { ColorSwatch } from "~/components/shared/color-swatch";
+import { colorMap } from "~/components/shared/color-swatch";
+import type { CustomChipType } from "~/components/shared/custom-chips";
+import { CustomChips } from "~/components/shared/custom-chips";
 import { filterSections } from "~/lib/search/filter-sections";
-import { FilterChip } from "./filter-chip";
+import type { FacetCounts } from "~/lib/search/mock-search-service";
 import { FilterSection } from "./filter-section";
-import type { FilterState } from "./types";
+import type { AvailableFilters, FilterState } from "./types";
+
+function resolveChipType(
+  isSelected: boolean,
+  staticAvailable: boolean,
+  dynamicAvailable?: boolean
+): CustomChipType {
+  const available = dynamicAvailable === undefined ? staticAvailable : dynamicAvailable;
+  if (!available) {
+    return "unavailable";
+  }
+  return isSelected ? "selected" : "unselected";
+}
+
+/** Derive chip availability for a fuel label (e.g. "Hybrid (Hybrid)") */
+function fuelChipAvailable(label: string, availableFuels?: string[]): boolean | undefined {
+  if (!availableFuels) {
+    return undefined;
+  }
+  const key = label.split(" (")[0] ?? label;
+  return availableFuels.includes(key);
+}
+
+/** Generic chip availability helper */
+function chipAvail(label: string, list?: string[]): boolean | undefined {
+  if (!list) {
+    return undefined;
+  }
+  return list.some((l) => l.toLowerCase() === label.toLowerCase());
+}
 
 interface SidebarFiltersProps {
   draftState: FilterState;
@@ -16,6 +47,14 @@ interface SidebarFiltersProps {
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
   scrollInfo: { thumbTop: number; thumbHeight: number };
   handleScroll: () => void;
+  /** Dynamic chip availability returned by the last search response */
+  availableFilters?: AvailableFilters;
+  /**
+   * Per-dimension vehicle counts — use to render count badges on chips,
+   * e.g. "Sedan (12)". Resolve display labels via the bucket label maps
+   * exported from mock-search-service.
+   */
+  facetCounts?: FacetCounts;
 }
 
 /**
@@ -32,6 +71,8 @@ export function SidebarFilters({
   scrollContainerRef,
   scrollInfo,
   handleScroll,
+  availableFilters,
+  facetCounts: _facetCounts,
 }: SidebarFiltersProps) {
   const {
     selectedPriceQuick,
@@ -102,7 +143,7 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {filterSections.price.quickRanges.map((range) => (
-                    <FilterChip
+                    <CustomChips
                       key={range}
                       label={range}
                       onClick={() =>
@@ -111,7 +152,7 @@ export function SidebarFilters({
                           range === selectedPriceQuick ? "" : range
                         )
                       }
-                      selected={selectedPriceQuick === range}
+                      type={selectedPriceQuick === range ? "selected" : "unselected"}
                     />
                   ))}
                 </div>
@@ -152,7 +193,7 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {filterSections.year.popularRanges.map((range) => (
-                    <FilterChip
+                    <CustomChips
                       key={range}
                       label={range}
                       onClick={() =>
@@ -161,7 +202,7 @@ export function SidebarFilters({
                           range === selectedYearQuick ? "" : range
                         )
                       }
-                      selected={selectedYearQuick === range}
+                      type={selectedYearQuick === range ? "selected" : "unselected"}
                     />
                   ))}
                 </div>
@@ -208,7 +249,7 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {filterSections.mileage.quickFilters.map((filter) => (
-                    <FilterChip
+                    <CustomChips
                       key={filter}
                       label={filter}
                       onClick={() =>
@@ -217,7 +258,7 @@ export function SidebarFilters({
                           filter === selectedMileage ? "" : filter
                         )
                       }
-                      selected={selectedMileage === filter}
+                      type={selectedMileage === filter ? "selected" : "unselected"}
                     />
                   ))}
                 </div>
@@ -239,14 +280,18 @@ export function SidebarFilters({
                 Select all body styles that match your needs
               </div>
               <div className="flex flex-wrap gap-2">
-                {filterSections.bodyStyle.map((style) => (
-                  <FilterChip
-                    key={style}
-                    label={style}
+                {filterSections.bodyStyle.map((label) => (
+                  <CustomChips
+                    key={label}
+                    label={label}
                     onClick={() =>
-                      toggleArrayFilter("selectedBodyStyles", selectedBodyStyles, style)
+                      toggleArrayFilter("selectedBodyStyles", selectedBodyStyles, label)
                     }
-                    selected={selectedBodyStyles.includes(style)}
+                    type={resolveChipType(
+                      selectedBodyStyles.includes(label),
+                      true,
+                      chipAvail(label, availableFilters?.bodyStyles)
+                    )}
                   />
                 ))}
               </div>
@@ -268,14 +313,23 @@ export function SidebarFilters({
               </div>
               <div className="flex flex-wrap gap-2 gap-y-4">
                 {filterSections.exteriorColors.map((color) => (
-                  <ColorSwatch
-                    color={color}
+                  <CustomChips
+                    className="pl-[var(--spacing-2xs)]"
                     key={color}
                     label={color}
                     onClick={() =>
                       toggleArrayFilter("selectedExteriorColors", selectedExteriorColors, color)
                     }
-                    selected={selectedExteriorColors.includes(color)}
+                    prefix={
+                      <span
+                        className={`h-5 w-5 shrink-0 rounded-full ${colorMap[color] ?? "bg-gray-400"}`}
+                      />
+                    }
+                    type={resolveChipType(
+                      selectedExteriorColors.includes(color),
+                      true,
+                      chipAvail(color, availableFilters?.exteriorColors)
+                    )}
                   />
                 ))}
               </div>
@@ -297,14 +351,23 @@ export function SidebarFilters({
               </div>
               <div className="flex flex-wrap gap-2 gap-y-4">
                 {filterSections.interiorColors.map((color) => (
-                  <ColorSwatch
-                    color={color}
+                  <CustomChips
+                    className="pl-[var(--spacing-2xs)]"
                     key={color}
                     label={color}
                     onClick={() =>
                       toggleArrayFilter("selectedInteriorColors", selectedInteriorColors, color)
                     }
-                    selected={selectedInteriorColors.includes(color)}
+                    prefix={
+                      <span
+                        className={`h-5 w-5 shrink-0 rounded-full ${colorMap[color] ?? "bg-gray-400"}`}
+                      />
+                    }
+                    type={resolveChipType(
+                      selectedInteriorColors.includes(color),
+                      true,
+                      chipAvail(color, availableFilters?.interiorColors)
+                    )}
                   />
                 ))}
               </div>
@@ -322,7 +385,7 @@ export function SidebarFilters({
           >
             <div className="space-y-3">
               <input
-                className="h-[48px] w-[675px] rounded-[8px] border border-[#F8F8F8] bg-[#F8F8F8] px-3 py-2 font-normal text-[#000] text-[16px] leading-normal"
+                className="h-[48px] w-[100%] rounded-[var(--spacing-xs)] border border-[var(--color-brand-surface)] bg-[var(--color-brand-surface)] px-3 py-2 font-normal text-[length:var(--text-md)] text-[var(--color-brand-text-primary)] leading-normal"
                 placeholder={filterSections.makeModelSearchPlaceholder}
                 type="text"
               />
@@ -332,11 +395,21 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2 gap-y-4">
                   {filterSections.popularModels.slice(0, 18).map((model) => (
-                    <FilterChip
+                    <CustomChips
                       key={model}
                       label={model}
                       onClick={() => toggleArrayFilter("selectedModels", selectedModels, model)}
-                      selected={selectedModels.includes(model)}
+                      type={resolveChipType(
+                        selectedModels.includes(model),
+                        true,
+                        availableFilters
+                          ? availableFilters.models.some(
+                              (m) =>
+                                m.toLowerCase().includes(model.toLowerCase()) ||
+                                model.toLowerCase().includes(m.toLowerCase())
+                            )
+                          : undefined
+                      )}
                     />
                   ))}
                 </div>
@@ -358,12 +431,16 @@ export function SidebarFilters({
                 Select acceptable fuel types
               </div>
               <div className="flex flex-wrap gap-2 gap-y-4">
-                {filterSections.fuelTypes.map((type) => (
-                  <FilterChip
-                    key={type}
-                    label={type}
-                    onClick={() => toggleArrayFilter("selectedFuelTypes", selectedFuelTypes, type)}
-                    selected={selectedFuelTypes.includes(type)}
+                {filterSections.fuelTypes.map((label) => (
+                  <CustomChips
+                    key={label}
+                    label={label}
+                    onClick={() => toggleArrayFilter("selectedFuelTypes", selectedFuelTypes, label)}
+                    type={resolveChipType(
+                      selectedFuelTypes.includes(label),
+                      true,
+                      fuelChipAvailable(label, availableFilters?.fuelTypes)
+                    )}
                   />
                 ))}
               </div>
@@ -389,13 +466,17 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2 gap-y-4">
                   {filterSections.safetyFeatures.map((f) => (
-                    <FilterChip
+                    <CustomChips
                       key={f}
                       label={f}
                       onClick={() =>
                         toggleArrayFilter("selectedSafetyFeatures", selectedSafetyFeatures, f)
                       }
-                      selected={selectedSafetyFeatures.includes(f)}
+                      type={resolveChipType(
+                        selectedSafetyFeatures.includes(f),
+                        true,
+                        chipAvail(f, availableFilters?.safetyFeatures)
+                      )}
                     />
                   ))}
                 </div>
@@ -406,13 +487,17 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2 gap-y-4">
                   {filterSections.comfortFeatures.map((f) => (
-                    <FilterChip
+                    <CustomChips
                       key={f}
                       label={f}
                       onClick={() =>
                         toggleArrayFilter("selectedComfortFeatures", selectedComfortFeatures, f)
                       }
-                      selected={selectedComfortFeatures.includes(f)}
+                      type={resolveChipType(
+                        selectedComfortFeatures.includes(f),
+                        true,
+                        chipAvail(f, availableFilters?.comfortFeatures)
+                      )}
                     />
                   ))}
                 </div>
@@ -423,13 +508,17 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2 gap-y-4">
                   {filterSections.techFeatures.map((f) => (
-                    <FilterChip
+                    <CustomChips
                       key={f}
                       label={f}
                       onClick={() =>
                         toggleArrayFilter("selectedTechFeatures", selectedTechFeatures, f)
                       }
-                      selected={selectedTechFeatures.includes(f)}
+                      type={resolveChipType(
+                        selectedTechFeatures.includes(f),
+                        true,
+                        chipAvail(f, availableFilters?.techFeatures)
+                      )}
                     />
                   ))}
                 </div>
@@ -440,13 +529,17 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {filterSections.exteriorFeatures.map((f) => (
-                    <FilterChip
+                    <CustomChips
                       key={f}
                       label={f}
                       onClick={() =>
                         toggleArrayFilter("selectedExteriorFeatures", selectedExteriorFeatures, f)
                       }
-                      selected={selectedExteriorFeatures.includes(f)}
+                      type={resolveChipType(
+                        selectedExteriorFeatures.includes(f),
+                        true,
+                        chipAvail(f, availableFilters?.exteriorFeatures)
+                      )}
                     />
                   ))}
                 </div>
@@ -457,7 +550,7 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {filterSections.performanceFeatures.map((f) => (
-                    <FilterChip
+                    <CustomChips
                       key={f}
                       label={f}
                       onClick={() =>
@@ -467,7 +560,11 @@ export function SidebarFilters({
                           f
                         )
                       }
-                      selected={selectedPerformanceFeatures.includes(f)}
+                      type={resolveChipType(
+                        selectedPerformanceFeatures.includes(f),
+                        true,
+                        chipAvail(f, availableFilters?.performanceFeatures)
+                      )}
                     />
                   ))}
                 </div>
@@ -478,13 +575,17 @@ export function SidebarFilters({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {filterSections.seatingCapacity.map((f) => (
-                    <FilterChip
+                    <CustomChips
                       key={f}
                       label={f}
                       onClick={() =>
                         toggleArrayFilter("selectedSeatingCapacity", selectedSeatingCapacity, f)
                       }
-                      selected={selectedSeatingCapacity.includes(f)}
+                      type={resolveChipType(
+                        selectedSeatingCapacity.includes(f),
+                        true,
+                        chipAvail(f, availableFilters?.seatingCapacity)
+                      )}
                     />
                   ))}
                 </div>
@@ -535,11 +636,15 @@ export function SidebarFilters({
           >
             <div className="flex flex-wrap gap-2">
               {filterSections.drivetrains.map((dt) => (
-                <FilterChip
+                <CustomChips
                   key={dt}
                   label={dt}
                   onClick={() => toggleArrayFilter("selectedDrivetrains", selectedDrivetrains, dt)}
-                  selected={selectedDrivetrains.includes(dt)}
+                  type={resolveChipType(
+                    selectedDrivetrains.includes(dt),
+                    true,
+                    chipAvail(dt, availableFilters?.drivetrains)
+                  )}
                 />
               ))}
             </div>
@@ -556,13 +661,17 @@ export function SidebarFilters({
           >
             <div className="flex flex-wrap gap-2">
               {filterSections.transmissions.map((t) => (
-                <FilterChip
+                <CustomChips
                   key={t}
                   label={t}
                   onClick={() =>
                     toggleArrayFilter("selectedTransmissions", selectedTransmissions, t)
                   }
-                  selected={selectedTransmissions.includes(t)}
+                  type={resolveChipType(
+                    selectedTransmissions.includes(t),
+                    true,
+                    chipAvail(t, availableFilters?.transmissions)
+                  )}
                 />
               ))}
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, cn } from "@tfs-ucmp/ui";
+import { Card, CardContent, cn, Heading } from "@tfs-ucmp/ui";
 import { cva, type VariantProps } from "class-variance-authority";
 import Image from "next/image";
 
@@ -73,9 +73,13 @@ export function VehicleTypeCard({
           />
         </div>
 
-        <h3 className="mb-[var(--spacing-xs)] truncate text-center font-semibold text-[length:var(--font-size-md)] text-[var(--color-core-surfaces-foreground)] uppercase sm:text-[length:var(--font-size-xl)]">
+        <Heading
+          className="mb-[var(--spacing-xs)] truncate text-center text-[length:var(--font-size-md)] uppercase sm:text-[length:var(--font-size-xl)] md:text-[length:var(--font-size-xl)][var(--color-core-surfaces-foreground)]"
+          level={3}
+          weight="semibold"
+        >
           {name}
-        </h3>
+        </Heading>
 
         {description && (
           <p className="truncate text-center font-normal text-[length:var(--font-size-sm)] text-[var(--color-core-surfaces-foreground)] sm:text-[length:var(--font-size-sm)]">

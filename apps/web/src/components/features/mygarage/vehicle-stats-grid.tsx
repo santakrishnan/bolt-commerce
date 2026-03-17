@@ -1,3 +1,4 @@
+import { Heading } from "@tfs-ucmp/ui";
 import type React from "react";
 
 export interface VehicleStatCardProps {
@@ -40,7 +41,13 @@ export const VehicleStatsGrid: React.FC<VehicleStatsGridProps> = ({
   title = "Find your vehicle",
 }) => (
   <section className="flex w-full flex-col items-center px-2 py-8">
-    <h2 className="mb-6 text-center font-semibold text-2xl">{title}</h2>
+    <Heading
+      className="mb-6 text-center text-2xl md:text-2xl lg:text-[length:var(--text-2xl)]"
+      level={2}
+      weight="semibold"
+    >
+      {title}
+    </Heading>
     <div className="flex w-full max-w-6xl flex-row justify-center gap-4">
       {cards.map((card: VehicleStatCardProps, _idx: number) => (
         <VehicleStatCard key={card.title} {...card} />

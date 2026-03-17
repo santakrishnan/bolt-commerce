@@ -2,6 +2,7 @@
 
 import { useVisitorData } from "@fingerprintjs/fingerprintjs-pro-react";
 import { createContext, type ReactNode, use, useCallback, useEffect, useState } from "react";
+import { API_ROUTES } from "~/lib/routes/constants";
 import { extractSealedResult } from "./sdk-transforms";
 import type { FedFingerprintData, ProfileContextState, ProfileContextValue } from "./types";
 
@@ -95,7 +96,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
         hasSealedResult: !!sealedResult,
       });
 
-      const response = await fetch("/api/session", {
+      const response = await fetch(API_ROUTES.SESSION, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -155,7 +156,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
         // Step 1: Bootstrap — server checks cookies, returns FED data if valid
         log("Bootstrap: checking server cookies...");
 
-        const res = await fetch("/api/session", {
+        const res = await fetch(API_ROUTES.SESSION, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

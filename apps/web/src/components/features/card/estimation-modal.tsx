@@ -1,5 +1,10 @@
-import { Button } from "@tfs-ucmp/ui";
+"use client";
+
+import { Heading, Button as ShadcnButton } from "@tfs-ucmp/ui";
 import Image from "next/image";
+import { useState } from "react";
+import { AppButton } from "~/components/shared/button";
+import { useSingletonModal } from "~/hooks/use-single-modal";
 
 interface EstimationModalProps {
   creditScore: string;
@@ -7,6 +12,7 @@ interface EstimationModalProps {
   termLength: string;
   estimatedMonthlyPayment: string;
   onClose: () => void;
+  isOpen: boolean;
 }
 
 export default function EstimationModal({
@@ -15,27 +21,42 @@ export default function EstimationModal({
   termLength,
   estimatedMonthlyPayment,
   onClose,
+  isOpen,
 }: EstimationModalProps) {
+  const [isCloseHovered, setIsCloseHovered] = useState(false);
+
+  useSingletonModal("estimation-open", isOpen, onClose);
   return (
-    <div className="absolute inset-0 z-[30] flex flex-col overflow-hidden rounded-lg bg-white shadow-xl">
+    <div className="absolute inset-0 z-30 flex flex-col overflow-hidden rounded-lg bg-white shadow-xl">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3">
-        <h3 className="font-bold text-base">Summary</h3>
-        <Button
+        <Heading className="text-base md:text-base" level={3} weight="bold">
+          Summary
+        </Heading>
+        <ShadcnButton
           aria-label="Close"
-          className="flex h-8 items-center justify-center rounded-full px-2 text-[var(--color-brand-text)] underline transition-colors hover:bg-transparent hover:text-[var(--color-brand-text)]"
+          className="flex h-8 items-center justify-center rounded-full px-2 underline transition-colors hover:bg-transparent"
           onClick={onClose}
+          onMouseEnter={() => setIsCloseHovered(true)}
+          onMouseLeave={() => setIsCloseHovered(false)}
+          type="button"
           variant="ghost"
         >
-          <span className="mr-1 text-sm underline">Close</span>
+          <span
+            className={`mr-1 text-sm ${
+              isCloseHovered ? "text-muted-foreground" : "text-(--color-brand-text)"
+            }`}
+          >
+            Close
+          </span>
           <Image
             alt="Close"
-            className="mt-0.75 block"
+            className={`mt-0.75 block ${isCloseHovered ? "opacity-60" : "opacity-100"}`}
             height={7.15}
             src="/images/search/cross.svg"
             width={7.15}
           />
-        </Button>
+        </ShadcnButton>
       </div>
 
       <div className="h-px bg-black opacity-10" />
@@ -89,19 +110,18 @@ export default function EstimationModal({
 
       {/* Bottom Buttons */}
       <div className="flex gap-3 px-4 pt-2 pb-4">
-        <Button
-          className="flex-1 whitespace-nowrap rounded-md px-4 py-2.5 font-semibold text-sm"
-          variant="default"
+        <AppButton
+          className="flex-1 whitespace-nowrap px-4 py-2.5"
+          onClick={() => {
+            // TODO: wire up pre-qualification flow
+          }}
+          variant="primary"
         >
           Get Prequalified
-        </Button>
-        <Button
-          className="flex-1 rounded-lg px-4 py-2.5 font-semibold text-[var(--color-brand-text)] text-sm underline hover:bg-transparent hover:text-[var(--color-brand-text)]"
-          onClick={onClose}
-          variant="outline"
-        >
+        </AppButton>
+        <AppButton className="flex-1 px-4 py-2.5" onClick={onClose} variant="tertiary">
           Close
-        </Button>
+        </AppButton>
       </div>
     </div>
   );

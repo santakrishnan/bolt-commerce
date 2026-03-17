@@ -1,6 +1,12 @@
 "use client";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@tfs-ucmp/ui";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Heading,
+} from "@tfs-ucmp/ui";
 import Link from "next/link";
 import { footerSections } from "~/lib/data/footer/footer-links";
 
@@ -14,9 +20,13 @@ export function FooterNavigation() {
     <>
       {footerSections.map((section) => (
         <div className="hidden min-w-0 md:block" key={section.title}>
-          <h3 className="mb-4 font-bold font-toyota text-[var(--core-surfaces-inverse-foreground)] text-xl leading-6">
+          <Heading
+            className="mb-4 text-[var(--core-surfaces-inverse-foreground)] text-xl leading-6 md:text-xl"
+            level={3}
+            weight="bold"
+          >
             {section.title}
-          </h3>
+          </Heading>
           <ul className="space-y-3">
             {section.links.map((link) => (
               <li key={link.label}>

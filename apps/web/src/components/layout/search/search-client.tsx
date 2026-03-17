@@ -1,16 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import {
-  defaultFilterState,
-  FilterSidebar,
-  type FilterState,
-} from "~/components/features/search/filter-sidebar";
-import { SearchHero } from "~/components/features/search/search-hero";
-import { VehicleResults } from "~/components/features/search/vehicle-results";
-import { useSearchNavigation } from "~/hooks/use-search-navigation";
-import type { Vehicle } from "~/lib/search/data";
-
+// Progress bar animation helper
 function getProgressTransition(progress: number): string {
   if (progress === 100) {
     return "width 0.25s ease-in, opacity 0.4s ease 0.2s";
@@ -21,6 +11,18 @@ function getProgressTransition(progress: number): string {
   // Fast start → dramatic deceleration (NProgress-style crawl)
   return "width 1.5s cubic-bezier(0.05, 0.6, 0.1, 1), opacity 0.15s ease";
 }
+
+import { useRef } from "react";
+import {
+  defaultFilterState,
+  FilterSidebar,
+  type FilterState,
+} from "~/components/features/search/filter-sidebar";
+import { SearchHero } from "~/components/features/search/search-hero";
+import { VehicleResults } from "~/components/features/search/vehicle-results";
+import { useSearchNavigation } from "~/hooks/use-search-navigation";
+import type { Vehicle } from "~/lib/search/data";
+import { useSearchContext } from "./search-context";
 
 interface FilterPreset {
   selectedPriceQuick?: string;
@@ -36,57 +38,45 @@ interface SearchClientProps {
   initialFilterPreset?: FilterPreset;
 }
 
-// Regex for detecting numbers with K suffix (e.g., 35k)
-const NUMBER_WITH_K_REGEX = /^\d+k$/i;
-
-// Convert slugified query back to human-readable format
-// e.g., "suv-under-35k-with-low-miles" -> "SUV under 35K with Low Miles"
-function deslugify(slug: string): string {
-  if (!slug) {
-    return "";
-  }
-  return slug
-    .split("-")
-    .map((word) => {
-      // Capitalize common acronyms
-      const upper = word.toUpperCase();
-      if (["SUV", "AWD", "FWD", "RWD", "4WD"].includes(upper)) {
-        return upper;
-      }
-      // Handle numbers with K suffix (35k -> 35K)
-      if (NUMBER_WITH_K_REGEX.test(word)) {
-        return `${word.slice(0, -1)}K`;
-      }
-      // Capitalize first letter of other words
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-    .join(" ");
+function matchesTextQuery(vehicle: Vehicle, query: string): boolean {
+  return (
+    vehicle.title.toLowerCase().includes(query) ||
+    vehicle.miles.toLowerCase().includes(query) ||
+    vehicle.bodyType.toLowerCase().includes(query) ||
+    vehicle.labels.some((label) => label.toLowerCase().includes(query))
+  );
 }
 
-export function SearchClient({
-  vehicles,
-  initialBodyStyles = [],
-  initialSearchQuery = "",
-  initialFilterPreset,
-}: SearchClientProps) {
-  const { navigate } = useSearchNavigation({ mode: "replace", scroll: false });
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const [searchQuery, setSearchQuery] = useState(deslugify(initialSearchQuery));
-  const searchQueryRef = useRef(deslugify(initialSearchQuery));
-  // Background label filter — filters by vehicle.labels without touching the search box
-  const [labelFilter, setLabelFilter] = useState(initialFilterPreset?.labelFilter ?? "");
-  const [refineSearchFilters, setRefineSearchFilters] = useState<{ id: string; label: string }[]>(
-    []
-  );
-  const [progress, setProgress] = useState(0);
-  const [isProgressVisible, setIsProgressVisible] = useState(false);
+export function SearchClient({ vehicles }: SearchClientProps) {
+  const {
+    vehiclePool,
+    setVehiclePool,
+    filterState,
+    setFilterState,
+    searchQuery,
+    setSearchQuery,
+    searchQueryRef,
+    labelFilter,
+    setLabelFilter,
+    refineSearchFilters,
+    setRefineSearchFilters,
+    currentPage,
+    setCurrentPage,
+    progress,
+    setProgress,
+    isProgressVisible,
+    setIsProgressVisible,
+    isFilterOpen,
+    setIsFilterOpen,
+    availableFilters,
+    applyFiltersSearch,
+  } = useSearchContext();
+  const { navigate } = useSearchNavigation({ mode: "replace", scroll: false, recordHistory: true });
   const progressTimers = useRef<number[]>([]);
   const itemsPerPage = 12;
 
-  // Compute filtered vehicle count based on search query + background label filter
-  const filteredVehicles = vehicles.filter((vehicle) => {
+  // Compute filtered vehicle count based on search query + body styles + background label filter
+  const filteredVehicles = vehiclePool.filter((vehicle) => {
     // Background label filter (Excellent Deals / Price Drop)
     if (
       labelFilter &&
@@ -94,30 +84,56 @@ export function SearchClient({
     ) {
       return false;
     }
+    // Body style chip filter
+    if (
+      filterState.selectedBodyStyles.length > 0 &&
+      !filterState.selectedBodyStyles.some(
+        (s) => s.toLowerCase() === vehicle.bodyType.toLowerCase()
+      )
+    ) {
+      return false;
+    }
+    // Price quick filter — from "Cars Under $20,000" quick-link chip
+    if (filterState.selectedPriceQuick === "Cars Under $20,000" && vehicle.price >= 20_000) {
+      return false;
+    }
+    // Mileage quick filter — from "Low Miles" quick-link chip
+    if (filterState.selectedMileage === "Low Miles" && vehicle.mileage >= 20_000) {
+      return false;
+    }
     // User-typed search query
     if (!searchQuery.trim()) {
       return true;
     }
     const query = searchQuery.toLowerCase();
-    return (
-      vehicle.title.toLowerCase().includes(query) ||
-      vehicle.miles.toLowerCase().includes(query) ||
-      vehicle.labels.some((label) => label.toLowerCase().includes(query))
-    );
+
+    // ── Quick-finder preset queries ──────────────────────────────────────────
+    // These originate from VehicleQuickLinkCard and require semantic matching
+    // that cannot be satisfied by plain text search.
+    //   "Cars Under $20,000"  → filter by price < 20,000
+    //   "Shop Excellent Deals" → match the "Excellent Price" label
+    //   "Price Drop"           → falls through to standard label match below
+    //   "Low Miles"           → filter by mileage < 20,000
+    if (query === "cars under $20,000") {
+      return vehicle.price < 20_000;
+    }
+    if (query === "shop excellent deals") {
+      return vehicle.labels.some((l) => l.toLowerCase().includes("excellent price"));
+    }
+    if (query === "low miles") {
+      return vehicle.mileage < 20_000;
+    }
+
+    // Standard free-text search
+    return matchesTextQuery(vehicle, query);
   });
   const vehicleCount = filteredVehicles.length;
 
-  // Filter state — pre-populate body styles and any filter preset from URL
-  const [filterState, setFilterState] = useState<FilterState>({
-    ...defaultFilterState,
-    ...(initialBodyStyles.length > 0 ? { selectedBodyStyles: initialBodyStyles } : {}),
-    ...(initialFilterPreset?.selectedPriceQuick
-      ? { selectedPriceQuick: initialFilterPreset.selectedPriceQuick }
-      : {}),
-    ...(initialFilterPreset?.selectedMileage
-      ? { selectedMileage: initialFilterPreset.selectedMileage }
-      : {}),
-  });
+  // When no results match, fall back to showing all vehicles so the page
+  // never appears empty. The search query is cleared for VehicleResults so it
+  // doesn't re-apply the same filter and produce zero again.
+  const displayVehicles = filteredVehicles.length === 0 ? vehiclePool : filteredVehicles;
+  const displaySearchQuery = filteredVehicles.length === 0 ? "" : searchQuery;
 
   const handleFilterChange = (key: keyof FilterState, value: FilterState[keyof FilterState]) => {
     setFilterState((prev) => ({ ...prev, [key]: value }));
@@ -125,6 +141,8 @@ export function SearchClient({
 
   const handleApplyFilters = (newState: FilterState) => {
     setFilterState(newState);
+    // Fire mock search API and refresh vehiclePool + availableFilters
+    applyFiltersSearch(newState, { labelFilter });
   };
 
   // Helper to add single-value filters
@@ -174,9 +192,9 @@ export function SearchClient({
     if (labelFilter) {
       filters.push({ label: labelFilter, type: "label", value: labelFilter });
     }
-    // Refine search filters (red background badges)
+    // Refine search filters
     for (const rf of refineSearchFilters) {
-      filters.push({ label: rf.label, type: "refineSearch", value: rf.id, isRefineSearch: true });
+      filters.push({ label: rf.label, type: "refineSearch", value: rf.id });
     }
     return filters;
   };
@@ -286,61 +304,66 @@ export function SearchClient({
     }
   };
 
-  const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
   const resetFilters = () => {
-    setFilterState(defaultFilterState);
+    const reset = { ...filterState, ...defaultFilterState };
+    setFilterState(reset);
     setLabelFilter("");
     setRefineSearchFilters([]);
+    // Clear text query state so the reset truly clears all filters/search
+    setSearchQuery("");
+    searchQueryRef.current = "";
+    // Re-run search with cleared filters so vehiclePool + availableFilters update
+    applyFiltersSearch(defaultFilterState, { searchQuery: "" });
   };
 
   const applyRefineFilters = (filters: { id: string; label: string }[]) => {
     setRefineSearchFilters(filters);
+    // Trigger a search including the refine-modal feature selections
+    applyFiltersSearch(filterState, {
+      labelFilter,
+      refineFilters: filters,
+    });
   };
 
   const handleSearch = () => {
-    // Update URL with ?q= param — keeps it a soft replace so SearchClient doesn't remount
-    navigate(searchQueryRef.current);
-
+    setVehiclePool(vehicles);
     // Cancel any running animation
     for (const t of progressTimers.current) {
       clearTimeout(t);
     }
     progressTimers.current = [];
-    // Reset silently, then start YouTube-style sequence on next paint
     setIsProgressVisible(false);
     setProgress(0);
     progressTimers.current.push(
-      // Frame 1: bar appears at 0% (no transition yet)
       window.setTimeout(() => {
         setIsProgressVisible(true);
         setProgress(0);
       }, 16) as unknown as number,
-      // Frame 2: crawl to 78% via slow cubic-bezier (1.5 s)
       window.setTimeout(() => setProgress(78), 20) as unknown as number,
-      // Frame 3: snap to 100% after crawl has been running ~830 ms
       window.setTimeout(() => setProgress(100), 850) as unknown as number,
-      // Frame 4: fade out
-      window.setTimeout(() => setIsProgressVisible(false), 1100) as unknown as number,
-      // Frame 5: silent reset so next search starts clean
-      window.setTimeout(() => setProgress(0), 1550) as unknown as number
+      window.setTimeout(() => setIsProgressVisible(false), 1200) as unknown as number
     );
+    navigate(searchQueryRef.current);
   };
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 lg:px-0">
       <FilterSidebar
+        availableFilters={availableFilters}
         filterState={filterState}
         isOpen={isFilterOpen}
         onApply={handleApplyFilters}
         onClose={() => setIsFilterOpen(false)}
         onReset={resetFilters}
         vehicleCount={vehicleCount}
+        vehicles={vehicles}
+        searchQuery={searchQuery}
+        labelFilter={labelFilter}
+        refineFilters={refineSearchFilters}
       />
-
       <main className="relative flex-1 bg-gray-100">
         <SearchHero
           activeFilters={activeFilters}
-          isProgressVisible={isProgressVisible}
           onRemoveFilter={removeFilter}
           onReset={resetFilters}
           onSearch={() => {
@@ -351,20 +374,19 @@ export function SearchClient({
             searchQueryRef.current = q;
             setSearchQuery(q);
           }}
-          onToggleFilter={toggleFilter}
-          progress={progress}
           searchQuery={searchQuery}
           vehicleCount={vehicleCount}
+          vehiclesAvailable={vehicles.length}
         />
-
         <div className="mx-6 md:mx-0">
-          <div className="relative h-[1px] overflow-hidden bg-[var(--color-structure-interaction-subtle-border)]">
+          <div className="relative h-px overflow-hidden bg-(--color-structure-interaction-subtle-border)">
             <div
               aria-hidden
-              className="absolute top-0 left-0 h-full bg-actions-primary"
+              className="absolute top-0 left-0 h-full"
               style={{
                 width: `${progress}%`,
                 opacity: isProgressVisible ? 1 : 0,
+                background: "var(--primary)",
                 transition: getProgressTransition(progress),
               }}
             />
@@ -373,15 +395,14 @@ export function SearchClient({
         <VehicleResults
           activeFilters={activeFilters}
           currentPage={currentPage}
-          isProgressVisible={isProgressVisible}
           itemsPerPage={itemsPerPage}
           onApplyRefineFilters={applyRefineFilters}
           onPageChange={setCurrentPage}
           onRemoveFilter={removeFilter}
           onReset={resetFilters}
-          onToggleFilter={toggleFilter}
-          searchQuery={searchQuery}
-          vehicles={filteredVehicles}
+          onToggleFilter={() => setIsFilterOpen(true)}
+          searchQuery={displaySearchQuery}
+          vehicles={displayVehicles}
         />
       </main>
     </div>

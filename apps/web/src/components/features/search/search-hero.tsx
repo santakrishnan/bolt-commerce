@@ -1,12 +1,11 @@
 "use client";
-
-import { Button } from "@tfs-ucmp/ui";
+import { Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { XIcon } from "@/components/assets/icons";
-import { cn } from "@/lib/utils";
+import { AppButton } from "~/components/shared/button";
 import { SearchBar } from "~/components/shared/search-bar";
 import { MockAutocompleteService } from "~/components/shared/search-bar/services/mock-autocomplete";
+import { CustomChips } from "../../shared";
 import type { ActiveFilter } from "./vehicle-results";
 
 // Create autocomplete service instance
@@ -17,17 +16,6 @@ const autocompleteService = new MockAutocompleteService();
  * TODO: Replace with data fetched from API when available.
  */
 const MOCK_SUGGESTED_PILLS = ["Off-road", "Eco-friendly", "High safety rating", "Near me"];
-
-function getProgressTransition(p: number): string {
-  if (p === 100) {
-    return "width 0.25s ease-in, opacity 0.4s ease 0.2s";
-  }
-  if (p === 0) {
-    return "none";
-  }
-  // Fast start → dramatic deceleration (NProgress-style crawl)
-  return "width 1.5s cubic-bezier(0.05, 0.6, 0.1, 1), opacity 0.15s ease";
-}
 
 export interface SearchHeroProps {
   searchQuery: string;
@@ -40,8 +28,7 @@ export interface SearchHeroProps {
   onToggleFilter?: () => void;
   onReset?: () => void;
   vehicleCount?: number;
-  progress?: number;
-  isProgressVisible?: boolean;
+  vehiclesAvailable?: number;
   activeFilters: ActiveFilter[];
   onRemoveFilter: (type: string, value: string) => void;
   /** Suggested search pills shown below the input (will be fetched from API). Falls back to mock data. */
@@ -58,9 +45,8 @@ export function SearchHero({
   placeholder = "Try: 'SUV under 35k with heated seats near San Francisco",
   onToggleFilter,
   onReset,
-  vehicleCount = 0,
-  progress = 0,
-  isProgressVisible = false,
+  vehicleCount,
+  vehiclesAvailable,
   activeFilters,
   onRemoveFilter,
   suggestedPills = MOCK_SUGGESTED_PILLS,
@@ -102,19 +88,21 @@ export function SearchHero({
             {/* Left: Filter + Reset OR Vehicle count + Sort when filters applied */}
             {activeFilters.length > 0 ? (
               <div className="flex shrink-0 items-center gap-3">
-                <button
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-red-500 transition-colors"
+                <AppButton
+                  className="h-10 w-10"
                   onClick={onToggleFilter}
+                  size="xs"
                   type="button"
+                  variant="primary"
                 >
                   <Image
                     alt="Filter"
-                    className="h-4 w-4"
+                    className="h-4 w-4 max-w-none"
                     height={16}
                     src="/images/filter_one.svg"
                     width={16}
                   />
-                </button>
+                </AppButton>
                 <div className="flex flex-row items-center gap-3 md:flex-col md:items-start md:gap-0">
                   <div className="font-bold text-[#111] text-[12px] leading-normal md:text-[16px]">
                     {vehicleCount} vehicles found
@@ -141,31 +129,24 @@ export function SearchHero({
             ) : (
               <div className="flex shrink-0 items-center gap-2">
                 {onToggleFilter && (
-                  <Button
-                    className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full bg-[#EB0A1E] px-4 font-semibold text-[14px] text-white hover:bg-[#EB0A1E]/90"
+                  <AppButton
+                    className="px-[var(--spacing-md)]"
+                    icon={
+                      <Image
+                        alt="Filter"
+                        className="h-4 w-4"
+                        height={16}
+                        src="/images/filter_one.svg"
+                        width={16}
+                      />
+                    }
+                    iconPosition="left"
                     onClick={onToggleFilter}
-                    type="button"
-                    variant="ghost"
+                    size="md"
+                    variant="primary"
                   >
-                    <Image
-                      alt="Filter"
-                      className="h-4 w-4"
-                      height={16}
-                      src="/images/filter_one.svg"
-                      width={16}
-                    />
-                    <span>Filter and Sort</span>
-                  </Button>
-                )}
-                {onReset && (
-                  <Button
-                    className="inline-flex h-10 cursor-pointer items-center justify-center rounded-full bg-black px-6 font-semibold text-[14px] text-white hover:bg-black/80"
-                    onClick={onReset}
-                    type="button"
-                    variant="ghost"
-                  >
-                    Reset
-                  </Button>
+                    Filter and Sort
+                  </AppButton>
                 )}
               </div>
             )}
@@ -181,6 +162,8 @@ export function SearchHero({
                     withBorder: true,
                     placeholder,
                     showSearchButton: true,
+                    enableSearchHistory: false,
+                    quickFilters: suggestedPills,
                   }}
                   onOpenChange={(open) => {
                     setIsStickyDropdownOpen(open);
@@ -198,56 +181,22 @@ export function SearchHero({
               {activeFilters.length > 0 && (
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center justify-center gap-2 md:justify-end">
-                    {activeFilters.map((filter, idx) => (
-                      <div
-                        className={cn(
-                          "flex h-[var(--spacing-xl)] items-center gap-[var(--spacing-xs)] rounded-full border p-[var(--spacing-sm)] text-xs",
-                          filter.isRefineSearch
-                            ? "border-[var(--color-destructive)] bg-[var(--color-destructive)] text-[var(--color-destructive-foreground)]"
-                            : "border-[var(--color-states-muted)] bg-transparent text-black"
-                        )}
-                        key={`${filter.type}-${filter.value}-${idx}`}
-                      >
-                        <span>{filter.label}</span>
-                        <Button
-                          className={cn(
-                            "h-[var(--spacing-xs)] w-[var(--spacing-xs)] p-[0px] transition-colors hover:text-[var(--color-destructive)]",
-                            filter.isRefineSearch
-                              ? "text-[var(--color-destructive-foreground)]"
-                              : "text-black"
-                          )}
-                          onClick={() => onRemoveFilter(filter.type, filter.value)}
-                          type="button"
-                          variant="search"
-                        >
-                          <XIcon className="h-3 w-3" />
-                        </Button>
-                      </div>
+                    {activeFilters.map((filter) => (
+                      <CustomChips
+                        isRefineSearch={filter.isRefineSearch}
+                        key={`${filter.type}-${filter.value}`}
+                        label={filter.label}
+                        onRemove={() => onRemoveFilter(filter.type, filter.value)}
+                        type="applied"
+                      />
                     ))}
-                    <Button
-                      className="flex h-[var(--spacing-xl)] items-center justify-center gap-[var(--spacing-xs)] rounded-full bg-black px-[var(--spacing-lg)] text-center font-normal text-[var(--text-xs)] text-white leading-normal"
-                      onClick={onReset}
-                      type="button"
-                      variant="search"
-                    >
+                    <AppButton onClick={onReset} size="sm" type="button" variant="secondary">
                       Reset
-                    </Button>
+                    </AppButton>
                   </div>
                 </div>
               )}
             </div>
-          </div>
-          {/* Progress bar — bottom of sticky header */}
-          <div className="relative h-[1px] overflow-hidden bg-[var(--color-structure-interaction-subtle-border)]">
-            <div
-              aria-hidden
-              className="absolute top-0 left-0 h-full bg-[#EB0A1E]"
-              style={{
-                width: `${progress}%`,
-                opacity: isProgressVisible ? 1 : 0,
-                transition: getProgressTransition(progress),
-              }}
-            />
           </div>
         </div>
       )}
@@ -261,11 +210,15 @@ export function SearchHero({
             {/* Title */}
             {showTitle && (
               <div className="flex flex-col items-center justify-center text-center md:items-start md:justify-start md:text-left">
-                <h1 className="mb-6 font-bold text-[32px] text-brand-text uppercase leading-[56px] tracking-[-0.449px] md:mb-0">
+                <Heading
+                  className="mb-6 text-[32px] text-brand-text uppercase leading-[56px] tracking-[-0.449px] md:mb-0"
+                  level={1}
+                  weight="bold"
+                >
                   FIND YOUR NEXT CAR
-                </h1>
+                </Heading>
                 <p className="font-normal text-[15px] text-brand-text-primary leading-normal">
-                  1,784,503 Vehicles Available
+                  {vehiclesAvailable} Vehicles Available
                 </p>
               </div>
             )}

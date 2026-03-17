@@ -1,5 +1,6 @@
-import { Button } from "@tfs-ucmp/ui";
+import { Button, Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
+import { CustomBadge } from "~/components/shared/custom-badge";
 import type { CarCardProps } from "./car-card-types";
 
 interface CarCardContentProps {
@@ -50,9 +51,13 @@ export function CarCardContent({
       <div className="max-h-[71px]">
         {/* Car Name and Price */}
         <div className="flex items-start justify-between py-0">
-          <h3 className="max-w-[180px] overflow-hidden break-words font-bold text-[var(--color-card-title)] text-base leading-5.5">
+          <Heading
+            className="max-w-[180px] overflow-hidden break-words font-bold text-[var(--color-card-title)] text-base leading-5.5 md:text-base"
+            level={3}
+            weight="bold"
+          >
             {carName}
-          </h3>
+          </Heading>
           <div className="ml-2 flex flex-col items-end gap-2">
             {wasPrice ? (
               <span className="text-gray-400 text-xs">
@@ -143,10 +148,7 @@ export function CarCardContent({
       {/* Match Badge and Refine Search */}
       <div className="flex items-center justify-between">
         {matchPercentage && (
-          <div className="flex h-6 items-center justify-center gap-1.5 rounded bg-black px-2 py-1 pb-1.5">
-            <Image alt="Match star" height={13} src="/images/search/match-star.svg" width={14} />
-            <span className="font-semibold text-2xs text-white">{matchPercentage}% Match</span>
-          </div>
+          <CustomBadge matchPercentage={Number(matchPercentage)} type="matchingPercentage" />
         )}
         {/* stopPropagation prevents card click from opening VehiclePreviewModal */}
         <Button
@@ -193,24 +195,13 @@ export function CarCardContent({
       {/* Features */}
       <div className="flex items-center justify-between gap-3">
         {features.warranty && (
-          <div className="flex shrink-0 items-center gap-1">
-            <Image alt="Warranty" height={16} src="/images/garage/warranty.svg" width={12} />
-            <span className="whitespace-nowrap text-muted-foreground text-xs">Warranty</span>
-          </div>
+          <CustomBadge className="text-[length:var(--text-sm)]" text="Warranty" type="warranty" />
         )}
         {features.inspected && (
-          <div className="flex shrink-0 items-center gap-1">
-            <Image alt="Inspected" height={15} src="/images/garage/inspected.svg" width={15} />
-            <span className="whitespace-nowrap text-muted-foreground text-xs">Inspected</span>
-          </div>
+          <CustomBadge className="text-[length:var(--text-sm)]" text="Inspected" type="Inspected" />
         )}
-        {features.oneOwner && owners > 0 && (
-          <div className="flex shrink-0 items-center gap-1">
-            <Image alt="Owners" height={14} src="/images/garage/owners.svg" width={16} />
-            <span className="whitespace-nowrap text-muted-foreground text-xs">
-              {owners} Owner{owners > 1 ? "s" : ""}
-            </span>
-          </div>
+        {owners > 0 && (
+          <CustomBadge className="text-[length:var(--text-sm)]" ownerCount={owners} type="owner" />
         )}
       </div>
     </div>

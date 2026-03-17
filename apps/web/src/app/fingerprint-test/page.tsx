@@ -1,5 +1,6 @@
 "use client";
 
+import { Heading } from "@tfs-ucmp/ui";
 import { useArrow } from "~/lib/arrow";
 
 /**
@@ -71,7 +72,9 @@ export default function FingerprintTestPage() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-2 font-bold text-4xl text-gray-900">Arrow — Fingerprint Test</h1>
+        <Heading className="mb-2 text-4xl text-gray-900 md:text-4xl" level={1} weight="bold">
+          Arrow — Fingerprint Test
+        </Heading>
         <p className="mb-8 text-gray-500 text-sm">
           Data below is read from <code>useArrow()</code> — the filtered Arrow context layer,{" "}
           <em>not</em> the raw Fingerprint SDK.
@@ -94,7 +97,9 @@ export default function FingerprintTestPage() {
 
         {/* ── Tracking IDs ── */}
         <section className="mb-6 rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="mb-4 font-semibold text-gray-800 text-xl">Tracking IDs</h2>
+          <Heading className="mb-4 text-gray-800 text-xl md:text-xl" level={2} weight="semibold">
+            Tracking IDs
+          </Heading>
           <div className="space-y-3">
             {(
               [
@@ -118,7 +123,9 @@ export default function FingerprintTestPage() {
         {/* ── Identity ── */}
         {fingerprintData && (
           <section className="mb-6 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-4 font-semibold text-gray-800 text-xl">Identity</h2>
+            <Heading className="mb-4 text-gray-800 text-xl md:text-xl" level={2} weight="semibold">
+              Identity
+            </Heading>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
               <div>
                 <dt className="font-medium text-gray-500">Visitor ID</dt>
@@ -153,7 +160,9 @@ export default function FingerprintTestPage() {
         {/* ── Browser ── */}
         {fingerprintData?.browser && (
           <section className="mb-6 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-4 font-semibold text-gray-800 text-xl">Browser</h2>
+            <Heading className="mb-4 text-gray-800 text-xl md:text-xl" level={2} weight="semibold">
+              Browser
+            </Heading>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
               {(
                 [
@@ -182,7 +191,9 @@ export default function FingerprintTestPage() {
         {/* ── Geo ── */}
         {fingerprintData?.geo && (
           <section className="mb-6 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-4 font-semibold text-gray-800 text-xl">Geolocation</h2>
+            <Heading className="mb-4 text-gray-800 text-xl md:text-xl" level={2} weight="semibold">
+              Geolocation
+            </Heading>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
               {(
                 [
@@ -213,7 +224,9 @@ export default function FingerprintTestPage() {
         {/* ── Trust Signals ── */}
         {fingerprintData?.trust && (
           <section className="mb-6 rounded-lg bg-white p-6 shadow-sm">
-            <h2 className="mb-4 font-semibold text-gray-800 text-xl">Trust Signals</h2>
+            <Heading className="mb-4 text-gray-800 text-xl md:text-xl" level={2} weight="semibold">
+              Trust Signals
+            </Heading>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm sm:grid-cols-3">
               {fingerprintData.trust.bot !== undefined && (
                 <div>

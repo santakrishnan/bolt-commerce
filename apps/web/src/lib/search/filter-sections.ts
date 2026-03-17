@@ -28,6 +28,13 @@ export interface MileageFilter {
   maxDropdown: string[];
 }
 
+/** A chip option that may be marked unavailable (no inventory match) */
+// export interface ChipOption {
+//   label: string;
+//   /** When false the chip renders greyed-out and non-interactive */
+//   available: boolean;
+// }
+
 export interface FilterSections {
   price: PriceFilter;
   year: YearFilter;

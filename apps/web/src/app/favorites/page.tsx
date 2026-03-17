@@ -1,9 +1,11 @@
 "use client";
 
+import { Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
 import { useFavorites } from "~/components/providers/favorites-provider";
-import type { Vehicle } from "~/lib/search/mock-vehicles";
+import type { Vehicle } from "~/components/shared/types";
+import { buildUsedCarsPath, ROUTES } from "~/lib/routes";
 import { mockVehicles } from "~/lib/search/mock-vehicles";
 
 export default function FavoritesPage() {
@@ -17,7 +19,9 @@ export default function FavoritesPage() {
   return (
     <div className="mx-auto min-h-screen max-w-(--container-2xl) px-4 py-10 sm:px-6 lg:px-20">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-bold text-2xl">My Favorites ({vehicles.length})</h1>
+        <Heading className="text-2xl md:text-2xl" level={1} weight="bold">
+          My Favorites ({vehicles.length})
+        </Heading>
         {vehicles.length > 0 && (
           <button
             className="rounded-md border border-red-500 px-4 py-2 text-red-600 text-sm transition-colors hover:bg-red-50"
@@ -34,7 +38,7 @@ export default function FavoritesPage() {
           <p className="text-gray-500 text-lg">You haven&apos;t saved any vehicles yet.</p>
           <Link
             className="rounded-full bg-[#EB0A1E] px-6 py-3 font-semibold text-sm text-white transition-colors hover:bg-red-700"
-            href="/used-cars"
+            href={ROUTES.USED_CARS}
           >
             Browse Vehicles
           </Link>
@@ -69,7 +73,14 @@ export default function FavoritesPage() {
                 const imageUrl = Array.isArray(car.image) ? (car.image[0] ?? "") : car.image;
                 const vdpUrl =
                   car.make && car.model && car.variant && car.year && car.vin
-                    ? `/used-cars/details/${car.make}/${car.model}/${car.variant}/${car.year}/${car.vin}`
+                    ? buildUsedCarsPath({
+                        type: "details",
+                        make: car.make,
+                        model: car.model,
+                        trim: car.variant,
+                        year: car.year,
+                        vin: car.vin,
+                      })
                     : "#";
 
                 return (

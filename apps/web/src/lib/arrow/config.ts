@@ -7,6 +7,8 @@
  * Requirements: 1.3, 4.1, 6.2, 10.1, 10.2
  */
 
+import { API_ROUTES } from "~/lib/routes/constants";
+
 /**
  * Server-side configuration (not exposed to client)
  */
@@ -153,8 +155,8 @@ export function validateClientConfig(): ClientConfig {
   }
 
   return {
-    profileServiceUrl: profileServiceUrl || "/api/profile",
-    eventServiceUrl: eventServiceUrl || "/api/events",
+    profileServiceUrl: profileServiceUrl || API_ROUTES.PROFILE,
+    eventServiceUrl: eventServiceUrl || API_ROUTES.EVENTS,
   };
 }
 

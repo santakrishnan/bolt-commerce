@@ -49,7 +49,7 @@ export function HomeHero({
 
       <div
         className={cn(
-          "relative z-10 mx-auto flex max-w-[var(--container-2xl)] flex-col px-[var(--spacing-md)] py-[var(--spacing-md)] sm:px-[var(--spacing-lg)] md:justify-between lg:px-[var(--spacing-4xl)] lg:py-[var(--spacing-2xl)]",
+          "relative z-10 mx-auto flex max-w-[var(--container-2xl)] flex-col px-[var(--spacing-md)] py-[var(--spacing-md)] sm:px-[var(--spacing-lg)] md:justify-between lg:px-[var(--spacing-4xl)] lg:py-[var(--spacing-xl)]",
           heightClassName ? "h-full overflow-hidden" : defaultHeightClass
         )}
       >
@@ -57,7 +57,9 @@ export function HomeHero({
           <div
             className={cn(
               "w-full",
-              heightClassName ? "mt-auto" : "mt-[var(--spacing-5xl)] md:mt-auto"
+              heightClassName
+                ? "mt-auto flex flex-col md:mt-auto lg:mt-30"
+                : "mt-[var(--spacing-5xl)] md:mt-auto"
             )}
           >
             <HomeHeroKnownUserContent {...knownUser} />

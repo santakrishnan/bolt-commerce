@@ -12,9 +12,12 @@
 // ---------------------------------------------------------------------------
 
 export interface VehiclePreviewData {
+  /** Pre-built display title, e.g. "2023 Toyota Corolla Cross". When provided the modal renders it directly instead of assembling from parts. */
+  title?: string;
   year: number;
   make: string;
   model: string;
+  trim?: string;
   price: number;
   originalPrice: number;
   condition: string;
@@ -57,6 +60,7 @@ export const demoVehiclePreview: VehiclePreviewData = {
   year: 2023,
   make: "Toyota",
   model: "Highlander XLE",
+  trim: "XLE",
   price: 43_098,
   originalPrice: 35_900,
   condition: "Excellent Price",

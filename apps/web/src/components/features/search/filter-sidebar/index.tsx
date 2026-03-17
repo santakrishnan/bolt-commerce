@@ -1,13 +1,15 @@
 "use client";
 
 import { Button } from "@tfs-ucmp/ui";
+import {AppButton} from "~/components/shared/button";
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { computeAvailableFiltersSync } from "~/lib/search/mock-search-service";
 import { SidebarFilters } from "./sidebar-filters";
 import { SidebarNav } from "./sidebar-nav";
 import { defaultFilterState, type FilterSidebarProps, type FilterState } from "./types";
 
-export type { FilterSidebarProps, FilterState } from "./types";
+export type { AvailableFilters, FilterSidebarProps, FilterState } from "./types";
 export { defaultFilterState } from "./types";
 
 export function FilterSidebar({
@@ -16,6 +18,12 @@ export function FilterSidebar({
   filterState,
   onApply,
   onReset,
+  availableFilters,
+  facetCounts,
+  vehicles,
+  searchQuery,
+  labelFilter,
+  refineFilters,
 }: FilterSidebarProps) {
   // Draft state: tracks user selections inside the sidebar without propagating to parent
   const [draftState, setDraftState] = useState<FilterState>(filterState);
@@ -27,9 +35,25 @@ export function FilterSidebar({
     }
   }, [isOpen, filterState]);
 
-  const handleDraftChange = (key: keyof FilterState, value: FilterState[keyof FilterState]) => {
+  const handleDraftChange = useCallback((key: keyof FilterState, value: FilterState[keyof FilterState]) => {
     setDraftState((prev) => ({ ...prev, [key]: value }));
-  };
+  }, []);
+
+  /**
+   * Recompute available filter chips on every draft change so selecting one
+   * dimension (e.g. "Truck") instantly disables incompatible values in other
+   * dimensions (e.g. non-Gasoline fuel types) — without waiting for Apply.
+   *
+   * Falls back to the `availableFilters` prop when no vehicle list is provided.
+   */
+  const liveAvailableFilters = useMemo(() => {
+    if (!vehicles || vehicles.length === 0) return availableFilters;
+    return computeAvailableFiltersSync(vehicles, draftState, {
+      searchQuery,
+      labelFilter,
+      refineFilters,
+    }).availableFilters;
+  }, [vehicles, draftState, availableFilters, searchQuery, labelFilter, refineFilters]);
 
   // Track which section is open (null = all closed, string = section title)
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -139,22 +163,20 @@ export function FilterSidebar({
               </span>
             </div>
             <div className="flex flex-row items-center gap-2.5">
-              <Button
-                className="text-(length:--font-size-sm) flex h-[var(--spacing-10)] items-center justify-center rounded-full bg-[var(--color-brand-red)] px-[var(--spacing-xl)] py-0 text-center font-semibold text-white leading-normal"
+              <AppButton
                 onClick={handleApply}
-                type="button"
-                variant="search"
+                variant="primary"
+                size="sm"
               >
                 Apply
-              </Button>
-              <Button
-                className="text-(length:--font-size-sm) flex h-[var(--spacing-10)] cursor-pointer items-center justify-center rounded-full bg-[var(--color-brand-text-primary)] px-[var(--spacing-xl)] py-0 text-center font-semibold text-white leading-normal"
+              </AppButton>
+              <AppButton
                 onClick={handleReset}
-                type="button"
-                variant="search"
+                variant="secondary"
+                size="sm"
               >
                 Reset
-              </Button>
+              </AppButton>
             </div>
           </div>
           <Button
@@ -178,6 +200,8 @@ export function FilterSidebar({
           <SidebarNav onToggleSection={toggleSection} openSection={openSection} />
 
           <SidebarFilters
+            availableFilters={liveAvailableFilters}
+            facetCounts={facetCounts}
             draftState={draftState}
             handleDraftChange={handleDraftChange}
             handleScroll={handleScroll}

@@ -1,22 +1,26 @@
-import { useCallback, useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
 import {
   addSearchEntry,
   clearSearchHistory,
-  getSearchHistory,
+  getAllSearchHistory,
   removeSearchEntry,
-} from "~/lib/search-history-storage";
+  type SearchEntry,
+} from "~/services/search-history-api";
 import type { SearchHistoryEntry, Suggestion, UseSearchHistoryReturn } from "../types";
 
+// Shared query key — must match the one in SearchHistoryProvider so both
+// the provider context and the search-bar hook read from the same cache.
+const SEARCH_HISTORY_KEY = ["search-history"] as const;
+
 /**
- * Hook for managing search history with cookie-based persistence
+ * Hook for managing search history backed by the mock API + TanStack Query.
  *
  * Features:
- * - Loads history from cookies on mount
- * - Provides methods to add, remove, and clear history
- * - Converts history entries to Suggestion format
- * - Automatically enforces 10-entry FIFO limit (handled by storage layer)
- *
- * @returns Search history state and methods
+ * - Shares global in-memory state with SearchHistoryProvider via QueryClient
+ * - Optimistic updates: UI reflects changes instantly, API call fires in background
+ * - Rollback on failure; background re-sync when the mutation settles
+ * - Automatically enforces 10-entry FIFO limit (handled by the API layer)
  *
  * @example
  * const { recentSearches, addSearch, toSuggestions } = useSearchHistory();
@@ -24,74 +28,119 @@ import type { SearchHistoryEntry, Suggestion, UseSearchHistoryReturn } from "../
  * const suggestions = toSuggestions();
  */
 export function useSearchHistory(): UseSearchHistoryReturn {
-  const [recentSearches, setRecentSearches] = useState<SearchHistoryEntry[]>([]);
+  const queryClient = useQueryClient();
 
-  /**
-   * Load search history from cookies
-   */
-  const loadHistory = useCallback(() => {
-    const entries = getSearchHistory();
-    setRecentSearches(entries);
-  }, []);
+  // ── Read: live-subscribe to the shared cache ────────────────────
+  const { data: recentSearches = [] } = useQuery({
+    queryKey: SEARCH_HISTORY_KEY,
+    queryFn: getAllSearchHistory,
+    initialData: [] as SearchHistoryEntry[],
+  });
 
-  /**
-   * Load history on mount
-   */
-  useEffect(() => {
-    loadHistory();
-  }, [loadHistory]);
+  // ── Helper: always read current cache without stale closure ─────
+  const readCache = useCallback(
+    () => queryClient.getQueryData<SearchEntry[]>(SEARCH_HISTORY_KEY) ?? [],
+    [queryClient]
+  );
 
-  /**
-   * Add a search to history
-   * - Skips empty or single-character queries
-   * - Duplicate queries update timestamp rather than creating a new entry
-   * - Oldest entries removed when exceeding 10 entries (FIFO)
-   */
+  // ── Mutation: add ────────────────────────────────────────────────
+  const { mutate: doAdd } = useMutation({
+    mutationFn: ({ query, url, type }: { query: string; url: string; type: "nlp" | "filter" }) =>
+      addSearchEntry(query, url, type),
+    onMutate: async ({ query, url, type }) => {
+      await queryClient.cancelQueries({ queryKey: SEARCH_HISTORY_KEY });
+      const previous = readCache();
+
+      const trimmed = query.trim();
+      if (trimmed.length <= 1) {
+        return { previous };
+      }
+
+      const entries = [...previous];
+      const existingIdx = entries.findIndex((e) => e.query.toLowerCase() === trimmed.toLowerCase());
+
+      if (existingIdx !== -1) {
+        const existing = entries[existingIdx] as SearchEntry;
+        entries.splice(existingIdx, 1);
+        entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
+      } else {
+        entries.unshift({
+          id: Date.now().toString(),
+          query: trimmed,
+          url,
+          timestamp: new Date().toISOString(),
+          type,
+        });
+      }
+
+      queryClient.setQueryData<SearchEntry[]>(SEARCH_HISTORY_KEY, entries.slice(0, 10));
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(SEARCH_HISTORY_KEY, context.previous);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: SEARCH_HISTORY_KEY }),
+  });
+
+  // ── Mutation: remove ─────────────────────────────────────────────
+  const { mutate: doRemove } = useMutation({
+    mutationFn: removeSearchEntry,
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey: SEARCH_HISTORY_KEY });
+      const previous = readCache();
+      queryClient.setQueryData<SearchEntry[]>(
+        SEARCH_HISTORY_KEY,
+        previous.filter((e) => e.id !== id)
+      );
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(SEARCH_HISTORY_KEY, context.previous);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: SEARCH_HISTORY_KEY }),
+  });
+
+  // ── Mutation: clear all ──────────────────────────────────────────
+  const { mutate: doClear } = useMutation({
+    mutationFn: clearSearchHistory,
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: SEARCH_HISTORY_KEY });
+      const previous = readCache();
+      queryClient.setQueryData<SearchEntry[]>(SEARCH_HISTORY_KEY, []);
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(SEARCH_HISTORY_KEY, context.previous);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: SEARCH_HISTORY_KEY }),
+  });
+
+  // ── Stable handlers ──────────────────────────────────────────────
+
   const addSearch = useCallback(
-    (query: string, url: string, type: "nlp" | "filter" = "nlp") => {
-      const success = addSearchEntry(query, url, type);
-      if (success) {
-        loadHistory();
-      }
-    },
-    [loadHistory]
+    (query: string, url: string, type: "nlp" | "filter" = "nlp") => doAdd({ query, url, type }),
+    [doAdd]
   );
 
-  /**
-   * Remove a search from history by ID
-   */
-  const removeSearch = useCallback(
-    (id: string) => {
-      const success = removeSearchEntry(id);
-      if (success) {
-        loadHistory();
-      }
-    },
-    [loadHistory]
+  const removeSearch = useCallback((id: string) => doRemove(id), [doRemove]);
+
+  const clearHistory = useCallback(() => doClear(), [doClear]);
+
+  const toSuggestions = useCallback(
+    (): Suggestion[] =>
+      recentSearches.map((entry) => ({
+        text: "",
+        highlight: entry.query,
+        id: entry.id,
+      })),
+    [recentSearches]
   );
-
-  /**
-   * Clear all search history
-   */
-  const clearHistory = useCallback(() => {
-    clearSearchHistory();
-    loadHistory();
-  }, [loadHistory]);
-
-  /**
-   * Convert history entries to Suggestion format
-   * - Uses query as both text and highlight
-   * - Includes entry ID for tracking
-   *
-   * @returns Array of suggestions from history
-   */
-  const toSuggestions = useCallback((): Suggestion[] => {
-    return recentSearches.map((entry) => ({
-      text: "",
-      highlight: entry.query,
-      id: entry.id,
-    }));
-  }, [recentSearches]);
 
   return {
     recentSearches,

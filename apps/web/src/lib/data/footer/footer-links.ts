@@ -17,37 +17,37 @@ export const footerSections: FooterSection[] = [
   {
     title: "Shop",
     links: [
-      { label: "Buy a Car", href: "/buy" },
-      { label: "Finance Options", href: "/finance" },
-      { label: "Trade-In Value", href: "/trade-in" },
+      { label: "Buy a Car", href: "#" },
+      { label: "Finance Options", href: "#" },
+      { label: "Trade-In Value", href: "#" },
     ],
   },
   {
     title: "Support",
     links: [
-      { label: "Contact Us", href: "/contact" },
-      { label: "FAQs", href: "/faq" },
-      { label: "Financing Help", href: "/finance/help" },
-      { label: "Returns & Exchanges", href: "/returns" },
+      { label: "Contact Us", href: "#" },
+      { label: "FAQs", href: "#" },
+      { label: "Financing Help", href: "#" },
+      { label: "Returns & Exchanges", href: "#" },
     ],
   },
   {
     title: "Company",
     links: [
-      { label: "About Arrow", href: "/about" },
-      { label: "Press", href: "/press" },
-      { label: "Partnerships", href: "/partnerships" },
-      { label: "Locations", href: "/locations" },
+      { label: "About Arrow", href: "#" },
+      { label: "Press", href: "#" },
+      { label: "Partnerships", href: "#" },
+      { label: "Locations", href: "#" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Cookie Policy", href: "/cookies" },
-      { label: "Accessibility", href: "/accessibility" },
-      { label: "Sitemap", href: "/sitemap" },
+      { label: "Privacy Policy", href: "#" },
+      { label: "Terms of Service", href: "#" },
+      { label: "Cookie Policy", href: "#" },
+      { label: "Accessibility", href: "#" },
+      { label: "Sitemap", href: "#" },
     ],
   },
 ];
@@ -73,6 +73,6 @@ export const contactInfo = {
   location: {
     label: "Find a Location",
     value: "Dealership Locator",
-    href: "/locations",
+    href: "#",
   },
 };

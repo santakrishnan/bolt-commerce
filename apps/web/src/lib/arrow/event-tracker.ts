@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef } from "react";
+import { API_ROUTES } from "~/lib/routes/constants";
 import { useArrowSafe } from "./arrow-provider";
 import { ARROW_HEADER } from "./constants";
 import { ARROW_ENCRYPTED_HEADER, encryptPayload, resolveEncryptionKey } from "./encryption";
@@ -32,7 +33,7 @@ interface EventTracker {
 }
 
 export function createEventTracker(): EventTracker {
-  const baseUrl = process.env.NEXT_PUBLIC_EVENT_SERVICE_URL || "/api/events";
+  const baseUrl = process.env.NEXT_PUBLIC_EVENT_SERVICE_URL || API_ROUTES.EVENTS;
   const encryptionKey = resolveEncryptionKey();
 
   return {

@@ -18,7 +18,7 @@
  *    functions below — nothing else needs to change.
  */
 
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 import { ArrowServerError, createArrowServerClient } from "~/lib/arrow/server-api";
 import {
@@ -112,6 +112,7 @@ export function transformVehicleFinderCounts(
 export async function fetchHeroStats(): Promise<HeroStat[]> {
   "use cache";
   cacheLife("landing");
+  cacheTag("hero-stats");
 
   if (isMockMode()) {
     console.log("[LandingService] Mock mode — returning local hero stats");
@@ -143,6 +144,7 @@ export async function fetchHeroStats(): Promise<HeroStat[]> {
 export async function fetchVehicleFinderOptions(): Promise<VehicleFinderOptionStatic[]> {
   "use cache";
   cacheLife("landing");
+  cacheTag("vehicle-finder-options");
 
   if (isMockMode()) {
     console.log("[LandingService] Mock mode — returning local finder options");
@@ -175,6 +177,7 @@ export async function fetchVehicleFinderOptions(): Promise<VehicleFinderOptionSt
 export async function fetchVehicleFinderCounts(): Promise<VehicleFinderCounts> {
   "use cache";
   cacheLife("landing");
+  cacheTag("vehicle-finder-counts");
 
   if (isMockMode()) {
     console.log("[LandingService] Mock mode — returning local finder counts");

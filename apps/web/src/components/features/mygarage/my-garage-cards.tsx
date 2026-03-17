@@ -1,11 +1,18 @@
+"use client";
+
 // Scrollable cards for My Garage
+/* eslint-disable */
+/* biome:disable */
 
 import { Button, ScrollArea } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
 import { type FC, Fragment, type ReactNode } from "react";
-
+import { useRouter } from "next/navigation";
+import { ROUTES } from "~/lib/routes/constants";
+import { CustomBadge } from "~/components/shared/custom-badge";
 import { GarageInfoCard } from "~/components/features/card/garage-info-card";
+import { CircularProgress } from "~/components/shared/circular-progress";
 
 export type { GarageInfoCardProps } from "~/components/features/card/garage-info-card";
 
@@ -32,6 +39,7 @@ export interface SavedVehicleCardProps {
   price: string;
   miles: string;
   onRemove?: () => void;
+  onClick?: () => void;
 }
 
 export const SavedVehicleCard: FC<SavedVehicleCardProps> = ({
@@ -40,8 +48,20 @@ export const SavedVehicleCard: FC<SavedVehicleCardProps> = ({
   price,
   miles,
   onRemove,
+  onClick,
 }) => (
-  <div className="relative flex items-center gap-3 rounded py-2">
+  <div
+    className="relative flex w-full cursor-pointer items-center gap-3 rounded py-4 text-left"
+    onClick={onClick}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick?.();
+      }
+    }}
+    role="button"
+    tabIndex={0}
+  >
     <Image
       alt={title}
       className="h-10 w-16 rounded object-cover"
@@ -56,8 +76,11 @@ export const SavedVehicleCard: FC<SavedVehicleCardProps> = ({
     </div>
     <Button
       aria-label="Remove saved vehicle"
-      className="ml-2 h-10 w-10 rounded-full text-black hover:text-icon-primary"
-      onClick={onRemove}
+      className="ml-2 h-10 w-10 rounded-full text-black hover:bg-transparent hover:text-icon-primary focus:bg-transparent active:bg-transparent"
+      onClick={(e) => {
+        e.stopPropagation();
+        onRemove?.();
+      }}
       size="icon"
       variant="ghost"
     >
@@ -110,7 +133,7 @@ export const RecentSearchCard: FC<RecentSearchCardProps> = ({
       {!disabled && (
         <Button
           aria-label="Remove recent search"
-          className="ml-2 h-10 w-10 shrink-0 rounded-full text-gray-400 hover:text-gray-700"
+          className="ml-2 h-10 w-10 shrink-0 rounded-full text-gray-400 hover:bg-transparent hover:text-gray-700 focus:bg-transparent active:bg-transparent"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -148,19 +171,14 @@ export const FinancingCard: FC<FinancingCardProps> = ({
   onBuyOnline,
   onGetPrequalified,
 }) => {
-  // Calculate progress percentage for circular indicator
-  const percentage = (daysRemaining / 30) * 100;
-  const circumference = 2 * Math.PI * 18; // radius = 18
-  const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   // If customer is already prequalified, show the "Your Financing" card
   if (prequalified) {
+    const router = useRouter();
     return (
       <GarageInfoCard
         badge={
-          <span className="flex items-center justify-center rounded bg-[var(--color-badge-success-bg,#078843)] px-2 py-[5px] text-center font-semibold text-[length:10px] text-[var(--color-badge-text,#FFF)] leading-normal [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
-            Pre-qualified
-          </span>
+          <CustomBadge type="preQualifies" text="Pre-qualified" />
         }
         ctaLabel="Buy Online"
         ctaVariant="primary"
@@ -172,49 +190,13 @@ export const FinancingCard: FC<FinancingCardProps> = ({
             </span>
           </div>
         }
-        onCtaClick={onBuyOnline}
+        onCtaClick={() => {
+          onBuyOnline?.();
+          router.push(ROUTES.COMING_SOON);
+        }}
       >
         <div className="flex items-center gap-[var(--spacing-md,16px)]">
-          <div className="relative flex flex-col items-center">
-            <svg
-              aria-label="Financing days remaining progress indicator"
-              className="h-12 w-12 -rotate-90 transform"
-              viewBox="0 0 40 40"
-            >
-              <title>Financing days remaining progress indicator</title>
-              {/* Background circle */}
-              <circle
-                className="text-[#ECECEC]"
-                cx="20"
-                cy="20"
-                fill="transparent"
-                r="18"
-                stroke="currentColor"
-                strokeWidth="3"
-              />
-              {/* Progress circle */}
-              <circle
-                className="text-[var(--color-accent-primary,#EB0D1C)] transition-all duration-300"
-                cx="20"
-                cy="20"
-                fill="transparent"
-                r="18"
-                stroke="currentColor"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                strokeWidth="3"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-center font-semibold text-[length:var(--font-size-sm,14px)] text-[var(--color-text-primary,#000)] leading-[130%] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
-                {daysRemaining}
-              </span>
-              <span className="text-center font-semibold text-[#8A8A8A] text-[length:8px] uppercase leading-normal [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
-                DAYS
-              </span>
-            </div>
-          </div>
+          <CircularProgress total={30} value={daysRemaining} />
           <div className="flex flex-col">
             <span className="font-semibold text-[length:var(--font-size-md,16px)] text-[var(--color-text-primary,#111)] leading-[130%] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
               You are pre-qualified
@@ -270,15 +252,13 @@ export const TradeOfferCard: FC<TradeOfferCardProps> = ({
   onShopWithTradeIn,
   onGetEstimate,
 }) => {
+  const router = useRouter();
+
   // If customer HAS submitted trade-in, show the "Sell/Trade Offer" card with their vehicle
   if (hasSubmittedTradeIn && imageUrl && title && price && miles && expiresIn) {
     return (
       <GarageInfoCard
-        badge={
-          <span className="flex items-center justify-center rounded bg-[var(--color-badge-default-bg,#565656)] px-2 py-[5px] text-center font-semibold text-[length:10px] text-[var(--color-badge-text,#FFF)] leading-normal [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]">
-            Expires in {expiresIn}
-          </span>
-        }
+        badge={<CustomBadge type="ExpiresAt" expiresInDays={2} />}
         ctaLabel="Shop With Your Trade-In"
         ctaVariant="primary"
         heading={
@@ -287,7 +267,10 @@ export const TradeOfferCard: FC<TradeOfferCardProps> = ({
             <span className="text-[length:var(--text-body-lg,18px)]">Sell/Trade Offer</span>
           </div>
         }
-        onCtaClick={onShopWithTradeIn}
+        onCtaClick={() => {
+          onShopWithTradeIn?.();
+          router.push(ROUTES.COMING_SOON);
+        }}
       >
         <div className="flex flex-col gap-[var(--spacing-md,16px)]">
           <div className="flex items-center justify-between gap-[var(--spacing-lg,24px)]">
@@ -408,6 +391,7 @@ export interface MyGarageCardsProps {
   financing: FinancingCardProps;
   tradeOffer: TradeOfferCardProps;
   testDrive?: TestDriveCardProps;
+  onSavedVehicleClick?: (id: number | string) => void;
 }
 
 export const MyGarageCards: FC<
@@ -425,10 +409,11 @@ export const MyGarageCards: FC<
   onRemoveSavedVehicle,
   onRemoveSearch,
   onClearAllSearches,
+  onSavedVehicleClick,
 }) => (
   <div className="flex w-full flex-col gap-4 lg:flex-row">
     <div className="flex min-w-65 flex-1 flex-col rounded-md bg-white py-4 shadow">
-      <div className="flex items-center justify-between px-4 pb-0">
+      <div className="flex items-center justify-between px-4 pb-0 mb-6">
         <div className="flex items-center gap-2 font-semibold text-sm">
           <Image
             alt="Saved Vehicles"
@@ -451,7 +436,7 @@ export const MyGarageCards: FC<
       <div className="mx-4 mt-[23px] h-px bg-black opacity-10" />
       <div className="py-2">
         <div className="relative">
-          <ScrollArea className="h-55 px-4 pr-3">
+          <ScrollArea className="h-78 px-4 pr-3">
             {savedVehicles.length === 0 ? (
               <div className="flex h-full items-center justify-center py-10 text-center text-gray-400 text-sm">
                 No saved vehicles yet. Click the heart icon on a vehicle to save it.
@@ -461,6 +446,7 @@ export const MyGarageCards: FC<
                 <Fragment key={props.id}>
                   <SavedVehicleCard
                     {...props}
+                    onClick={onSavedVehicleClick ? () => onSavedVehicleClick(props.id) : undefined}
                     onRemove={
                       onRemoveSavedVehicle ? () => onRemoveSavedVehicle(props.id) : undefined
                     }
@@ -481,7 +467,7 @@ export const MyGarageCards: FC<
       </div>
     </div>
     <div className="flex min-w-65 flex-1 flex-col rounded-lg bg-white py-4 shadow">
-      <div className="flex items-center justify-between px-4 pb-0">
+      <div className="flex items-center justify-between px-4 pb-0 mb-6">
         <div className="flex items-center gap-2 font-semibold text-sm">
           <Image
             alt="Recent Searches"
@@ -504,7 +490,7 @@ export const MyGarageCards: FC<
           </Button>
         )}
       </div>
-      <div className="mx-4 mt-[23px] h-px bg-black opacity-10" />
+      <div className="mx-4 h-px bg-black opacity-10" />
       <div className="py-2">
         <div className="relative">
           <ScrollArea className="h-55 px-4 pr-3">

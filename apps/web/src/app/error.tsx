@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@tfs-ucmp/ui";
+import { Button, Heading } from "@tfs-ucmp/ui";
 import { useEffect } from "react";
 
 export default function ErrorBoundary({
@@ -18,7 +18,9 @@ export default function ErrorBoundary({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-4 text-center">
-        <h1 className="font-bold text-4xl">Something went wrong!</h1>
+        <Heading className="text-4xl md:text-4xl" level={1} weight="bold">
+          Something went wrong!
+        </Heading>
         <p className="text-muted-foreground">
           {error.message || "An unexpected error occurred. Please try again."}
         </p>

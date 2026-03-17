@@ -1,5 +1,6 @@
-import { Button, Card, CardContent, CardHeader } from "@tfs-ucmp/ui";
+import { Card, CardContent, CardHeader } from "@tfs-ucmp/ui";
 import type React from "react";
+import { AppButton } from "../../shared/button";
 
 export interface GarageInfoCardProps {
   /** Card heading shown on the left - can be string or ReactNode for custom content */
@@ -24,16 +25,6 @@ export const GarageInfoCard: React.FC<GarageInfoCardProps> = ({
   onCtaClick,
   ctaVariant = "primary",
 }) => {
-  const getButtonClassName = () => {
-    if (ctaVariant === "secondary") {
-      return "bg-black text-white hover:bg-gray-800";
-    }
-    if (ctaVariant === "tertiary") {
-      return "border border-gray-300 bg-white text-black hover:bg-gray-50";
-    }
-    return "bg-brand text-primary-foreground hover:bg-primary-hover";
-  };
-
   return (
     <Card className="border-0 shadow">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 px-[var(--spacing-lg,24px)] pt-[var(--spacing-md,16px)] pb-[var(--spacing-md,16px)]">
@@ -49,13 +40,9 @@ export const GarageInfoCard: React.FC<GarageInfoCardProps> = ({
       />
       <CardContent className="flex flex-col gap-[var(--spacing-md,16px)] px-[var(--spacing-lg,24px)] pt-[var(--spacing-md,16px)] pb-[var(--spacing-md,16px)] font-normal text-[color:var(--color-text-secondary,#58595B)] text-[length:var(--font-size-sm,14px)] leading-normal [font-family:var(--font-family,'Toyota_Type')] [leading-trim:both] [text-edge:cap]">
         {children}
-        <Button
-          className={`rounded-full ${getButtonClassName()}`}
-          onClick={onCtaClick}
-          type="button"
-        >
+        <AppButton onClick={onCtaClick} size="md" variant={ctaVariant}>
           {ctaLabel}
-        </Button>
+        </AppButton>
       </CardContent>
     </Card>
   );

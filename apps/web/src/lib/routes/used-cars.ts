@@ -1,3 +1,4 @@
+import { ROUTES } from "./constants";
 import { parseVehicleDetailsSegments, tryParseSlug } from "./vehicle-segments";
 
 /**
@@ -130,22 +131,22 @@ export function parseUsedCarsParams(segments: string[] | undefined): UsedCarsRou
 
 export function buildUsedCarsPath(route: UsedCarsRoute): string {
   if (route.type === "details") {
-    return `/used-cars/details/${route.make}/${route.model}/${route.trim}/${route.year}/${route.vin}`;
+    return `${ROUTES.USED_CARS_DETAILS}/${route.make}/${route.model}/${route.trim}/${route.year}/${route.vin}`;
   }
 
   // SRP paths
   const { filters } = route;
   if (filters.bodyType) {
-    return `/used-cars/${filters.bodyType}`;
+    return `${ROUTES.USED_CARS}/${filters.bodyType}`;
   }
   if (filters.make && filters.model && filters.trim) {
-    return `/used-cars/${filters.make}/${filters.model}/${filters.trim}`;
+    return `${ROUTES.USED_CARS}/${filters.make}/${filters.model}/${filters.trim}`;
   }
   if (filters.make && filters.model) {
-    return `/used-cars/${filters.make}/${filters.model}`;
+    return `${ROUTES.USED_CARS}/${filters.make}/${filters.model}`;
   }
   if (filters.make) {
-    return `/used-cars/${filters.make}`;
+    return `${ROUTES.USED_CARS}/${filters.make}`;
   }
-  return "/used-cars";
+  return ROUTES.USED_CARS;
 }

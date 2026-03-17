@@ -1,3 +1,4 @@
+import { mockVehicles } from "~/lib/search/mock-vehicles";
 import type { HeroStat, VehicleFinderCounts, VehicleFinderOptionStatic } from "./types";
 
 // ─── Mock data for landing service ──────────────────────────────────────────
@@ -21,15 +22,19 @@ export const MOCK_HERO_STATS: HeroStat[] = [
 ];
 
 export const MOCK_VEHICLE_FINDER_OPTIONS: VehicleFinderOptionStatic[] = [
-  { id: "under-20k", title: "Cars-Under-$20,000", icon: "price-tag" },
-  { id: "excellent-deals", title: "Shop-Excellent-Deals", icon: "badge" },
-  { id: "price-drop", title: "Price-Drop", icon: "arrow-down" },
-  { id: "low-miles", title: "Low-Miles", icon: "speedometer" },
+  { id: "under-20k", title: "Cars Under $20,000", icon: "price-tag" },
+  { id: "excellent-deals", title: "Shop Excellent Deals", icon: "badge" },
+  { id: "price-drop", title: "Price Drop", icon: "arrow-down" },
+  { id: "low-miles", title: "Low Miles", icon: "speedometer" },
 ];
 
 export const MOCK_VEHICLE_FINDER_COUNTS: VehicleFinderCounts = {
-  "under-20k": 4564,
-  "excellent-deals": 9797,
-  "price-drop": 17_998,
-  "low-miles": 9797,
+  "under-20k": mockVehicles.filter((v) => v.price < 20_000).length,
+  "excellent-deals": mockVehicles.filter((v) =>
+    v.labels.some((l) => l.toLowerCase().includes("excellent price"))
+  ).length,
+  "price-drop": mockVehicles.filter((v) =>
+    v.labels.some((l) => l.toLowerCase().includes("price drop"))
+  ).length,
+  "low-miles": mockVehicles.filter((v) => v.mileage < 20_000).length,
 };

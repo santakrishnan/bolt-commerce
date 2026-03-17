@@ -92,7 +92,6 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-[var(--spacing-md)]" />
               </div>
               <p className="font-semibold text-[length:var(--font-size-sm)] text-body leading-normal">
                 This vehicle is significantly lower than average market price

@@ -1,4 +1,5 @@
-import { Button, StarIcon } from "@tfs-ucmp/ui";
+import { StarIcon } from "@tfs-ucmp/ui";
+import { AppButton } from "~/components/shared/button";
 
 interface RatingDistribution {
   stars: number;
@@ -42,12 +43,11 @@ export function VehicleRating({ title, rating, reviewCount, distribution }: Vehi
             ))}
           </div>
         </div>
-        <Button
-          className="rounded-[var(--radius-large)] border-black px-[var(--spacing-xl)] py-[var(--spacing-md)] font-[var(--font-weight-medium)] text-[length:var(--text-sm)]"
-          variant="outline"
+        <AppButton
+          variant="tertiary" size="md"
         >
           View More ({reviewCount} Reviews)
-        </Button>
+        </AppButton>
       </div>
       {/* Right: Rating distribution bars */}
       <div className="w-full flex-1">

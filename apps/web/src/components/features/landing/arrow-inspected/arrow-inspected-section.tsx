@@ -1,4 +1,4 @@
-import { cn } from "@tfs-ucmp/ui";
+import { cn, Heading } from "@tfs-ucmp/ui";
 import type { InspectionFeature } from "~/lib/data";
 import { ArrowInspectedCarousel } from "./arrow-inspected-carousel";
 import { InspectionFeatureCard } from "./inspection-feature-card";
@@ -47,14 +47,16 @@ export function ArrowInspectedSection({
             headerClassName
           )}
         >
-          <h2
+          <Heading
             className={cn(
-              "font-bold text-[length:var(--font-size-lg)] leading-tight tracking-tight lg:text-[length:var(--font-size-2xl)]",
+              "text-[length:var(--text-xl)] leading-tight tracking-tight lg:text-[length:var(--font-size-2xl)]",
               titleClassName
             )}
+            level={2}
+            weight="semibold"
           >
             {title}
-          </h2>
+          </Heading>
           <p
             className={cn(
               "text-[var(--color-core-surfaces-foreground)] text-base leading-relaxed sm:text-base",

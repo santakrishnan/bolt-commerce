@@ -1,4 +1,4 @@
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 export type { InspectionFeature } from "~/data/inspection/features";
 export type { VehicleType } from "~/data/vehicles/vehicle-types";
@@ -6,6 +6,7 @@ export type { VehicleType } from "~/data/vehicles/vehicle-types";
 export async function getVehicleCount(): Promise<number> {
   "use cache";
   cacheLife("landing");
+  cacheTag("vehicle-count");
 
   // TODO: Replace with actual API call
   // const res = await fetch('https://api.example.com/vehicles/count')
@@ -16,6 +17,10 @@ export async function getVehicleCount(): Promise<number> {
 }
 
 export async function getVehicleTypes() {
+  "use cache";
+  cacheLife("landing");
+  cacheTag("vehicle-types");
+
   try {
     const module = await import("~/data/vehicles/vehicle-types");
     return module.vehicleTypes;
@@ -25,6 +30,10 @@ export async function getVehicleTypes() {
 }
 
 export async function getInspectionFeatures() {
+  "use cache";
+  cacheLife("landing");
+  cacheTag("inspection-features");
+
   try {
     const module = await import("~/data/inspection/features");
     return module.inspectionFeatures;

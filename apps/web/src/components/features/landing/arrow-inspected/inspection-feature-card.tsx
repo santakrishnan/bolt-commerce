@@ -1,4 +1,4 @@
-import { Card, CardContent, cn } from "@tfs-ucmp/ui";
+import { Card, CardContent, cn, Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import type { InspectionFeature } from "~/data/inspection/features";
 
@@ -38,9 +38,12 @@ export function InspectionFeatureCard({ feature, className }: InspectionFeatureC
               src={iconSrc}
               width={32}
             />
-            <h3 className="font-bold text-base text-text-primary leading-normal lg:font-semibold lg:text-[length:var(--font-size-xl)] lg:leading-[115%]">
+            <Heading
+              className="font-bold text-base text-text-primary leading-normal md:text-base lg:font-semibold lg:text-[length:var(--font-size-xl)] lg:leading-[115%]"
+              level={3}
+            >
               {feature.title}
-            </h3>
+            </Heading>
           </div>
           <p className="font-normal text-sm text-text-primary leading-normal tracking-[-0.42px] lg:text-[var(--Core-surfaces-card-foreground)] lg:text-[var(--font-size-sm,14px)] lg:leading-[125%] lg:tracking-[-0.14px]">
             {feature.description}

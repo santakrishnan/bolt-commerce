@@ -34,6 +34,7 @@ import {
   useState,
 } from "react";
 import { ARROW_HEADER } from "~/lib/arrow/constants";
+import { API_ROUTES } from "~/lib/routes/constants";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -110,7 +111,7 @@ export interface VisitorProfileConfig {
 }
 
 const DEFAULT_CONFIG: Required<VisitorProfileConfig> = {
-  profileEndpoint: "/api/visitor-profile",
+  profileEndpoint: API_ROUTES.VISITOR_PROFILE,
   cacheTtlMs: 5 * 60 * 1000, // 5 minutes
   autoFetch: true,
 };

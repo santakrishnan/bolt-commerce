@@ -7,36 +7,45 @@ import type {
   HistoryData,
   PriceHistoryEntry,
   PricingData,
+  VehicleDetail,
   VehicleSpecData,
+  VehicleStatusData,
 } from "~/lib/data/vehicle";
 import { FeaturesTab } from "./features-tab";
 import { HistoryTab } from "./history-tab";
 import { OverviewTab } from "./overview-tab";
 import { PricingTab } from "./pricing-tab";
+import type { VehicleMetaBarChipComponents } from "./vehicle-meta-bar";
 
 interface VehicleDetailsTabsProps {
   className?: string;
   specs: VehicleSpecData[];
+  vehicle: VehicleDetail;
   features: FeatureCategory[];
   featuresInitialCount: number;
   pricingData: PricingData;
   priceHistory: PriceHistoryEntry[];
   historyData: HistoryData;
+  vehicleStatus: VehicleStatusData;
+  metaBarChipComponents?: VehicleMetaBarChipComponents;
   showInspectionSection?: boolean;
   featuresTableView?: boolean;
 }
 
 const tabTriggerClassName =
-  "flex-shrink-0 whitespace-nowrap rounded-none border-transparent border-b-[3px] bg-transparent px-[var(--spacing-lg)] pb-[var(--spacing-sm)] pt-0 font-normal text-[var(--color-core-surfaces-foreground)] text-[length:var(--font-size-md)] leading-normal data-[state=active]:border-[var(--color-actions-accent)] data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:text-[var(--color-core-surfaces-foreground)] data-[state=active]:shadow-none";
+  "shrink-0 whitespace-nowrap rounded-none border-transparent border-b-3 bg-transparent px-(--spacing-lg) pb-sm pt-0 font-normal text-(--color-core-surfaces-foreground) text-(length:--font-size-md) leading-normal data-[state=active]:border-(--color-actions-accent) data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:text-(--color-core-surfaces-foreground) data-[state=active]:shadow-none";
 
 export function VehicleDetailsTabs({
   className,
   specs,
+  vehicle,
   features,
   featuresInitialCount,
   pricingData,
   priceHistory,
   historyData,
+  vehicleStatus,
+  metaBarChipComponents,
   featuresTableView: _featuresTableView = false,
 }: VehicleDetailsTabsProps) {
   const tabDefs = [
@@ -49,7 +58,17 @@ export function VehicleDetailsTabs({
     {
       id: "features",
       label: "Features & Details",
-      content: <FeaturesTab features={features} initialCount={featuresInitialCount} />,
+      content: (
+        <FeaturesTab
+          features={features}
+          historyData={historyData}
+          initialCount={featuresInitialCount}
+          metaBarChipComponents={metaBarChipComponents}
+          specs={specs}
+          vehicle={vehicle}
+          vehicleStatus={vehicleStatus}
+        />
+      ),
       contentClassName: "mt-0",
     },
     {
@@ -73,14 +92,14 @@ export function VehicleDetailsTabs({
       <Tabs className="w-full" onValueChange={(id) => setActiveId(id)} value={activeId}>
         <div className="relative mb-12 w-full border-gray-200 border-b">
           <div
-            className="overflow-x-auto px-[var(--spacing-2xs)] md:overflow-x-visible md:px-0"
+            className="overflow-x-auto px-(--spacing-2xs) md:overflow-x-visible md:px-0"
             style={{
               scrollbarWidth: "none",
               msOverflowStyle: "none",
               WebkitOverflowScrolling: "touch",
             }}
           >
-            <TabsList className="flex h-auto flex-nowrap gap-[var(--spacing-10)] rounded-none border-0 bg-transparent p-0">
+            <TabsList className="flex h-auto flex-nowrap gap-10 rounded-none border-0 bg-transparent p-0">
               {tabDefs.map((tab, _index) => (
                 <TabsTrigger className={cn(tabTriggerClassName)} key={tab.id} value={tab.id}>
                   {tab.label}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Heading } from "@tfs-ucmp/ui";
 import { useEffect, useState } from "react";
 import type { ArrowFingerprintData, VisitorProfile } from "~/lib/arrow";
 import { useArrow, useEventTracking } from "~/lib/arrow";
@@ -9,7 +10,9 @@ import { useArrow, useEventTracking } from "~/lib/arrow";
 function VisitorIntelligenceSection({ data }: { data: ArrowFingerprintData }) {
   return (
     <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-4 font-semibold text-2xl text-gray-800">Visitor Intelligence</h2>
+      <Heading className="mb-4 text-2xl text-gray-800 md:text-2xl" level={2} weight="semibold">
+        Visitor Intelligence
+      </Heading>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Identity */}
         <div className="rounded bg-gray-50 p-4">
@@ -115,7 +118,9 @@ function VisitorProfileSection({
   return (
     <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-semibold text-2xl text-gray-800">Visitor Profile</h2>
+        <Heading className="text-2xl text-gray-800 md:text-2xl" level={2} weight="semibold">
+          Visitor Profile
+        </Heading>
         <div className="flex gap-2">
           <button
             className="rounded bg-gray-100 px-3 py-1.5 text-gray-600 text-xs transition-colors hover:bg-gray-200 disabled:opacity-50"
@@ -186,7 +191,9 @@ function EventTrackingSection({
   return (
     <div className="rounded-lg bg-white p-6 shadow-md">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="font-semibold text-2xl text-gray-800">Track Events</h2>
+        <Heading className="text-2xl text-gray-800 md:text-2xl" level={2} weight="semibold">
+          Track Events
+        </Heading>
         <div className="flex items-center gap-4">
           <span className="text-gray-500 text-sm">{eventCount} tracked</span>
           <button
@@ -281,7 +288,9 @@ export default function TrackingDemoPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="max-w-md rounded-lg border border-red-200 bg-red-50 p-6">
-          <h2 className="mb-2 font-bold text-lg text-red-800">Arrow Error</h2>
+          <Heading className="mb-2 text-lg text-red-800 md:text-lg" level={2} weight="bold">
+            Arrow Error
+          </Heading>
           <p className="text-red-600">{error.message}</p>
         </div>
       </div>
@@ -291,7 +300,9 @@ export default function TrackingDemoPage() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12">
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-8 font-bold text-4xl text-gray-900">User Behavior Tracking Demo</h1>
+        <Heading className="mb-8 text-4xl text-gray-900 md:text-4xl" level={1} weight="bold">
+          User Behavior Tracking Demo
+        </Heading>
 
         {/* Arrow status badge */}
         <div
@@ -306,7 +317,9 @@ export default function TrackingDemoPage() {
 
         {/* Status Card */}
         <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 font-semibold text-2xl text-gray-800">Tracking Status</h2>
+          <Heading className="mb-4 text-2xl text-gray-800 md:text-2xl" level={2} weight="semibold">
+            Tracking Status
+          </Heading>
           <div className="space-y-3">
             <div className="flex items-center">
               <span className="w-32 font-medium text-gray-700">Status:</span>
@@ -327,7 +340,9 @@ export default function TrackingDemoPage() {
 
         {/* IDs Card */}
         <div className="mb-6 rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 font-semibold text-2xl text-gray-800">Tracking IDs</h2>
+          <Heading className="mb-4 text-2xl text-gray-800 md:text-2xl" level={2} weight="semibold">
+            Tracking IDs
+          </Heading>
           <div className="space-y-4">
             <div>
               <p className="mb-1 block font-medium text-gray-600 text-sm">

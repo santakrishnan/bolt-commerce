@@ -1,6 +1,5 @@
 import {
   BatteryIcon,
-  Button,
   ColorsIcon,
   cn,
   EngineIcon,
@@ -11,6 +10,7 @@ import {
 } from "@tfs-ucmp/ui";
 import type { ReactNode } from "react";
 import type { VehicleSpecData } from "~/lib/data/vehicle";
+import { AppButton } from "~/components/shared/button";
 
 interface OverviewTabProps {
   specs: VehicleSpecData[];
@@ -54,14 +54,12 @@ export function OverviewTab({ specs }: OverviewTabProps) {
         <h3 className="font-semibold text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)] text-body leading-heading md:px-[var(--spacing-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-heading">
           Overview
         </h3>
-        <Button
-          className={cn(
-            "flex items-center justify-center rounded-full border border-[var(--color-actions-tertiary-border)] bg-[var(--color-core-surfaces-background)] px-[var(--spacing-xl)] py-0 text-center font-semibold text-[length:var(--font-size-sm)] text-body hover:bg-transparent hover:text-inherit focus:bg-transparent active:bg-transparent lg:h-10 lg:max-w-50 lg:shrink-0 lg:border lg:border-heading lg:px-[var(--spacing-xl)] lg:py-0 lg:font-semibold lg:text-[length:var(--font-size-sm)] lg:text-heading lg:leading-normal"
-          )}
-          variant="outline"
+        <AppButton
+          variant="tertiary"
+          size="md"
         >
           View All Specs
-        </Button>
+        </AppButton>
       </div>
 
       {/* Specs Card */}

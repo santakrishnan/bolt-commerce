@@ -6,6 +6,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { ROUTES } from "~/lib/routes/constants";
 import { buildUsedCarsPath, parseUsedCarsParams, type UsedCarsRoute } from "../used-cars";
 
 // ── parseUsedCarsParams ──────────────────────────────────────────────
@@ -192,13 +193,13 @@ describe("buildUsedCarsPath", () => {
       vin: "1HGCM82633A004352",
     };
     expect(buildUsedCarsPath(route)).toBe(
-      "/used-cars/details/toyota/camry/se/2023/1HGCM82633A004352"
+      `${ROUTES.USED_CARS}/details/toyota/camry/se/2023/1HGCM82633A004352`
     );
   });
 
   it("builds the base SRP path with no filters", () => {
     const route: UsedCarsRoute = { type: "srp", filters: {} };
-    expect(buildUsedCarsPath(route)).toBe("/used-cars");
+    expect(buildUsedCarsPath(route)).toBe(ROUTES.USED_CARS);
   });
 
   it("builds SRP path with bodyType filter", () => {
@@ -206,7 +207,7 @@ describe("buildUsedCarsPath", () => {
       type: "srp",
       filters: { bodyType: "suv" },
     };
-    expect(buildUsedCarsPath(route)).toBe("/used-cars/suv");
+    expect(buildUsedCarsPath(route)).toBe(`${ROUTES.USED_CARS}/suv`);
   });
 
   it("builds SRP path with make filter only", () => {
@@ -214,7 +215,7 @@ describe("buildUsedCarsPath", () => {
       type: "srp",
       filters: { make: "toyota" },
     };
-    expect(buildUsedCarsPath(route)).toBe("/used-cars/toyota");
+    expect(buildUsedCarsPath(route)).toBe(`${ROUTES.USED_CARS}/toyota`);
   });
 
   it("builds SRP path with make + model", () => {
@@ -222,7 +223,7 @@ describe("buildUsedCarsPath", () => {
       type: "srp",
       filters: { make: "toyota", model: "camry" },
     };
-    expect(buildUsedCarsPath(route)).toBe("/used-cars/toyota/camry");
+    expect(buildUsedCarsPath(route)).toBe(`${ROUTES.USED_CARS}/toyota/camry`);
   });
 
   it("builds SRP path with make + model + trim", () => {
@@ -230,7 +231,7 @@ describe("buildUsedCarsPath", () => {
       type: "srp",
       filters: { make: "toyota", model: "camry", trim: "se" },
     };
-    expect(buildUsedCarsPath(route)).toBe("/used-cars/toyota/camry/se");
+    expect(buildUsedCarsPath(route)).toBe(`${ROUTES.USED_CARS}/toyota/camry/se`);
   });
 
   it("prioritizes bodyType over make when both are set", () => {
@@ -238,13 +239,15 @@ describe("buildUsedCarsPath", () => {
       type: "srp",
       filters: { bodyType: "sedan", make: "toyota" },
     };
-    expect(buildUsedCarsPath(route)).toBe("/used-cars/sedan");
+    expect(buildUsedCarsPath(route)).toBe(`${ROUTES.USED_CARS}/sedan`);
   });
 });
 
 // ── Round-trip consistency ───────────────────────────────────────────
 
-const USED_CARS_PREFIX_REGEX = /^\/used-cars\/?/;
+const USED_CARS_PREFIX_REGEX = new RegExp(
+  `^${ROUTES.USED_CARS.replace(/[-\\/\\^$*+?.()|[\\]{}]/g, "\\\\$&")}\\/?`
+);
 
 describe("round-trip: parse → build → parse", () => {
   const cases: [string, string[]][] = [

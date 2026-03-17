@@ -6,7 +6,6 @@ export interface EstimationData {
 }
 
 export interface CarCardProps {
-  wasLiked?: boolean;
   carImage: string | string[];
   carName: string;
   // Optional VDP route segments — used to build the VDP URL and populate the preview modal
@@ -38,7 +37,6 @@ export interface CarCardProps {
     oneOwner?: boolean;
   };
   estimation?: EstimationData;
-  onFavoriteToggle?: () => void;
   onApplyRefineFilters?: (filters: { id: string; label: string }[]) => void;
   /** Set to false to disable the card-click preview modal (e.g. on the garage page) */
   enablePreviewModal?: boolean;

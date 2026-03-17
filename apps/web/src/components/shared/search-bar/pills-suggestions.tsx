@@ -138,9 +138,14 @@ export const PillsSuggestions: React.FC<PillsSuggestionsProps> = ({
               type="button"
               variant="search"
             >
-              {suggestion.text
-                ? `${suggestion.text} ${suggestion.highlight}`.trim()
-                : suggestion.highlight}
+              {suggestion.text ? (
+                <>
+                  <span>{suggestion.text}</span>{" "}
+                  <span className="font-semibold"> {suggestion.highlight}</span>
+                </>
+              ) : (
+                <span className="font-semibold"> {suggestion.highlight}</span>
+              )}
             </Button>
           );
         })}

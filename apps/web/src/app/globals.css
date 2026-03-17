@@ -139,3 +139,19 @@ html {
     scroll-behavior: auto;
   }
 }
+
+/* ==========================================
+   header slide animation
+   ========================================== */
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+header.slide-down {
+  animation: slideDown 0.35s ease-out;
+}

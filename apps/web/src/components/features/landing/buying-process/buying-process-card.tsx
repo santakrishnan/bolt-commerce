@@ -1,7 +1,8 @@
-import { Card, CardContent, cn } from "@tfs-ucmp/ui";
+import { Card, CardContent, cn, Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactElement } from "react";
+import { ROUTES } from "~/lib/routes/constants";
 import config from "./buying-process-config.json";
 import type { ProcessStep } from "./types";
 
@@ -32,20 +33,29 @@ export function BuyingProcessCard({ steps }: BuyingProcessCardProps): ReactEleme
                     width={36}
                   />
                 </div>
-                <h3 className="mb-[var(--spacing-sm)] font-semibold text-[length:var(--font-size-xl)] text-[var(--color-core-surfaces-foreground)]">
+                <Heading
+                  className="mb-[var(--spacing-sm)] text-[length:var(--font-size-xl)] text-[var(--color-core-surfaces-foreground)] md:text-[length:var(--font-size-xl)]"
+                  level={3}
+                  weight="semibold"
+                >
                   {step.title}
-                </h3>
+                </Heading>
                 <p className="text-[length:var(--font-size-sm)] text-[var(--color-core-surfaces-foreground)] leading-relaxed">
                   {step.description}
                 </p>
-                {step.linkText && step.linkHref && (
-                  <Link
-                    className="mt-auto pt-[var(--spacing-md)] font-semibold text-[length:var(--font-size-sm)] text-primary underline underline-offset-4 opacity-0 transition-opacity hover:text-primary-hover group-hover:opacity-100"
-                    href={step.linkHref}
-                  >
-                    {step.linkText}
-                  </Link>
-                )}
+                {step.linkText &&
+                  step.linkHref &&
+                  (() => {
+                    const href = step.linkHref === "/used-cars" ? ROUTES.USED_CARS : step.linkHref;
+                    return (
+                      <Link
+                        className="mt-auto pt-[var(--spacing-md)] font-semibold text-[length:var(--font-size-sm)] text-primary underline underline-offset-4 opacity-0 transition-opacity hover:text-primary-hover group-hover:opacity-100"
+                        href={href}
+                      >
+                        {step.linkText}
+                      </Link>
+                    );
+                  })()}
               </CardContent>
             </Card>
           );

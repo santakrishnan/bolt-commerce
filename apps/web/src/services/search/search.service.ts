@@ -38,19 +38,40 @@ function isMockMode(): boolean {
   return !process.env.SEARCH_SERVICE_URL || process.env.USE_MOCK_SEARCH === "true";
 }
 
+// ─── Utilities ──────────────────────────────────────────────────────────────
+
+/** Fisher-Yates shuffle — returns a new randomly-ordered copy of the array. */
+function shuffle<T>(arr: readonly T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = copy[i];
+    copy[i] = copy[j] as T;
+    copy[j] = tmp as T;
+  }
+  return copy;
+}
+
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
 /**
  * Generate mock search results. Dynamically imports mock vehicles from
  * `lib/search/mock-vehicles` to keep the bundle clean in production.
+ *
+ * Results are shuffled on every call so the mock API behaves like a
+ * real backend returning non-deterministic ordering.
  */
 async function getMockResults(query: SearchQuery): Promise<SearchResult> {
   const { mockVehicles } = await import("~/lib/search/mock-vehicles");
 
-  let vehicles: SearchVehicle[] = mockVehicles.map((v) => ({
-    ...v,
-    estimation: v.estimation ?? undefined,
-  }));
+  let vehicles: SearchVehicle[] = shuffle(
+    mockVehicles.map((v) => ({
+      ...v,
+      // Jitter the match score ±5 so "sort by relevance" varies per request
+      match: Math.max(0, Math.min(100, v.match + Math.floor(Math.random() * 11) - 5)),
+      estimation: v.estimation ?? undefined,
+    }))
+  );
 
   // Apply basic filtering
   if (query.query) {

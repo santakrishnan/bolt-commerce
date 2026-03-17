@@ -1,6 +1,7 @@
-import { Card, CardContent, cn } from "@tfs-ucmp/ui";
+import { Card, CardContent, cn, Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
+import { ROUTES } from "~/lib/routes/constants";
 import type { VehicleFinderOption } from "./data";
 
 export interface VehicleQuickLinkCardProps {
@@ -24,8 +25,8 @@ export function VehicleQuickLinkCard({
   backgroundColor,
 }: VehicleQuickLinkCardProps) {
   const iconSrc = iconMap[option.icon];
-  const searchQuery = encodeURIComponent(option.title.replace(WHITESPACE_REGEX, "-"));
-  const href = `/used-cars?q=${searchQuery}`;
+  const searchQuery = option.title.toLocaleLowerCase().replace(WHITESPACE_REGEX, "-");
+  const href = `${ROUTES.USED_CARS}?q=${searchQuery}`;
 
   return (
     <Link href={href}>
@@ -46,9 +47,13 @@ export function VehicleQuickLinkCard({
             width={48}
           />
           <div className="flex flex-col items-center gap-[var(--spacing-sm)]">
-            <h3 className="text-center font-semibold text-base text-text-medium leading-[110%] tracking-[-0.64px] lg:text-[length:var(--font-size-xl)]">
+            <Heading
+              className="text-center text-base text-text-medium leading-[110%] tracking-[-0.64px] md:text-base lg:text-[length:var(--font-size-xl)]"
+              level={3}
+              weight="semibold"
+            >
               {option.title}
-            </h3>
+            </Heading>
             <p className="text-center font-semibold text-base leading-[110%] tracking-[-0.64px]">
               <span className="text-primary">{option.vehicleCount.toLocaleString()}</span>{" "}
               <span className="text-black">vehicles</span>

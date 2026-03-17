@@ -3,13 +3,20 @@
 import { Button } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import { type JSX, useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "~/components/providers/location-provider";
 
 /** Validates a 5-digit US zip code */
 const ZIP_RE = /^\d{5}$/;
 
-export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): JSX.Element {
-  const { state: locationState, actions, meta } = useLocation();
+export function LocationBlock({
+  useSolidStyles,
+  onModalOpenChange,
+}: {
+  useSolidStyles: boolean;
+  onModalOpenChange?: (open: boolean) => void;
+}): JSX.Element | null {
+  const { state: locationState, actions } = useLocation();
   const [modalOpen, setModalOpen] = useState(false);
   const [zipInput, setZipInput] = useState("");
   const [zipError, setZipError] = useState("");
@@ -17,7 +24,13 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const { displayZip, displayCity, displayState, isManualZip, description } = locationState;
-  const { isLoading } = meta;
+
+  // Notify parent when modal open state changes
+  useEffect(() => {
+    onModalOpenChange?.(modalOpen);
+  }, [modalOpen, onModalOpenChange]);
+
+  // No JS-based fade: render label directly to avoid flicker/hydration issues
 
   // Focus input when modal opens
   useEffect(() => {
@@ -76,6 +89,12 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
     setModalOpen(false);
   }, [actions]);
 
+  // Hide the block until location data has arrived — no loading skeleton per component.
+  const hasData = Boolean(displayZip || displayCity || displayState || description);
+  if (!hasData) {
+    return null;
+  }
+
   // Build the trigger label with a graceful fallback chain:
   // Manual zip with description → "Miami, FL 33101"
   // Fingerprint: "Buffalo, WV 25033" → "Buffalo 25033" → "WV 25033" → "25033"
@@ -94,17 +113,30 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
 
   return (
     <div className="relative inline-block" ref={containerRef}>
+      {/* Full-viewport backdrop rendered on <body> so it sits below the fixed header */}
+      {modalOpen &&
+        createPortal(
+          <div aria-hidden="true" className="fixed inset-0 z-[34] bg-black/40" />,
+          document.body
+        )}
       {/* Trigger button */}
       <button
         aria-expanded={modalOpen}
         aria-haspopup="dialog"
-        className={`cursor-pointer border-none bg-transparent font-normal text-sm leading-none outline-none hover:underline hover:underline-offset-4 ${
+        className={`inline-flex cursor-pointer items-center gap-1.5 border-none bg-transparent font-normal text-sm leading-none outline-none hover:underline hover:underline-offset-4 ${
           useSolidStyles ? "text-text-dark" : "text-white"
         }`}
         onClick={handleToggle}
         type="button"
       >
-        {isLoading ? "Loading…" : triggerLabel}
+        <span aria-live="polite">{triggerLabel}</span>
+        <Image
+          alt=""
+          className={`transition-transform ${modalOpen ? "rotate-180" : ""} ${useSolidStyles ? "[filter:brightness(0)]" : ""}`}
+          height={6}
+          src="/images/caret-location.svg"
+          width={10}
+        />
       </button>
 
       {/* Dialog */}
@@ -112,7 +144,7 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
         <div
           aria-labelledby="location-dialog-title"
           aria-modal="true"
-          className="absolute top-full left-0 z-50 mt-10 w-[min(96vw,20rem)] rounded bg-white px-4 py-8 lg:left-1/2 lg:w-104 lg:-translate-x-1/2"
+          className="absolute top-full left-0 z-50 mt-10 w-[min(96vw,20rem)] rounded bg-white px-4 py-4 lg:left-1/2 lg:w-104 lg:-translate-x-1/2"
           role="dialog"
         >
           {/* Pointy edge */}
@@ -120,18 +152,16 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
             <Image alt="" height={16} src="/images/triangle.svg" width={24} />
           </div>
 
-          <div className="px-4">
-            <h3 className="font-semibold text-sm" id="location-dialog-title">
+          <div className="px-4 pt-4">
+            <h3
+              className="font-normal text-[length:var(--Font-Size-Scale---font-size-sm,14px)] text-[var(--color-states-muted-foreground,#525252)] leading-[125%] tracking-[-0.14px] [font-family:var(--font-family)] [leading-trim:both] [text-edge:cap]"
+              id="location-dialog-title"
+            >
               Update Your Location
             </h3>
 
-            {/* Current detected location */}
-            {!isManualZip && displayCity && displayState && (
-              <p className="mt-1 text-gray-400 text-xs">
-                Detected: {displayCity}, {displayState} {displayZip}
-              </p>
-            )}
-            {isManualZip && (
+            {/* Current detected location (removed per request) */}
+            {/* {isManualZip && (
               <div className="mt-1">
                 <p className="text-gray-400 text-xs">
                   Current: {description || displayZip} (manually set)
@@ -142,16 +172,16 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
                   </p>
                 )}
               </div>
-            )}
+            )} */}
           </div>
 
-          <div className="p-4">
+          <div className="px-4 py-2">
             <label className="sr-only" htmlFor="location-zip">
               Enter zip code
             </label>
             <input
               autoComplete="postal-code"
-              className="w-full rounded bg-core-surfaces-background px-3 py-2 text-sm outline-none"
+              className="flex h-[var(--spacing-2xl,48px)] w-full items-center gap-[var(--spacing-xs,8px)] self-stretch rounded bg-core-surfaces-background px-[var(--spacing-md,16px)] text-[length:var(--Font-Size-Scale---font-size-sm,14px)] outline-none [font-family:var(--font-family)]"
               id="location-zip"
               inputMode="numeric"
               maxLength={5}
@@ -172,12 +202,8 @@ export function LocationBlock({ useSolidStyles }: { useSolidStyles: boolean }): 
             />
             {zipError && <p className="mt-1 text-red-500 text-xs">{zipError}</p>}
 
-            <Button
-              className="mt-4 w-full rounded-full bg-primary"
-              disabled={isLoading}
-              onClick={handleUpdate}
-            >
-              {isLoading ? "Loading…" : "Update"}
+            <Button className="mt-4 w-full rounded-full bg-primary" onClick={handleUpdate}>
+              Update
             </Button>
 
             {/* Use Device Location button - only show if manual zip is set */}

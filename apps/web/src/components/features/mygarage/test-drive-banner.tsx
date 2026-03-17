@@ -1,5 +1,8 @@
+"use client";
+import { Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import type React from "react";
+import { AppButton } from "~/components/shared/button";
 
 export interface TestDriveBannerProps {
   title?: string;
@@ -25,17 +28,23 @@ export const TestDriveBanner: React.FC<TestDriveBannerProps> = ({
       />
       <div className="mx-auto flex w-full max-w-[var(--container-2xl)] flex-col-reverse items-stretch md:flex-row">
         <div className="z-20 flex shrink-0 flex-col justify-center px-4 py-8 sm:px-6 md:w-[45%] md:py-12 lg:w-[40%] lg:px-12 lg:py-0 xl:w-[38%] xl:px-20">
-          <h2 className="mb-3 font-bold text-background text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-nowrap">
+          <Heading
+            className="mb-3 text-background text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-nowrap"
+            level={2}
+            weight="bold"
+          >
             {title}
-          </h2>
+          </Heading>
           <p className="mb-5 text-primary-foreground/80 text-sm md:text-base">{description}</p>
-          <button
-            className="w-fit rounded-full bg-destructive px-5 py-2 font-semibold text-destructive-foreground text-sm transition-colors duration-200 hover:bg-(--primary-hover)"
-            onClick={onButtonClick}
-            type="button"
+          <AppButton
+            className="w-fit px-5 py-2 text-sm"
+            onClick={() => {
+              onButtonClick?.();
+            }}
+            variant="primary"
           >
             {buttonText}
-          </button>
+          </AppButton>
         </div>
         <div className="relative h-[280px] w-full shrink-0 overflow-hidden sm:h-[350px] md:h-auto md:min-h-[300px] md:w-[55%] md:shrink lg:min-h-full lg:w-[60%] xl:w-[62%]">
           <Image

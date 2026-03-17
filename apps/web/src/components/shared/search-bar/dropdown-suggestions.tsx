@@ -68,13 +68,15 @@ export const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({
     <div
       className={cn(
         // Base styles
-        "absolute right-0 left-0 z-50",
+        "absolute right-0 left-0 z-10",
         "bg-(--color-core-surfaces-card)",
         "border border-(--color-structure-interaction-border)",
-        "rounded-3xl",
+        "border-t-0",
+        "rounded-t-none rounded-b-3xl",
+        "overflow-hidden",
         "shadow-lg",
         // Position directly below input (no gap)
-        "top-full -mt-px",
+        "top-0",
         // Animation styles
         "origin-top transition-all duration-200 ease-out",
         isAnimating
@@ -84,7 +86,7 @@ export const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({
       id="search-suggestions"
       role="listbox"
     >
-      <div className="py-xs">
+      <div className="pt-lg pb-xs">
         {suggestions.map((suggestion, index) => {
           const suggestionId = `suggestion-${index}`;
           const isActive = activeDescendantId === suggestionId;
@@ -94,13 +96,14 @@ export const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({
               aria-selected={isActive}
               className={cn(
                 // Base styles
+                "group search-dropdown-item",
                 "px-md",
                 "py-sm",
                 "cursor-pointer",
                 "transition-colors duration-150",
                 // Hover and active states
-                "hover:bg-(--color-core-surfaces-hover)",
-                isActive && "bg-(--color-core-surfaces-hover)",
+                "hover:bg-gray-100",
+                isActive && "bg-gray-100",
                 // Text styles
                 "text-(--font-size-sm)",
                 "font-(--font-family)"
@@ -118,13 +121,13 @@ export const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({
               role="option"
               tabIndex={-1}
             >
-              <span className="text-(--color-core-surfaces-foreground-muted)">
+              <span className="text-(--color-core-surfaces-foreground-muted) transition-colors group-hover:text-(--color-core-surfaces-foreground)">
                 {suggestion.text}
               </span>
               {suggestion.highlight && (
                 <>
                   {" "}
-                  <span className="font-semibold text-(--color-core-surfaces-foreground)">
+                  <span className="font-semibold text-(--color-core-surfaces-foreground) transition-colors group-hover:text-(--color-brand-text-primary)">
                     {suggestion.highlight}
                   </span>
                 </>

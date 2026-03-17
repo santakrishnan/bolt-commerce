@@ -11,6 +11,7 @@
 
 export interface VehicleDetail {
   id: string;
+  title?: string;
   year: number;
   make: string;
   model: string;
@@ -22,11 +23,15 @@ export interface VehicleDetail {
   inspected: boolean;
   miles: string;
   drivetrain: string;
+  fuelType?: string;
+  transmission?: string;
   mpg: string;
   stock: string;
   vin: string;
   exteriorColor: string;
   interiorColor: string;
+  certified?: boolean;
+  inspectionPassed?: boolean;
   dealer: {
     name: string;
     location: string;
@@ -92,6 +97,7 @@ export interface HistoryData {
   repairsReported: number;
   ownerTypes: string[];
   lastOdometerReading: number;
+  titleStatus?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -119,6 +125,7 @@ export interface VehicleStatusData {
   historyReportPending: boolean;
   inspectionInProgress: boolean;
   limitedPhotos: boolean;
+  featuresTableView?: boolean;
 }
 
 // ---------------------------------------------------------------------------
