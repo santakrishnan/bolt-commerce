@@ -13,12 +13,12 @@ import { VehicleMetaBar, type VehicleMetaBarChipComponents } from "./vehicle-met
 
 interface FeaturesTabProps {
   features: FeatureCategory[];
-  initialCount: number;
-  vehicle: VehicleDetail;
-  specs: VehicleSpecData[];
   historyData: HistoryData;
-  vehicleStatus: VehicleStatusData;
+  initialCount: number;
   metaBarChipComponents?: VehicleMetaBarChipComponents;
+  specs: VehicleSpecData[];
+  vehicle: VehicleDetail;
+  vehicleStatus: VehicleStatusData;
 }
 
 const COLUMNS_PER_ROW = 4;

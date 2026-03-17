@@ -9,8 +9,8 @@ import { PriceHistoryTable } from "./price-history-table";
 import { PriceRangeMeter } from "./price-range-meter";
 
 interface PricingTabProps {
-  pricingData: PricingData;
   priceHistory: PriceHistoryEntry[];
+  pricingData: PricingData;
 }
 
 export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {

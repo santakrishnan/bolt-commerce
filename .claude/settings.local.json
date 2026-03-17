@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc --noEmit --project apps/web/tsconfig.json)",
-      "Bash(pnpm install --filter web)"
+      "Bash(pnpm install --filter web)",
+      "Bash(npx vitest run --project web apps/web/src/components/shared/search-bar/__tests__/use-search-history.test.ts)",
+      "Bash(npx vitest run src/components/shared/search-bar/__tests__/use-search-history.test.ts)",
+      "Bash(npx vitest run apps/web/src/components/shared/search-bar/__tests__/use-search-history.test.ts)",
+      "Bash(node -e \"console.log\\(process.version\\)\")",
+      "Bash(npx vitest run apps/web/src/lib/routes/__tests__/used-cars.test.ts)",
+      "Bash(npx vitest run apps/web/src/components/shared/search-bar/__tests__/use-voice-recognition.test.ts)",
+      "Bash(npx vitest run apps/web/src/components/shared/search-bar/__tests__/autocomplete-services.test.ts)",
+      "Bash(node -e \":*)",
+      "Bash(npx vitest run apps/web/src/components/shared/search-bar/__tests__/use-search-history.test.ts --reporter verbose)"
     ]
   }
 }

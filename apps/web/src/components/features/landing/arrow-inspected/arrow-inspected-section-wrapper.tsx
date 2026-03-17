@@ -2,15 +2,15 @@ import { getInspectionFeatures } from "~/lib/data";
 import { ArrowInspectedSection } from "./arrow-inspected-section";
 
 export interface ArrowInspectedSectionWrapperProps {
-  headerClassName?: string;
-  titleClassName?: string;
-  descriptionClassName?: string;
-  containerClassName?: string;
-  className?: string;
   carouselClassName?: string;
-  gridClassName?: string;
-  title?: string;
+  className?: string;
+  containerClassName?: string;
   description?: string;
+  descriptionClassName?: string;
+  gridClassName?: string;
+  headerClassName?: string;
+  title?: string;
+  titleClassName?: string;
 }
 
 export async function ArrowInspectedSectionWrapper(props: ArrowInspectedSectionWrapperProps) {

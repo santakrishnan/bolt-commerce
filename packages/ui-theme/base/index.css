@@ -29,10 +29,10 @@
 
 /* Base Styles */
 body {
-  @apply bg-background text-foreground;
   font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-optical-sizing: auto;
+  @apply bg-background text-foreground;
 }

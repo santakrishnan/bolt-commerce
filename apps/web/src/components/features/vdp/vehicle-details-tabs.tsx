@@ -19,17 +19,17 @@ import type { VehicleMetaBarChipComponents } from "./vehicle-meta-bar";
 
 interface VehicleDetailsTabsProps {
   className?: string;
-  specs: VehicleSpecData[];
-  vehicle: VehicleDetail;
   features: FeatureCategory[];
   featuresInitialCount: number;
-  pricingData: PricingData;
-  priceHistory: PriceHistoryEntry[];
-  historyData: HistoryData;
-  vehicleStatus: VehicleStatusData;
-  metaBarChipComponents?: VehicleMetaBarChipComponents;
-  showInspectionSection?: boolean;
   featuresTableView?: boolean;
+  historyData: HistoryData;
+  metaBarChipComponents?: VehicleMetaBarChipComponents;
+  priceHistory: PriceHistoryEntry[];
+  pricingData: PricingData;
+  showInspectionSection?: boolean;
+  specs: VehicleSpecData[];
+  vehicle: VehicleDetail;
+  vehicleStatus: VehicleStatusData;
 }
 
 const tabTriggerClassName =

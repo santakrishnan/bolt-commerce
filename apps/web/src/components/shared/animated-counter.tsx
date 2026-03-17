@@ -3,18 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 
 interface AnimatedCounterProps {
-  /** The target value to count up to */
-  value: number;
+  /** Additional class names */
+  className?: string;
   /** Duration of the animation in ms */
   duration?: number;
+  /** Format with locale separators (e.g. 1,000) */
+  formatted?: boolean;
   /** Optional prefix (e.g. "$") */
   prefix?: string;
   /** Optional suffix (e.g. "+") */
   suffix?: string;
-  /** Format with locale separators (e.g. 1,000) */
-  formatted?: boolean;
-  /** Additional class names */
-  className?: string;
+  /** The target value to count up to */
+  value: number;
 }
 
 function easeOutExpo(t: number): number {

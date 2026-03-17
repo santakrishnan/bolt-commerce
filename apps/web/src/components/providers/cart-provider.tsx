@@ -10,10 +10,6 @@ interface CartItem {
 }
 
 interface CartContextValue {
-  state: {
-    items: CartItem[];
-    total: number;
-  };
   actions: {
     addToCart: (productId: string) => void;
     removeFromCart: (productId: string) => void;
@@ -21,6 +17,10 @@ interface CartContextValue {
   };
   meta: {
     isLoading: boolean;
+  };
+  state: {
+    items: CartItem[];
+    total: number;
   };
 }
 

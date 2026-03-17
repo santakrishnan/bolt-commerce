@@ -13,7 +13,6 @@ const appButtonVariants = cva(
           "bg-actions-secondary text-[color:var(--color-actions-secondary-foreground)] hover:bg-actions-secondary-hover active:bg-actions-secondary-hover disabled:bg-states-disabled disabled:text-disabled-foreground",
         tertiary:
           "border-1 border-actions-tertiary-border bg-transparent text-[color:var(--color-actions-tertiary-foreground)] hover:bg-actions-tertiary-hover active:bg-actions-tertiary-hover disabled:border-primary/50 disabled:bg-states-disabled disabled:text-disabled-foreground",
-    
       },
       size: {
         xs: "h-7 px-[var(--spacing-md)] py-2.5 font-semibold text-[length:var(--text-sm)] leading-[125%] tracking-[-0.14px]",
@@ -32,9 +31,9 @@ const appButtonVariants = cva(
 export interface ButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "size">,
     VariantProps<typeof appButtonVariants> {
+  asChild?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
-  asChild?: boolean;
 }
 
 const AppButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -52,9 +51,13 @@ const AppButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
           children
         ) : (
           <>
-            {icon && iconPosition === "left" && <span className="inline-flex shrink-0">{icon}</span>}
+            {icon && iconPosition === "left" && (
+              <span className="inline-flex shrink-0">{icon}</span>
+            )}
             {children}
-            {icon && iconPosition === "right" && <span className="inline-flex shrink-0">{icon}</span>}
+            {icon && iconPosition === "right" && (
+              <span className="inline-flex shrink-0">{icon}</span>
+            )}
           </>
         )}
       </ShadcnButton>

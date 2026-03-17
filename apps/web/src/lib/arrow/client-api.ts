@@ -27,9 +27,9 @@ import { ARROW_ENCRYPTED_HEADER, encryptPayload, resolveEncryptionKey } from "./
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface ArrowClientIds {
-  sessionId: string | null;
   fingerprintId: string | null;
   profileId: string | null;
+  sessionId: string | null;
 }
 
 export interface ArrowClientConfig {
@@ -42,16 +42,16 @@ export interface ArrowClientConfig {
 }
 
 export interface ArrowRequestOptions extends Omit<RequestInit, "body" | "method"> {
-  /** Extra headers for this specific request */
-  headers?: Record<string, string>;
-  /** Abort signal override */
-  signal?: AbortSignal;
   /**
    * Encrypt the request body using JWE (A256KW + A256GCM).
    * Requires `NEXT_PUBLIC_ARROW_ENCRYPTION_KEY` to be set.
    * Only applies to POST / PUT requests with a body.
    */
   encrypt?: boolean;
+  /** Extra headers for this specific request */
+  headers?: Record<string, string>;
+  /** Abort signal override */
+  signal?: AbortSignal;
 }
 
 export class ArrowClientError extends Error {
@@ -69,10 +69,10 @@ export class ArrowClientError extends Error {
 }
 
 export interface ArrowClient {
+  delete<T = unknown>(path: string, opts?: ArrowRequestOptions): Promise<T>;
   get<T = unknown>(path: string, opts?: ArrowRequestOptions): Promise<T>;
   post<T = unknown>(path: string, body?: unknown, opts?: ArrowRequestOptions): Promise<T>;
   put<T = unknown>(path: string, body?: unknown, opts?: ArrowRequestOptions): Promise<T>;
-  delete<T = unknown>(path: string, opts?: ArrowRequestOptions): Promise<T>;
 }
 
 // ─── Factory ────────────────────────────────────────────────────────────────

@@ -28,20 +28,20 @@ import type { SearchPagination, SearchQuery, SearchResult, SearchVehicle } from 
 // ─── State ──────────────────────────────────────────────────────────────────
 
 export interface UseSearchState {
-  vehicles: SearchVehicle[];
-  pagination: SearchPagination | null;
-  isLoading: boolean;
   error: Error | null;
+  isLoading: boolean;
+  pagination: SearchPagination | null;
   query: SearchQuery;
+  vehicles: SearchVehicle[];
 }
 
 export interface UseSearchActions {
+  /** Reset the search state. */
+  reset(): void;
   /** Execute a search with the given query (merges with current query). */
   search(params?: Partial<SearchQuery>): Promise<void>;
   /** Set the current page. */
   setPage(page: number): Promise<void>;
-  /** Reset the search state. */
-  reset(): void;
 }
 
 export type UseSearchReturn = UseSearchState & UseSearchActions;
@@ -49,14 +49,14 @@ export type UseSearchReturn = UseSearchState & UseSearchActions;
 // ─── Tracking IDs (provided by the caller) ──────────────────────────────────
 
 export interface UseSearchOptions {
-  /** Arrow tracking IDs for personalization headers */
-  sessionId?: string | null;
-  fingerprintId?: string | null;
-  profileId?: string | null;
   /** Base API path (default: "/api/search") */
   endpoint?: string;
+  fingerprintId?: string | null;
   /** Initial query (optional) */
   initialQuery?: SearchQuery;
+  profileId?: string | null;
+  /** Arrow tracking IDs for personalization headers */
+  sessionId?: string | null;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────

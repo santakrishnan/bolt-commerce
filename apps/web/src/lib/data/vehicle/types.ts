@@ -10,35 +10,35 @@
 // ---------------------------------------------------------------------------
 
 export interface VehicleDetail {
-  id: string;
-  title?: string;
-  year: number;
-  make: string;
-  model: string;
-  trim: string;
-  price: number;
-  originalPrice: number;
-  condition: string;
-  warranty: boolean;
-  inspected: boolean;
-  miles: string;
-  drivetrain: string;
-  fuelType?: string;
-  transmission?: string;
-  mpg: string;
-  stock: string;
-  vin: string;
-  exteriorColor: string;
-  interiorColor: string;
   certified?: boolean;
-  inspectionPassed?: boolean;
+  condition: string;
   dealer: {
     name: string;
     location: string;
     distance: string;
   };
-  images: string[];
+  drivetrain: string;
+  exteriorColor: string;
+  fuelType?: string;
   highlights: string[];
+  id: string;
+  images: string[];
+  inspected: boolean;
+  inspectionPassed?: boolean;
+  interiorColor: string;
+  make: string;
+  miles: string;
+  model: string;
+  mpg: string;
+  originalPrice: number;
+  price: number;
+  stock: string;
+  title?: string;
+  transmission?: string;
+  trim: string;
+  vin: string;
+  warranty: boolean;
+  year: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -57,8 +57,8 @@ export interface VehicleSpecData {
 // ---------------------------------------------------------------------------
 
 export interface FeatureCategory {
-  name: string;
   features: string[];
+  name: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,11 +66,11 @@ export interface FeatureCategory {
 // ---------------------------------------------------------------------------
 
 export interface PricingData {
-  currentPrice: number;
   avgPrice: number;
+  currentPrice: number;
   daysOnSite: number;
-  views: number;
   saves: number;
+  views: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -79,9 +79,9 @@ export interface PricingData {
 
 /** A single row in the price history table */
 export interface PriceHistoryEntry {
+  change: number;
   date: string;
   price: number;
-  change: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -89,15 +89,15 @@ export interface PriceHistoryEntry {
 // ---------------------------------------------------------------------------
 
 export interface HistoryData {
-  vin: string;
-  vehicleDescription: string;
   damageReported: number;
-  previousOwners: number;
-  servicesOnRecord: number;
-  repairsReported: number;
-  ownerTypes: string[];
   lastOdometerReading: number;
+  ownerTypes: string[];
+  previousOwners: number;
+  repairsReported: number;
+  servicesOnRecord: number;
   titleStatus?: string;
+  vehicleDescription: string;
+  vin: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -105,15 +105,15 @@ export interface HistoryData {
 // ---------------------------------------------------------------------------
 
 export interface RatingDistribution {
-  stars: number;
   count: number;
   id: string;
+  stars: number;
 }
 
 export interface RatingData {
+  distribution: RatingDistribution[];
   rating: number;
   reviewCount: number;
-  distribution: RatingDistribution[];
 }
 
 // ---------------------------------------------------------------------------
@@ -121,11 +121,11 @@ export interface RatingData {
 // ---------------------------------------------------------------------------
 
 export interface VehicleStatusData {
-  noLongerAvailable: boolean;
+  featuresTableView?: boolean;
   historyReportPending: boolean;
   inspectionInProgress: boolean;
   limitedPhotos: boolean;
-  featuresTableView?: boolean;
+  noLongerAvailable: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -133,10 +133,10 @@ export interface VehicleStatusData {
 // ---------------------------------------------------------------------------
 
 export interface VinData {
-  vehicle: VehicleDetail;
-  pricing: PricingData;
-  priceHistory: PriceHistoryEntry[];
   history: HistoryData;
+  priceHistory: PriceHistoryEntry[];
+  pricing: PricingData;
+  vehicle: VehicleDetail;
 }
 
 // ---------------------------------------------------------------------------
@@ -144,9 +144,9 @@ export interface VinData {
 // ---------------------------------------------------------------------------
 
 export interface VehicleData {
-  specs: VehicleSpecData[];
   features: FeatureCategory[];
   featuresInitialCount: number;
   rating: RatingData;
+  specs: VehicleSpecData[];
   vehicleStatus: VehicleStatusData;
 }

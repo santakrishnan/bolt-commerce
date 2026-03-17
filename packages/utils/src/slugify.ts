@@ -65,6 +65,12 @@ const STOP_WORDS = new Set([
 
 export interface SlugifyOptions {
   /**
+   * Truncate the slug to this many characters, cutting at the last full word.
+   * Keeps URLs concise and below the ~75-char SEO sweet-spot.
+   * @default 75
+   */
+  maxLength?: number;
+  /**
    * Strip common English stop words (a, the, and, with, for, …).
    *
    * **Use for canonical/indexed URL slugs** (vehicle detail pages, category pages).
@@ -72,12 +78,6 @@ export interface SlugifyOptions {
    * @default false
    */
   removeStopWords?: boolean;
-  /**
-   * Truncate the slug to this many characters, cutting at the last full word.
-   * Keeps URLs concise and below the ~75-char SEO sweet-spot.
-   * @default 75
-   */
-  maxLength?: number;
 }
 
 /**

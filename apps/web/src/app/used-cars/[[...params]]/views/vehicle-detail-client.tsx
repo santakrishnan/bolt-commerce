@@ -15,10 +15,10 @@ import { getVehicleStatusFromFlagsSync } from "~/lib/flags/vdp-client";
 import type { VdpParams } from "~/lib/routes";
 
 interface VehicleDetailClientProps {
-  vehicle: VdpParams;
-  vinData: VinData;
-  vehicleData: VehicleData;
   vdpUrl: string;
+  vehicle: VdpParams;
+  vehicleData: VehicleData;
+  vinData: VinData;
 }
 
 export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDetailClientProps) {

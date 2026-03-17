@@ -9,16 +9,16 @@ import { useVoiceRecognition } from "../hooks/use-voice-recognition";
 
 // Mock Web Speech API
 interface MockSpeechRecognition {
+  abort: ReturnType<typeof vi.fn>;
   continuous: boolean;
   interimResults: boolean;
   lang: string;
+  onend: ((ev: Event) => void) | null;
+  onerror: ((ev: any) => void) | null;
+  onresult: ((ev: any) => void) | null;
+  onstart: ((ev: Event) => void) | null;
   start: ReturnType<typeof vi.fn>;
   stop: ReturnType<typeof vi.fn>;
-  abort: ReturnType<typeof vi.fn>;
-  onstart: ((ev: Event) => void) | null;
-  onend: ((ev: Event) => void) | null;
-  onresult: ((ev: any) => void) | null;
-  onerror: ((ev: any) => void) | null;
 }
 
 describe("useVoiceRecognition", () => {

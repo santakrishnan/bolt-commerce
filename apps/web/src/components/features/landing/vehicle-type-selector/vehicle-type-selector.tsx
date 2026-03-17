@@ -9,10 +9,10 @@ import { ROUTES } from "~/lib/routes/constants";
 import { VehicleTypeCard } from "./vehicle-type-card";
 
 export interface VehicleTypeSelectorProps {
-  vehicleTypes: VehicleType[];
-  onSelect?: (vehicleId: string) => void;
-  defaultSelected?: string;
   className?: string;
+  defaultSelected?: string;
+  onSelect?: (vehicleId: string) => void;
+  vehicleTypes: VehicleType[];
 }
 
 export function VehicleTypeSelector({

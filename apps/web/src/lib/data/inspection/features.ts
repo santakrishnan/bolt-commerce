@@ -1,9 +1,9 @@
 export interface InspectionFeature {
-  id: string;
-  title: string;
   description: string;
   icon: "arrow-circle" | "certified-document" | "verified-badge" | "guarantee";
+  id: string;
   image: string;
+  title: string;
 }
 
 export const inspectionFeatures: InspectionFeature[] = [

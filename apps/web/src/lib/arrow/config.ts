@@ -13,24 +13,24 @@ import { API_ROUTES } from "~/lib/routes/constants";
  * Server-side configuration (not exposed to client)
  */
 export interface ServerConfig {
-  fingerprintServiceUrl: string;
   fingerprintApiKey: string;
+  fingerprintServiceUrl: string;
 }
 
 /**
  * Client-side configuration (exposed via NEXT_PUBLIC_ prefix)
  */
 export interface ClientConfig {
-  profileServiceUrl: string;
   eventServiceUrl: string;
+  profileServiceUrl: string;
 }
 
 /**
  * Complete tracking configuration
  */
 export interface TrackingConfig {
-  server: ServerConfig;
   client: ClientConfig;
+  server: ServerConfig;
 }
 
 /**

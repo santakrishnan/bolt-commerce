@@ -2,13 +2,13 @@ import { Button, cn } from "@tfs-ucmp/ui";
 import Image from "next/image";
 
 interface VehicleDetailsBannerProps {
-  imageUrl: string;
-  title: string;
-  description: string;
   buttonLabel?: string;
   buttonVariant?: "default" | "destructive" | "outline";
-  onButtonClick?: () => void;
   className?: string;
+  description: string;
+  imageUrl: string;
+  onButtonClick?: () => void;
+  title: string;
 }
 
 export function VehicleDetailsBanner({

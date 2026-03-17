@@ -19,7 +19,7 @@ const OWNER_COUNT_REGEX = /(\d+)/;
 const MOCK_NETWORK_DELAY_MS = 40;
 
 interface VehicleProfile {
-  name: string;
+  features: FeatureCategory[];
   meta: {
     Drivetrain: string;
     "Fuel Type": string;
@@ -30,7 +30,7 @@ interface VehicleProfile {
     "Vehicle History": string;
     Certification: string;
   };
-  features: FeatureCategory[];
+  name: string;
 }
 
 const VEHICLE_PROFILES: VehicleProfile[] = [

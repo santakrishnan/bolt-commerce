@@ -22,11 +22,8 @@ import type { FedFingerprintData } from "~/lib/arrow/types";
  * **SDK v3 (deprecated):** Provided all fields directly.
  */
 export interface FingerprintClientData {
-  confidence?: number;
-  visitorFound?: boolean;
-  /** @deprecated Not available in SDK v4 client response — use sealed/server path */
-  incognito?: boolean;
-  ip?: string;
+  /** Smart Signal add-ons — only present if enabled on the subscription */
+  bot?: string;
   browserDetails?: {
     browserName?: string;
     browserMajorVersion?: string;
@@ -34,6 +31,10 @@ export interface FingerprintClientData {
     osVersion?: string;
     device?: string;
   };
+  confidence?: number;
+  /** @deprecated Not available in SDK v4 client response — use sealed/server path */
+  incognito?: boolean;
+  ip?: string;
   /** @deprecated Not available in SDK v4 client response — use sealed/server path */
   ipLocation?: {
     accuracyRadius?: number;
@@ -46,19 +47,29 @@ export interface FingerprintClientData {
     continent?: { code?: string; name?: string };
     subdivisions?: Array<{ isoCode?: string; name?: string }>;
   };
-  /** Smart Signal add-ons — only present if enabled on the subscription */
-  bot?: string;
-  vpn?: boolean;
   proxy?: boolean;
-  tampering?: boolean;
   suspectScore?: number;
+  tampering?: boolean;
+  visitorFound?: boolean;
+  vpn?: boolean;
 }
 
 export interface ProfileProxyRequest {
+  eventId?: string;
+  /**
+   * Full enriched fingerprint payload from the v3 JS Agent (sent client-side).
+   * @deprecated SDK v3 is deprecated — use `sealedResult` for v4 SDK.
+   * Retained for backward compatibility during migration.
+   */
+  fingerprintData?: FingerprintClientData;
+  fingerprintId?: string;
+  fingerprintMetadata?: {
+    confidence?: number;
+    requestId?: string;
+    visitorFound?: boolean;
+  };
   /** `"bootstrap"` checks cookies only; `"initialize"` (default) does full setup. */
   mode?: "bootstrap" | "initialize";
-  fingerprintId?: string;
-  eventId?: string;
   /**
    * Base64-encoded sealed result from the JS Agent v4 (Sealed Client Results).
    *
@@ -69,39 +80,28 @@ export interface ProfileProxyRequest {
    * calling the Fingerprint Server API with `eventId`.
    */
   sealedResult?: string;
-  /**
-   * Full enriched fingerprint payload from the v3 JS Agent (sent client-side).
-   * @deprecated SDK v3 is deprecated — use `sealedResult` for v4 SDK.
-   * Retained for backward compatibility during migration.
-   */
-  fingerprintData?: FingerprintClientData;
-  fingerprintMetadata?: {
-    confidence?: number;
-    requestId?: string;
-    visitorFound?: boolean;
-  };
 }
 
 export interface ProfileProxyResponse {
-  sessionId: string;
-  fingerprintId: string;
-  profileId: string | null;
-  fingerprintMetadata?: {
-    confidence?: number;
-    requestId?: string;
-    visitorFound?: boolean;
-  };
+  error?: string;
   /**
    * FED-safe fingerprint data — only visitorId, incognito, and location.
    * The full `FingerprintEventData` stays server-side.
    */
   fingerprintDetails?: FedFingerprintData;
-  error?: string;
+  fingerprintId: string;
+  fingerprintMetadata?: {
+    confidence?: number;
+    requestId?: string;
+    visitorFound?: boolean;
+  };
+  profileId: string | null;
+  sessionId: string;
 }
 
 export interface ProfileProxyError {
-  error: string;
   code: string;
+  error: string;
   partialData?: {
     sessionId?: string;
     fingerprintId?: string;

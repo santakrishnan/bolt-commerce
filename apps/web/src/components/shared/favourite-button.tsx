@@ -6,9 +6,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useFavorites } from "~/components/providers/favorites-provider";
 
 interface FavoriteButtonProps {
+  className?: string;
   /** VIN of the vehicle to toggle — hooks into the global favorites context. */
   vin: string;
-  className?: string;
 }
 
 /**

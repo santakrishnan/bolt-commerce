@@ -52,23 +52,23 @@ function vehicleToCarCardProps(vehicle: Vehicle) {
 }
 
 export interface ActiveFilter {
+  isRefineSearch?: boolean;
   label: string;
   type: string;
   value: string;
-  isRefineSearch?: boolean;
 }
 
 export interface VehicleResultsProps {
-  vehicles: Vehicle[];
-  searchQuery: string;
   activeFilters: ActiveFilter[];
-  onToggleFilter: () => void;
-  onRemoveFilter: (type: string, value: string) => void;
-  onReset: () => void;
-  onApplyRefineFilters?: (filters: { id: string; label: string }[]) => void;
   currentPage: number;
   itemsPerPage: number;
+  onApplyRefineFilters?: (filters: { id: string; label: string }[]) => void;
   onPageChange: (page: number) => void;
+  onRemoveFilter: (type: string, value: string) => void;
+  onReset: () => void;
+  onToggleFilter: () => void;
+  searchQuery: string;
+  vehicles: Vehicle[];
 }
 
 export function VehicleResults({

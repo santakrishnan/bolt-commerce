@@ -4,8 +4,8 @@ import { Input, useDebounce } from "@tfs-ucmp/ui";
 import { useState } from "react";
 
 interface SearchBarProps {
-  placeholder?: string;
   onSearch?: (query: string) => void;
+  placeholder?: string;
 }
 
 /**

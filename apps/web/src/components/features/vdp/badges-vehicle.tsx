@@ -1,9 +1,9 @@
 import type React from "react";
 import { CustomBadge } from "~/components/shared/custom-badge";
 export interface VehicleBadgesProps {
-  warranty: boolean;
-  inspected: boolean;
   className?: string;
+  inspected: boolean;
+  warranty: boolean;
 }
 
 export const VehicleBadges: React.FC<VehicleBadgesProps> = ({

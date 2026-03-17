@@ -23,8 +23,8 @@ import { buildVdpPath, type VdpParams } from "~/lib/routes";
 // import { VehicleStatusBanners } from "./vehicle-status-banners";
 
 interface VehiclePDPProps {
-  vehicle: VehicleDetail;
   slugParams: VdpParams;
+  vehicle: VehicleDetail;
   vehicleStatus: VehicleStatusData;
 }
 

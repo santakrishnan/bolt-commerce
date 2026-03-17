@@ -23,8 +23,8 @@ export type MaybePromise<T> = T | Promise<T>;
 // Service configuration types
 export interface ServiceConfig {
   baseUrl: string;
-  timeout?: number;
   headers?: Record<string, string>;
+  timeout?: number;
 }
 
 // Provider context pattern types (React 19 style)
@@ -33,9 +33,9 @@ export interface ProviderContextValue<
   TActions = Record<string, unknown>,
   TMeta = Record<string, unknown>,
 > {
-  state: TState;
   actions: TActions;
   meta: TMeta;
+  state: TState;
 }
 
 // Result type for operations that can fail

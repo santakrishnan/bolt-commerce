@@ -4,16 +4,16 @@ import { ArrowInspectedCarousel } from "./arrow-inspected-carousel";
 import { InspectionFeatureCard } from "./inspection-feature-card";
 
 export interface ArrowInspectedSectionProps {
-  inspectionFeatures: InspectionFeature[];
-  headerClassName?: string;
-  titleClassName?: string;
-  descriptionClassName?: string;
-  containerClassName?: string;
-  className?: string;
   carouselClassName?: string;
-  gridClassName?: string;
-  title?: string;
+  className?: string;
+  containerClassName?: string;
   description?: string;
+  descriptionClassName?: string;
+  gridClassName?: string;
+  headerClassName?: string;
+  inspectionFeatures: InspectionFeature[];
+  title?: string;
+  titleClassName?: string;
 }
 
 export function ArrowInspectedSection({

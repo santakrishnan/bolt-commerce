@@ -5,9 +5,9 @@ import { ROUTES } from "~/lib/routes/constants";
 import type { VehicleFinderOption } from "./data";
 
 export interface VehicleQuickLinkCardProps {
-  option: VehicleFinderOption;
-  className?: string;
   backgroundColor?: string;
+  className?: string;
+  option: VehicleFinderOption;
 }
 
 const iconMap = {

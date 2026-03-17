@@ -11,69 +11,69 @@
 
 /** Parameters for a vehicle search query. */
 export interface SearchQuery {
-  /** Free-text search term */
-  query?: string;
-  /** Page number (1-based) */
-  page?: number;
-  /** Results per page */
-  pageSize?: number;
-  /** Sort field */
-  sortBy?: "price" | "year" | "mileage" | "match" | "relevance";
-  /** Sort direction */
-  sortOrder?: "asc" | "desc";
-  /** Price range filter */
-  priceMin?: number;
-  priceMax?: number;
-  /** Year range filter */
-  yearMin?: number;
-  yearMax?: number;
   /** Body style filter (multi-select) */
   bodyStyles?: string[];
+  /** Fuel type filter */
+  fuelTypes?: string[];
   /** Make filter */
   makes?: string[];
   /** Model filter */
   models?: string[];
-  /** Fuel type filter */
-  fuelTypes?: string[];
+  /** Page number (1-based) */
+  page?: number;
+  /** Results per page */
+  pageSize?: number;
+  priceMax?: number;
+  /** Price range filter */
+  priceMin?: number;
+  /** Free-text search term */
+  query?: string;
+  /** Sort field */
+  sortBy?: "price" | "year" | "mileage" | "match" | "relevance";
+  /** Sort direction */
+  sortOrder?: "asc" | "desc";
+  yearMax?: number;
+  /** Year range filter */
+  yearMin?: number;
 }
 
 // ─── Search response ────────────────────────────────────────────────────────
 
 /** A vehicle result item. */
 export interface SearchVehicle {
-  id: number;
-  title: string;
-  make: string;
-  model: string;
-  variant: string;
-  year: number;
-  vin: string;
-  price: number;
-  oldPrice?: number;
-  image: string | string[];
-  miles: string;
-  odometer: string;
-  match: number;
-  labels: string[];
-  owners: number;
   estimation?: {
     creditScore: string;
     apr: string;
     termLength: string;
     estimatedMonthlyPayment: string;
   };
+  id: number;
+  image: string | string[];
+  labels: string[];
+  make: string;
+  match: number;
+  miles: string;
+  model: string;
+  odometer: string;
+  oldPrice?: number;
+  owners: number;
+  price: number;
+  title: string;
+  variant: string;
+  vin: string;
+  year: number;
 }
 
 /** Pagination metadata. */
 export interface SearchPagination {
   page: number;
   pageSize: number;
-  totalResults: number;
   totalPages: number;
+  totalResults: number;
 }
 
 /** Full search response. */
 export interface SearchResult {
-  vehicles: SearchVehicle[];
   pagination: SearchPagination;
+  vehicles: SearchVehicle[];
 }

@@ -1,7 +1,7 @@
 export interface ProcessStep {
-  icon: "refresh" | "search" | "shield" | "clipboard";
-  title: string;
   description: string;
-  linkText?: string;
+  icon: "refresh" | "search" | "shield" | "clipboard";
   linkHref?: string;
+  linkText?: string;
+  title: string;
 }

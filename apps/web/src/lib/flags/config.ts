@@ -18,10 +18,6 @@ export const FLAG_COOKIE_NAME = "feature-flags-user";
 // ============================================================================
 
 export interface FeatureFlags {
-  // Hero Banner Display
-  showDefaultLandingHero: boolean;
-  showPersonalizedHeroBanner: boolean;
-
   // Customer Status
   customerPreQualified: boolean;
   customerTestDriveScheduled: boolean;
@@ -29,18 +25,21 @@ export interface FeatureFlags {
 
   // Navigation & Redirect
   redirectToMyGarage: boolean;
+  // Hero Banner Display
+  showDefaultLandingHero: boolean;
+  showPersonalizedHeroBanner: boolean;
 }
 
 export interface MockUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  flags: FeatureFlags;
-  lastVisit?: number; // Unix timestamp (ms)
-  isAuthenticated?: boolean;
-  prequalified?: boolean;
   daysRemaining?: number; // Days remaining for prequalification offer (out of 30)
+  email: string;
+  firstName: string;
+  flags: FeatureFlags;
+  id: string;
+  isAuthenticated?: boolean;
+  lastName: string;
+  lastVisit?: number; // Unix timestamp (ms)
+  prequalified?: boolean;
 }
 
 // ============================================================================

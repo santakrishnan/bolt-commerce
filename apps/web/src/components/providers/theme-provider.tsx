@@ -3,14 +3,14 @@
 import { createContext, use, useCallback, useState } from "react";
 
 interface ThemeContextValue {
-  state: {
-    theme: "light" | "dark" | "system";
-  };
   actions: {
     setTheme: (theme: "light" | "dark" | "system") => void;
   };
   meta: {
     isLoading: boolean;
+  };
+  state: {
+    theme: "light" | "dark" | "system";
   };
 }
 

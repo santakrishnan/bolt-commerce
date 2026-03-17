@@ -19,10 +19,10 @@ interface AnimatingCarouselProps {
 }
 
 interface StyleState {
+  filter: string;
   opacity: number;
   transform: string;
   transition: string;
-  filter: string;
 }
 
 const SLIDE_INTERVAL = 5000;
@@ -80,8 +80,8 @@ function useContainerStyles() {
 // ============ SLIDE TRANSITION HOOK ============
 
 interface UseSlideTransitionProps {
-  numSlides: number;
   containerStyles: ReturnType<typeof useContainerStyles>;
+  numSlides: number;
 }
 
 function useSlideTransition({ numSlides, containerStyles }: UseSlideTransitionProps) {
@@ -354,7 +354,7 @@ export function CustomerJourneyCarousel({ className, flags }: AnimatingCarouselP
   }
 
   const slideA = filteredSlides[containerAIndex];
-  const slideB = containerBIndex !== null ? filteredSlides[containerBIndex] : null;
+  const slideB = containerBIndex === null ? null : filteredSlides[containerBIndex];
 
   // Safety check
   if (!slideA) {
@@ -484,9 +484,9 @@ function SingleSlideCarousel({ className, slide }: SingleSlideCarouselProps) {
 }
 
 interface ImageContainerProps {
+  slide: (typeof customerJourneySlides)[0];
   style: StyleState;
   zIndex: number;
-  slide: (typeof customerJourneySlides)[0];
 }
 
 function ImageContainer({ style, zIndex, slide }: ImageContainerProps) {
@@ -526,10 +526,10 @@ function GradientOverlays() {
 }
 
 interface TextContainerProps {
-  style: StyleState;
-  zIndex: number;
   isActive: boolean;
   slide: (typeof customerJourneySlides)[0];
+  style: StyleState;
+  zIndex: number;
 }
 
 function TextContainer({ style, zIndex, isActive, slide }: TextContainerProps) {
@@ -553,9 +553,9 @@ function TextContainer({ style, zIndex, isActive, slide }: TextContainerProps) {
 }
 
 interface NavigationDotsProps {
-  slides: typeof customerJourneySlides;
   currentIndex: number | null;
   onDotClick: (index: number) => void;
+  slides: typeof customerJourneySlides;
 }
 
 function NavigationDots({ slides, currentIndex, onDotClick }: NavigationDotsProps) {

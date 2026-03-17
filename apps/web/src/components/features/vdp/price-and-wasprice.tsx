@@ -1,9 +1,9 @@
 import type React from "react";
 
 export interface VehiclePriceProps {
-  price: number;
-  originalPrice?: number | null;
   className?: string;
+  originalPrice?: number | null;
+  price: number;
   priceClassName?: string;
 }
 

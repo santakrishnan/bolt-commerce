@@ -5,17 +5,17 @@ import Image from "next/image";
 import * as React from "react";
 
 export interface CarouselSlide {
-  src: string;
-  srcMobile?: string;
   alt: string;
   headline?: string;
   objectPosition?: string;
+  src: string;
+  srcMobile?: string;
 }
 
 interface HomeHeroCarouselProps {
-  slides: CarouselSlide[];
   autoAdvanceMs?: number;
   pauseOnHover?: boolean;
+  slides: CarouselSlide[];
 }
 
 export function HomeHeroCarousel({

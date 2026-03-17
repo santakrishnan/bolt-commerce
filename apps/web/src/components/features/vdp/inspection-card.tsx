@@ -2,14 +2,14 @@ import { Card } from "@tfs-ucmp/ui";
 import Image from "next/image";
 
 interface InspectionCardProps {
-  /** Photo displayed at top of card */
-  photoSrc: string;
-  photoAlt: string;
+  description: string;
   /** Small icon next to the title */
   iconSrc: string;
+  photoAlt: string;
+  /** Photo displayed at top of card */
+  photoSrc: string;
   /** Card title — supports line breaks via \n or JSX */
   title: React.ReactNode;
-  description: string;
 }
 
 /**

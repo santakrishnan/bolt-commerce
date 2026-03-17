@@ -3,31 +3,31 @@
 import { useQuery } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useOptimisticListMutation } from "~/hooks/use-optimistic-list-mutation";
+import { searchHistoryQueries } from "~/lib/queries/search-history";
 import {
   addSearchEntry,
   clearSearchHistory,
-  getAllSearchHistory,
   removeSearchEntry,
   type SearchEntry,
 } from "~/services/search-history-api";
 
-// ── Query key (shared with the search-bar hook) ───────────────────────
+// ── Re-export query key for consumers that need it (e.g. search-bar hook) ──
 
-export const SEARCH_HISTORY_KEY = ["search-history"] as const;
+export const SEARCH_HISTORY_KEY = searchHistoryQueries.all().queryKey;
 
 // ── Context shape ────────────────────────────────────────────────────
 
 interface SearchHistoryContextValue {
-  /** Current list of search entries (most recent first). */
-  searches: SearchEntry[];
-  /** Always true — initialData guarantees data on first render. */
-  isLoaded: boolean;
   /** Add a new search. Skips empty/1-char queries. Dedupes by query text. */
   addSearch: (query: string, url: string, type?: "nlp" | "filter") => void;
-  /** Remove a search entry by id. */
-  removeSearch: (id: string) => void;
   /** Remove all search history. */
   clearAll: () => void;
+  /** Whether the initial fetch has completed. */
+  isLoaded: boolean;
+  /** Remove a search entry by id. */
+  removeSearch: (id: string) => void;
+  /** Current list of search entries (most recent first). */
+  searches: SearchEntry[];
 }
 
 const SearchHistoryContext = createContext<SearchHistoryContextValue | null>(null);
@@ -36,24 +36,24 @@ const SearchHistoryContext = createContext<SearchHistoryContextValue | null>(nul
 
 interface AddVars {
   query: string;
-  url: string;
   type: "nlp" | "filter";
+  url: string;
 }
+
+// ── Derived constants from query factory ─────────────────────────────
+
+const queryOpts = searchHistoryQueries.all();
 
 // ── Provider ─────────────────────────────────────────────────────────
 
 export function SearchHistoryProvider({ children }: { children: React.ReactNode }) {
-  // ── Query: fetch all history from mock API ────────────────────────
-  const { data: searches = [] } = useQuery({
-    queryKey: SEARCH_HISTORY_KEY,
-    queryFn: getAllSearchHistory,
-    initialData: [] as SearchEntry[],
-  });
+  // ── Query: fetch all history via query factory ────────────────────
+  const { data: searches = [], isFetched } = useQuery(queryOpts);
 
   // ── Mutations using shared optimistic hook ──────────────────────────
 
   const { mutate: doAdd } = useOptimisticListMutation<SearchEntry, AddVars>({
-    queryKey: SEARCH_HISTORY_KEY,
+    queryKey: queryOpts.queryKey,
     mutationFn: ({ query, url, type }) => addSearchEntry(query, url, type),
     updater: (prev, { query, url, type }) => {
       const trimmed = query.trim();
@@ -62,15 +62,9 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
       }
 
       const entries = [...prev];
-      const existingIdx = entries.findIndex(
-        (e) => e.query.toLowerCase() === trimmed.toLowerCase()
-      );
+      const existingIdx = entries.findIndex((e) => e.query.toLowerCase() === trimmed.toLowerCase());
 
-      if (existingIdx !== -1) {
-        const existing = entries[existingIdx] as SearchEntry;
-        entries.splice(existingIdx, 1);
-        entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
-      } else {
+      if (existingIdx === -1) {
         entries.unshift({
           id: Date.now().toString(),
           query: trimmed,
@@ -78,6 +72,10 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
           timestamp: new Date().toISOString(),
           type,
         });
+      } else {
+        const existing = entries[existingIdx] as SearchEntry;
+        entries.splice(existingIdx, 1);
+        entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
       }
 
       return entries.slice(0, 10);
@@ -85,14 +83,14 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
   });
 
   const { mutate: doRemove } = useOptimisticListMutation<SearchEntry, string>({
-    queryKey: SEARCH_HISTORY_KEY,
-    mutationFn: removeSearchEntry,
+    queryKey: queryOpts.queryKey,
+    mutationFn: (id) => removeSearchEntry(id),
     updater: (prev, id) => prev.filter((e) => e.id !== id),
   });
 
   const { mutate: doClear } = useOptimisticListMutation<SearchEntry, void>({
-    queryKey: SEARCH_HISTORY_KEY,
-    mutationFn: clearSearchHistory,
+    queryKey: queryOpts.queryKey,
+    mutationFn: () => clearSearchHistory(),
     updater: () => [],
   });
 
@@ -112,12 +110,12 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
   const value = useMemo<SearchHistoryContextValue>(
     () => ({
       searches,
-      isLoaded: true,
+      isLoaded: isFetched,
       addSearch: handleAdd,
       removeSearch: handleRemove,
       clearAll: handleClearAll,
     }),
-    [searches, handleAdd, handleRemove, handleClearAll]
+    [searches, isFetched, handleAdd, handleRemove, handleClearAll]
   );
 
   return <SearchHistoryContext.Provider value={value}>{children}</SearchHistoryContext.Provider>;

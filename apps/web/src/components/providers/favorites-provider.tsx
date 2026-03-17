@@ -3,36 +3,32 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useMemo } from "react";
 import { useOptimisticListMutation } from "~/hooks/use-optimistic-list-mutation";
-import {
-  clearAllSavedVehicles,
-  getAllSavedVehicles,
-  saveVehicle,
-  unsaveVehicle,
-} from "~/services/saved-vehicles-api";
+import { savedVehicleQueries } from "~/lib/queries/saved-vehicles";
+import { clearAllSavedVehicles, saveVehicle, unsaveVehicle } from "~/services/saved-vehicles-api";
 
-// ── Query key ────────────────────────────────────────────────────────
+// ── Derived constants from query factory ─────────────────────────────
 
-const SAVED_VEHICLES_KEY = ["saved-vehicles"] as const;
+const queryOpts = savedVehicleQueries.all();
 
 // ── Context shape (unchanged — all consumers keep working) ───────────
 
 interface FavoritesContextValue {
-  /** Current list of saved VINs. */
-  savedVins: string[];
-  /** Whether data is available (always true — initialData guarantees it). */
-  isLoaded: boolean;
   /** Add a VIN (no-op if duplicate or at 30-limit). */
   addVehicle: (vin: string) => void;
-  /** Remove a VIN. */
-  removeVehicle: (vin: string) => void;
-  /** Toggle a VIN: add if missing, remove if present. */
-  toggleVehicle: (vin: string) => void;
-  /** Check if a VIN is in the favorites list. */
-  isVehicleSaved: (vin: string) => boolean;
-  /** Number of saved vehicles. */
-  savedCount: number;
   /** Remove all saved vehicles. */
   clearAll: () => void;
+  /** Whether the initial fetch has completed. */
+  isLoaded: boolean;
+  /** Check if a VIN is in the favorites list. */
+  isVehicleSaved: (vin: string) => boolean;
+  /** Remove a VIN. */
+  removeVehicle: (vin: string) => void;
+  /** Number of saved vehicles. */
+  savedCount: number;
+  /** Current list of saved VINs. */
+  savedVins: string[];
+  /** Toggle a VIN: add if missing, remove if present. */
+  toggleVehicle: (vin: string) => void;
 }
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
@@ -42,31 +38,26 @@ const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
 
-  // ── Query: fetch saved VINs from mock API ─────────────────────────
-  const { data: savedVins = [] } = useQuery({
-    queryKey: SAVED_VEHICLES_KEY,
-    queryFn: getAllSavedVehicles,
-    // Initialise with empty array so the first render is never undefined
-    initialData: [] as string[],
-  });
+  // ── Query: fetch saved VINs via query factory ─────────────────────
+  const { data: savedVins = [], isFetched } = useQuery(queryOpts);
 
   // ── Mutations using shared optimistic hook ──────────────────────────
 
   const { mutate: doSave } = useOptimisticListMutation<string, string>({
-    queryKey: SAVED_VEHICLES_KEY,
-    mutationFn: saveVehicle,
+    queryKey: queryOpts.queryKey,
+    mutationFn: (vin) => saveVehicle(vin),
     updater: (prev, vin) => (prev.includes(vin) ? prev : [...prev, vin]),
   });
 
   const { mutate: doUnsave } = useOptimisticListMutation<string, string>({
-    queryKey: SAVED_VEHICLES_KEY,
-    mutationFn: unsaveVehicle,
+    queryKey: queryOpts.queryKey,
+    mutationFn: (vin) => unsaveVehicle(vin),
     updater: (prev, vin) => prev.filter((v) => v !== vin),
   });
 
   const { mutate: doClear } = useOptimisticListMutation<string, void>({
-    queryKey: SAVED_VEHICLES_KEY,
-    mutationFn: clearAllSavedVehicles,
+    queryKey: queryOpts.queryKey,
+    mutationFn: () => clearAllSavedVehicles(),
     updater: () => [],
   });
 
@@ -79,7 +70,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   /** Toggle reads directly from the query cache so it never uses a stale closure. */
   const handleToggle = useCallback(
     (vin: string) => {
-      const current = queryClient.getQueryData<string[]>(SAVED_VEHICLES_KEY) ?? [];
+      const current = queryClient.getQueryData<string[]>(queryOpts.queryKey) ?? [];
       if (current.includes(vin)) {
         doUnsave(vin);
       } else {
@@ -98,7 +89,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<FavoritesContextValue>(
     () => ({
       savedVins,
-      isLoaded: true,
+      isLoaded: isFetched,
       addVehicle: handleAdd,
       removeVehicle: handleRemove,
       toggleVehicle: handleToggle,
@@ -106,7 +97,15 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       savedCount: savedVins.length,
       clearAll: handleClearAll,
     }),
-    [savedVins, handleAdd, handleRemove, handleToggle, handleIsVehicleSaved, handleClearAll]
+    [
+      savedVins,
+      isFetched,
+      handleAdd,
+      handleRemove,
+      handleToggle,
+      handleIsVehicleSaved,
+      handleClearAll,
+    ]
   );
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;

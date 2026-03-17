@@ -12,8 +12,8 @@ import type { Suggestion } from "./types";
  * Props for the DropdownSuggestions component
  */
 export interface DropdownSuggestionsProps {
-  /** Array of suggestions to display */
-  suggestions: Suggestion[];
+  /** ID of the currently active suggestion for ARIA */
+  activeDescendantId?: string;
 
   /** Whether suggestions are currently animating */
   isAnimating: boolean;
@@ -21,11 +21,10 @@ export interface DropdownSuggestionsProps {
   /** Callback when a suggestion is selected */
   onSelect: (suggestion: Suggestion) => void;
 
-  /** ID of the currently active suggestion for ARIA */
-  activeDescendantId?: string;
-
   /** Callback when a suggestion is focused via keyboard navigation */
   onSuggestionFocus?: (index: number) => void;
+  /** Array of suggestions to display */
+  suggestions: Suggestion[];
 }
 
 /**

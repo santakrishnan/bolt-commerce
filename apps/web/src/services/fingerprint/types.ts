@@ -5,34 +5,34 @@
  */
 
 export interface FingerprintBrowserDetails {
-  browser_name?: string;
   browser_major_version?: string;
+  browser_name?: string;
+  device?: string;
   os?: string;
   os_version?: string;
-  device?: string;
 }
 
 export interface FingerprintIdentification {
-  visitor_id: string;
   confidence: {
     score: number;
   };
   visitor_found: boolean;
+  visitor_id: string;
 }
 
 export interface FingerprintIpGeolocation {
   /** Server API v4 flat snake_case fields */
   accuracy_radius?: number;
+  city_name?: string;
+  continent_code?: string;
+  continent_name?: string;
+  country_code?: string;
+  country_name?: string;
   latitude?: number;
   longitude?: number;
   postal_code?: string;
-  timezone?: string;
-  city_name?: string;
-  country_code?: string;
-  country_name?: string;
-  continent_code?: string;
-  continent_name?: string;
   subdivisions?: Array<{ iso_code?: string; name?: string }>;
+  timezone?: string;
 }
 
 export interface FingerprintIpInfo {
@@ -47,21 +47,21 @@ export interface FingerprintIpInfo {
  * and surfaced through the session route.
  */
 export interface FingerprintEventData {
+  bot?: string;
+  browser_details?: FingerprintBrowserDetails;
   event_id: string;
-  visitor_id: string;
+  identification?: FingerprintIdentification;
+  incognito?: boolean;
+  ip_address?: string;
+  ip_info?: FingerprintIpInfo;
+  proxy?: boolean;
+  suspect_score?: number;
+  tampering?: boolean;
   timestamp: number;
   url?: string;
-  ip_address?: string;
   user_agent?: string;
-  browser_details?: FingerprintBrowserDetails;
-  identification?: FingerprintIdentification;
-  ip_info?: FingerprintIpInfo;
-  bot?: string;
-  incognito?: boolean;
+  visitor_id: string;
   vpn?: boolean;
-  proxy?: boolean;
-  tampering?: boolean;
-  suspect_score?: number;
 }
 
 /**
@@ -70,23 +70,23 @@ export interface FingerprintEventData {
  * Only the fields we consume are typed here.
  */
 export interface FingerprintApiResponse {
-  event_id?: string;
-  timestamp?: number;
-  url?: string;
-  ip_address?: string;
-  user_agent?: string;
+  /** v4 bot result: "bad" | "good" | "not_detected" */
+  bot?: string;
   browser_details?: FingerprintBrowserDetails;
+  event_id?: string;
   identification?: {
     visitor_id?: string;
     confidence?: { score?: number };
     visitor_found?: boolean;
   };
-  ip_info?: FingerprintIpInfo;
-  /** v4 bot result: "bad" | "good" | "not_detected" */
-  bot?: string;
   incognito?: boolean;
-  suspect_score?: number;
-  vpn?: boolean;
+  ip_address?: string;
+  ip_info?: FingerprintIpInfo;
   proxy?: boolean;
+  suspect_score?: number;
   tampering?: boolean;
+  timestamp?: number;
+  url?: string;
+  user_agent?: string;
+  vpn?: boolean;
 }

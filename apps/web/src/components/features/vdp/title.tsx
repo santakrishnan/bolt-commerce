@@ -2,12 +2,12 @@ import { Heading } from "@tfs-ucmp/ui";
 import type React from "react";
 
 export interface VehicleTitleProps {
-  title?: string;
-  year?: number | string;
+  className?: string;
   make?: string;
   model?: string;
+  title?: string;
   trim?: string;
-  className?: string;
+  year?: number | string;
 }
 
 export const VehicleTitle: React.FC<VehicleTitleProps> = ({

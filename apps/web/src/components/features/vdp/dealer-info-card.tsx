@@ -1,16 +1,15 @@
 "use client";
 
-import {  Card, CardContent, cn, StarIcon } from "@tfs-ucmp/ui";
-import { AppButton } from "~/components/shared/button";
+import { Card, CardContent, cn, StarIcon } from "@tfs-ucmp/ui";
 import Image from "next/image";
+import { AppButton } from "~/components/shared/button";
 import type { DealerInfo } from "../../../lib/data/dealer/dealer-data";
 
-
 interface DealerInfoCardProps {
+  className?: string;
   dealer: DealerInfo;
   onReviewsClick?: () => void;
   onTestDriveClick?: () => void;
-  className?: string;
 }
 
 export function DealerInfoCard({
@@ -140,21 +139,10 @@ export function DealerInfoCard({
 
             {/* Action Buttons */}
             <div className="flex w-full flex-col gap-[var(--spacing-xs)] pt-[var(--spacing-xl)]">
-              <AppButton
-                className=
-                  "w-full"
-                onClick={onReviewsClick}
-                size="md"
-                variant="secondary"
-              >
+              <AppButton className="w-full" onClick={onReviewsClick} size="md" variant="secondary">
                 View Reviews
               </AppButton>
-              <AppButton
-                className="w-full"
-                onClick={onTestDriveClick}
-                size="md"
-                variant="tertiary"
-              >
+              <AppButton className="w-full" onClick={onTestDriveClick} size="md" variant="tertiary">
                 Schedule a Test Drive
               </AppButton>
             </div>

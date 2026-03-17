@@ -6,10 +6,10 @@ interface UsedCarsDetailsProps {
   make: string;
   model: string;
   trim: string;
-  year: number;
+  vehicleData: VehicleData;
   vin: string;
   vinData: VinData;
-  vehicleData: VehicleData;
+  year: number;
 }
 
 /**

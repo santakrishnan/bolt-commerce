@@ -1,7 +1,7 @@
 "use client";
 
-import { AppButton } from "~/components/shared/button";
 import Image from "next/image";
+import { AppButton } from "~/components/shared/button";
 
 export const CardTradeIn = () => {
   return (
@@ -26,7 +26,7 @@ export const CardTradeIn = () => {
         </div>
       </div>
       <div className="bg-[var(--color-surface)] pb-[var(--spacing-5)] lg:block lg:pb-0">
-        <AppButton variant="secondary" size="md" className="w-full">
+        <AppButton className="w-full" size="md" variant="secondary">
           Accept My Trade-In Offer
         </AppButton>
       </div>

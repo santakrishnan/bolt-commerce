@@ -77,16 +77,16 @@ if (typeof document !== "undefined") {
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export interface CookieOptions {
-  /** Cookie expiration in seconds (maxAge) */
-  maxAge?: number;
   /** Cookie expiration as Date object (expires) */
   expires?: Date;
+  /** Cookie expiration in seconds (maxAge) */
+  maxAge?: number;
   /** Cookie path (default: "/") */
   path?: string;
-  /** Use Secure flag (default: auto-detected from protocol) */
-  secure?: boolean;
   /** SameSite attribute (default: "Lax") */
   sameSite?: "Strict" | "Lax" | "None";
+  /** Use Secure flag (default: auto-detected from protocol) */
+  secure?: boolean;
 }
 
 /**

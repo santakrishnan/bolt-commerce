@@ -5,22 +5,22 @@ import type { CarCardProps } from "./car-card-types";
 
 interface CarCardContentProps {
   carName: string;
-  price: string;
-  wasPrice?: string;
-  mileage: string;
+  dealerName: string;
+  distance: string;
   estimatedPayment: string;
   exteriorColor: string;
-  exteriorColorHex: string;
   exteriorColorGradient?: string;
+  exteriorColorHex: string;
+  features: NonNullable<CarCardProps["features"]>;
   interiorColor: string;
   interiorColorHex: string;
   matchPercentage?: string;
-  dealerName: string;
-  distance: string;
-  owners: number;
-  features: NonNullable<CarCardProps["features"]>;
+  mileage: string;
   onShowEstimation: () => void;
   onShowRefineSearch: () => void;
+  owners: number;
+  price: string;
+  wasPrice?: string;
 }
 
 /** Renders the card body — price, mileage, colours, match, dealer, features */

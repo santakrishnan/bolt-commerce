@@ -120,8 +120,8 @@ function isCustomVariant(type: CustomBadgeType): type is CustomVariant {
 const BADGE_ICON_BASE = "/images/badges/";
 
 export interface CustomBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  /** Visual style of the badge */
-  type?: CustomBadgeType;
+  /** When `type==='ExpiresAt'`, renders `Expires in <n> day(s)` */
+  expiresInDays?: number;
   /**
    * Override the default icon for this badge type.
    * - Pass a Lucide icon component to render it.
@@ -131,18 +131,16 @@ export interface CustomBadgeProps extends React.HTMLAttributes<HTMLSpanElement> 
    */
   icon?: LucideIcon | React.ReactNode | null;
   /**
+   * Position of the icon relative to the text label.
+   * @default 'left'
+   */
+  iconPosition?: "left" | "right";
+  /**
    * Override the icon with a custom SVG filename from /public/images/badges/.
    * Just pass the filename, e.g. `"my_icon.svg"` — the base path is fixed.
    * Takes precedence over the `icon` prop and the default icon map.
    */
   iconSrc?: string;
-  /**
-   * Position of the icon relative to the text label.
-   * @default 'left'
-   */
-  iconPosition?: "left" | "right";
-  /** Badge label */
-  text?: React.ReactNode;
   /**
    * Used when `type="matchingPercentage"`.
    * Renders as "<value>% match" — e.g. `97` → "97% match".
@@ -153,8 +151,10 @@ export interface CustomBadgeProps extends React.HTMLAttributes<HTMLSpanElement> 
    * Renders as "<value> owner" or "<value> owners" — e.g. `1` → "1 owner", `2` → "2 owners".
    */
   ownerCount?: number;
-  /** When `type==='ExpiresAt'`, renders `Expires in <n> day(s)` */
-  expiresInDays?: number;
+  /** Badge label */
+  text?: React.ReactNode;
+  /** Visual style of the badge */
+  type?: CustomBadgeType;
   // expiry prop removed — badges no longer auto-hide based on time
 }
 

@@ -56,8 +56,8 @@ export const AvatarButton = ({ firstName, useSolidStyles = true }: AvatarButtonP
 };
 
 interface MobileUserButtonProps {
-  showAvatar: boolean;
   firstName: string;
+  showAvatar: boolean;
   useSolidStyles: boolean;
 }
 

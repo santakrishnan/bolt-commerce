@@ -15,8 +15,8 @@ export async function SearchWrapper({
 }: SearchWrapperProps = {}) {
   const data = await getSearchPageData();
 
-// Resolve the URL slug (e.g. "sedan") to the exact body style label (e.g. "Sedan" / "SUV")
-   // filterSections.bodyStyle is a string[], so we compare slugs and labels as strings (case-insensitive).
+  // Resolve the URL slug (e.g. "sedan") to the exact body style label (e.g. "Sedan" / "SUV")
+  // filterSections.bodyStyle is a string[], so we compare slugs and labels as strings (case-insensitive).
   const initialBodyStyles: string[] = [];
   if (initialBodyType) {
     const match = filterSections.bodyStyle.find(
@@ -30,9 +30,9 @@ export async function SearchWrapper({
   // Maps of known q= slugs (produced by VehicleQuickLinkCard: title → whitespace replaced with dash)
   // to their corresponding filter presets. Keeps the search box empty and shows chips instead.
   interface QuickLinkPreset {
-    selectedPriceQuick?: string;
-    selectedMileage?: string;
     labelFilter?: string;
+    selectedMileage?: string;
+    selectedPriceQuick?: string;
   }
   const QUICK_LINK_MAP: Record<string, QuickLinkPreset> = {
     "Cars-Under-$20,000": { selectedPriceQuick: "Cars Under $20,000" },

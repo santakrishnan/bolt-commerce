@@ -1,9 +1,9 @@
 export interface CustomerJourneySlide {
+  ctaText: string;
   id: string;
   image: string;
-  title: string;
   subtitle: string;
-  ctaText: string;
+  title: string;
 }
 
 export const customerJourneySlides: CustomerJourneySlide[] = [

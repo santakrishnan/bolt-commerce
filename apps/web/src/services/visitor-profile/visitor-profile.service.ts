@@ -98,11 +98,11 @@ function createMockVisitorProfile(visitorId: string): VisitorProfile {
 // ─── Profile Resolution (POST /profiles/resolve) ───────────────────────────
 
 export interface ResolveProfileOptions {
-  payload: ProfileResolvePayload;
-  /** Arrow tracking IDs forwarded as headers to the BED service. */
-  ids?: ArrowServerIds;
   /** Filtered incoming request headers to forward to BED. */
   forwardHeaders?: Record<string, string>;
+  /** Arrow tracking IDs forwarded as headers to the BED service. */
+  ids?: ArrowServerIds;
+  payload: ProfileResolvePayload;
 }
 
 /**
@@ -153,11 +153,11 @@ export async function resolveProfile({
 // ─── Visitor Profile Retrieval (GET /profiles/:visitorId) ───────────────────
 
 export interface FetchVisitorProfileOptions {
-  visitorId: string;
-  /** Arrow tracking IDs forwarded as headers to the BED service. */
-  ids?: ArrowServerIds;
   /** Filtered incoming request headers to forward to BED. */
   forwardHeaders?: Record<string, string>;
+  /** Arrow tracking IDs forwarded as headers to the BED service. */
+  ids?: ArrowServerIds;
+  visitorId: string;
 }
 
 /**

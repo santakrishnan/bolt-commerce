@@ -2,16 +2,16 @@ import { StarIcon } from "@tfs-ucmp/ui";
 import { AppButton } from "~/components/shared/button";
 
 interface RatingDistribution {
-  stars: number;
   count: number;
   id: string;
+  stars: number;
 }
 
 interface VehicleRatingProps {
-  title: string;
+  distribution: RatingDistribution[];
   rating: number;
   reviewCount: number;
-  distribution: RatingDistribution[];
+  title: string;
 }
 
 export function VehicleRating({ title, rating, reviewCount, distribution }: VehicleRatingProps) {
@@ -43,9 +43,7 @@ export function VehicleRating({ title, rating, reviewCount, distribution }: Vehi
             ))}
           </div>
         </div>
-        <AppButton
-          variant="tertiary" size="md"
-        >
+        <AppButton size="md" variant="tertiary">
           View More ({reviewCount} Reviews)
         </AppButton>
       </div>

@@ -27,14 +27,14 @@ import { ARROW_COOKIE, ARROW_TTL } from "~/lib/arrow/constants";
 // ─── Session data assembled from individual cookies ─────────────────────────
 
 export interface SessionPayload {
-  /** Server-generated session ID (UUID v4) */
-  sessionId: string;
+  /** Fingerprint event ID for server-side detail lookups */
+  eventId?: string;
   /** Fingerprint visitor ID */
   fingerprintId: string;
   /** Resolved profile ID (nullable) */
   profileId: string | null;
-  /** Fingerprint event ID for server-side detail lookups */
-  eventId?: string;
+  /** Server-generated session ID (UUID v4) */
+  sessionId: string;
 }
 
 // ─── Encode / Decode (Base64url — no encryption for now) ────────────────────
@@ -63,14 +63,14 @@ export function decodeCookieValue(token: string): string | null {
 // ─── Per-cookie configuration ───────────────────────────────────────────────
 
 export interface CookieConfig {
-  /** Final cookie name (includes `__Host-` prefix in production) */
-  name: string;
+  httpOnly: boolean;
   /** Browser-enforced TTL in seconds */
   maxAge: number;
-  httpOnly: boolean;
-  secure: boolean;
-  sameSite: "lax";
+  /** Final cookie name (includes `__Host-` prefix in production) */
+  name: string;
   path: string;
+  sameSite: "lax";
+  secure: boolean;
 }
 
 /**

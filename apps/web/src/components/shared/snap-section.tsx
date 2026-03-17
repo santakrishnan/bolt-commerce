@@ -5,13 +5,13 @@ interface SnapSectionProps {
   children: ReactNode;
   className?: string;
   /**
-   * If true, section height will be viewport height minus header
-   */
-  useViewportHeight?: boolean;
-  /**
    * Additional inline styles
    */
   style?: React.CSSProperties;
+  /**
+   * If true, section height will be viewport height minus header
+   */
+  useViewportHeight?: boolean;
 }
 
 /**

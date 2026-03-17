@@ -1,11 +1,11 @@
 import type React from "react";
 
 export interface VehicleColorsProps {
-  exteriorName: string;
-  interiorName: string;
-  exteriorSwatchStyle?: React.CSSProperties;
-  interiorSwatchStyle?: React.CSSProperties;
   className?: string;
+  exteriorName: string;
+  exteriorSwatchStyle?: React.CSSProperties;
+  interiorName: string;
+  interiorSwatchStyle?: React.CSSProperties;
 }
 
 export const VehicleColors: React.FC<VehicleColorsProps> = ({

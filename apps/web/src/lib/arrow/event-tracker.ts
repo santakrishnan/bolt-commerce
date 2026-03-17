@@ -21,10 +21,10 @@ import { ARROW_ENCRYPTED_HEADER, encryptPayload, resolveEncryptionKey } from "./
 
 interface EventTrackRequest {
   eventName: string;
-  properties?: Record<string, unknown>;
-  sessionId: string;
   fingerprintId: string | null;
   profileId: string | null;
+  properties?: Record<string, unknown>;
+  sessionId: string;
   timestamp: number;
 }
 
@@ -47,7 +47,7 @@ export function createEventTracker(): EventTracker {
       // Encrypt body when key is available
       const isEncrypted = !!encryptionKey;
       const body = isEncrypted
-        ? await encryptPayload(payload, encryptionKey as string)
+        ? await encryptPayload(payload, encryptionKey as Uint8Array)
         : JSON.stringify(payload);
 
       const headers: Record<string, string> = {

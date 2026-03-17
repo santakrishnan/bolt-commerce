@@ -21,23 +21,23 @@ export const VDP_FLAG_COOKIE_NAME = "vdp-status-flag";
 // ============================================================================
 
 export interface VdpStatusFlags {
-  /** Banner: "This Vehicle Is No Longer Available" → CTA: Browse Similar Vehicles */
-  "vdp-no-longer-available": boolean;
+  /** Toggle for new Features Table View */
+  "features-table-view"?: boolean;
   /** Banner: "Vehicle History Report Pending" → CTA: View History Report */
   "vdp-history-report-pending": boolean;
   /** Banner: "160-Point Inspection In Progress" → no CTA */
   "vdp-inspection-in-progress": boolean;
   /** Banner: "Limited Photos Available" → CTA: Request More Photos */
   "vdp-limited-photos": boolean;
-  /** Toggle for new Features Table View */
-  "features-table-view"?: boolean;
+  /** Banner: "This Vehicle Is No Longer Available" → CTA: Browse Similar Vehicles */
+  "vdp-no-longer-available": boolean;
 }
 
 export interface VdpScenario {
-  id: string;
-  label: string;
   description: string;
   flags: VdpStatusFlags;
+  id: string;
+  label: string;
 }
 
 // ============================================================================

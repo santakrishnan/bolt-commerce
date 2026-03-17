@@ -8,8 +8,8 @@ import { AppButton } from "../../shared/button";
 
 interface RefineSearchModalProps {
   isOpen: boolean;
-  onClose: () => void;
   onApplyFilters?: (filters: { id: string; label: string }[]) => void;
+  onClose: () => void;
 }
 
 interface FilterOption {

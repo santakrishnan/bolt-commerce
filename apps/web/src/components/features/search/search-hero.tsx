@@ -18,21 +18,21 @@ const autocompleteService = new MockAutocompleteService();
 const MOCK_SUGGESTED_PILLS = ["Off-road", "Eco-friendly", "High safety rating", "Near me"];
 
 export interface SearchHeroProps {
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  onSearch: () => void;
-  onBlurOverlayChange?: (showOverlay: boolean) => void;
-  showTitle?: boolean;
-  showQuickFilters?: boolean;
-  placeholder?: string;
-  onToggleFilter?: () => void;
-  onReset?: () => void;
-  vehicleCount?: number;
-  vehiclesAvailable?: number;
   activeFilters: ActiveFilter[];
+  onBlurOverlayChange?: (showOverlay: boolean) => void;
   onRemoveFilter: (type: string, value: string) => void;
+  onReset?: () => void;
+  onSearch: () => void;
+  onSearchChange: (query: string) => void;
+  onToggleFilter?: () => void;
+  placeholder?: string;
+  searchQuery: string;
+  showQuickFilters?: boolean;
+  showTitle?: boolean;
   /** Suggested search pills shown below the input (will be fetched from API). Falls back to mock data. */
   suggestedPills?: string[];
+  vehicleCount?: number;
+  vehiclesAvailable?: number;
 }
 
 export function SearchHero({

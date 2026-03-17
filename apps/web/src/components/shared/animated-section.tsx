@@ -6,21 +6,21 @@ import type { ReactNode } from "react";
 interface AnimatedSectionProps {
   children: ReactNode;
   /**
-   * Optional delay in seconds before animation starts
-   */
-  delay?: number;
-  /**
    * Optional className to pass to the motion.div wrapper
    */
   className?: string;
   /**
-   * If true, adds extra delay to allow section animation to complete before child animations
+   * Optional delay in seconds before animation starts
    */
-  staggerChildren?: boolean;
+  delay?: number;
   /**
    * Custom animation duration (default: 1.2s)
    */
   duration?: number;
+  /**
+   * If true, adds extra delay to allow section animation to complete before child animations
+   */
+  staggerChildren?: boolean;
 }
 
 /**

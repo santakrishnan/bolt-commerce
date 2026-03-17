@@ -82,40 +82,40 @@ export async function decryptArrowPayload<T = unknown>(request: NextRequest): Pr
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export interface ArrowServerIds {
-  sessionId: string | null;
+  eventId?: string | null;
   fingerprintId: string | null;
   profileId: string | null;
-  eventId?: string | null;
+  sessionId: string | null;
 }
 
 export interface ArrowServerClientConfig {
-  /** Base URL for the upstream BED service (required) */
-  baseUrl: string;
-  /** Bearer token attached as `Authorization: Bearer <token>` */
-  authToken?: string;
   /** Alternative: API key attached as a custom header */
   apiKey?: { headerName: string; value: string };
+  /** Bearer token attached as `Authorization: Bearer <token>` */
+  authToken?: string;
+  /** Base URL for the upstream BED service (required) */
+  baseUrl: string;
   /** Extra headers merged into every request */
   defaultHeaders?: Record<string, string>;
-  /** Request timeout in milliseconds (default: 15 000) */
-  timeout?: number;
   /** Number of retries on 5xx / network errors (default: 1) */
   retries?: number;
   /** Base delay between retries in ms — doubled each attempt (default: 500) */
   retryDelay?: number;
   /** Service label used in log messages (default: "BED") */
   serviceName?: string;
+  /** Request timeout in milliseconds (default: 15 000) */
+  timeout?: number;
 }
 
 export interface ArrowServerRequestOptions {
-  /** Arrow tracking IDs to forward as headers */
-  ids?: ArrowServerIds;
   /** Extra headers for this specific request */
   headers?: Record<string, string>;
-  /** Override timeout per-request */
-  timeout?: number;
+  /** Arrow tracking IDs to forward as headers */
+  ids?: ArrowServerIds;
   /** Next.js fetch options (revalidate, tags, etc.) */
   next?: NextFetchRequestConfig;
+  /** Override timeout per-request */
+  timeout?: number;
 }
 
 /** Subset of Next.js extended fetch options */
@@ -254,11 +254,11 @@ export function extractForwardHeaders(request: NextRequest): Record<string, stri
 // ─── Server client ──────────────────────────────────────────────────────────
 
 export interface ArrowServerClient {
+  delete<T = unknown>(path: string, opts?: ArrowServerRequestOptions): Promise<T>;
   get<T = unknown>(path: string, opts?: ArrowServerRequestOptions): Promise<T>;
+  patch<T = unknown>(path: string, body?: unknown, opts?: ArrowServerRequestOptions): Promise<T>;
   post<T = unknown>(path: string, body?: unknown, opts?: ArrowServerRequestOptions): Promise<T>;
   put<T = unknown>(path: string, body?: unknown, opts?: ArrowServerRequestOptions): Promise<T>;
-  patch<T = unknown>(path: string, body?: unknown, opts?: ArrowServerRequestOptions): Promise<T>;
-  delete<T = unknown>(path: string, opts?: ArrowServerRequestOptions): Promise<T>;
 }
 
 const isDev = process.env.NODE_ENV === "development";
@@ -387,7 +387,7 @@ export function createArrowServerClient(config: ArrowServerClientConfig): ArrowS
     const fetchInit: RequestInit & { next?: NextFetchRequestConfig } = {
       method,
       headers: buildHeaders(opts?.ids, opts?.headers),
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : JSON.stringify(body),
       signal,
     };
     if (opts?.next) {

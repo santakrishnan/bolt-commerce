@@ -43,39 +43,39 @@ import { API_ROUTES } from "~/lib/routes/constants";
  * Extend this interface as the BED API evolves.
  */
 export interface VisitorProfile {
+  /** Any feature flags resolved for this visitor */
+  features?: Record<string, boolean>;
+  /** Whether this is a known / returning visitor */
+  isKnown?: boolean;
+  /** Arbitrary metadata the BED attaches to this profile */
+  metadata?: Record<string, unknown>;
+  /** Visitor preferences (saved searches, garage, etc.) */
+  preferences?: Record<string, unknown>;
   /** Profile identifier */
   profileId: string;
   /** Visitor segment / tier resolved by the BED */
   segment?: string;
-  /** Whether this is a known / returning visitor */
-  isKnown?: boolean;
-  /** Visitor preferences (saved searches, garage, etc.) */
-  preferences?: Record<string, unknown>;
-  /** Any feature flags resolved for this visitor */
-  features?: Record<string, boolean>;
+  /** ISO timestamp of the last profile update */
+  updatedAt?: string;
   /** User-journey flags (prequalified, tradeIn, testDrive). */
   userFlags?: {
     prequalified?: boolean;
     tradeIn?: boolean;
     testDrive?: boolean;
   };
-  /** Arbitrary metadata the BED attaches to this profile */
-  metadata?: Record<string, unknown>;
-  /** ISO timestamp of the last profile update */
-  updatedAt?: string;
 }
 
 export interface VisitorProfileState {
-  /** The cached profile data (null until first fetch completes) */
-  profile: VisitorProfile | null;
-  /** Whether a fetch is in progress */
-  isLoading: boolean;
   /** Last fetch error, if any */
   error: Error | null;
-  /** Epoch ms of the last successful fetch */
-  lastFetchedAt: number | null;
+  /** Whether a fetch is in progress */
+  isLoading: boolean;
   /** Whether the cache has been explicitly invalidated and a refresh is pending */
   isStale: boolean;
+  /** Epoch ms of the last successful fetch */
+  lastFetchedAt: number | null;
+  /** The cached profile data (null until first fetch completes) */
+  profile: VisitorProfile | null;
 }
 
 export interface VisitorProfileActions {
@@ -96,18 +96,18 @@ export type VisitorProfileContextValue = VisitorProfileState & VisitorProfileAct
 // ─── Configuration ──────────────────────────────────────────────────────────
 
 export interface VisitorProfileConfig {
-  /** API path to fetch the visitor profile (default: "/api/visitor-profile") */
-  profileEndpoint?: string;
-  /**
-   * Cache TTL in milliseconds. Within this window a cached profile
-   * is returned without a network call (default: 5 minutes).
-   */
-  cacheTtlMs?: number;
   /**
    * If true, profile is fetched automatically on mount / page navigation.
    * (default: true)
    */
   autoFetch?: boolean;
+  /**
+   * Cache TTL in milliseconds. Within this window a cached profile
+   * is returned without a network call (default: 5 minutes).
+   */
+  cacheTtlMs?: number;
+  /** API path to fetch the visitor profile (default: "/api/visitor-profile") */
+  profileEndpoint?: string;
 }
 
 const DEFAULT_CONFIG: Required<VisitorProfileConfig> = {
@@ -124,12 +124,12 @@ const VisitorProfileContext = createContext<VisitorProfileContextValue | null>(n
 
 interface VisitorProfileProviderProps {
   children: ReactNode;
-  /** Tracking IDs needed to call the profile API */
-  sessionId: string | null;
-  fingerprintId: string | null;
-  profileId: string | null;
   /** Optional configuration overrides */
   config?: VisitorProfileConfig;
+  fingerprintId: string | null;
+  profileId: string | null;
+  /** Tracking IDs needed to call the profile API */
+  sessionId: string | null;
 }
 
 export function VisitorProfileProvider({

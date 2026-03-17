@@ -5,11 +5,11 @@ import type React from "react";
 import { AppButton } from "~/components/shared/button";
 
 export interface TestDriveBannerProps {
-  title?: string;
-  description?: string;
   buttonText?: string;
-  onButtonClick?: () => void;
+  description?: string;
   imageAlt?: string;
+  onButtonClick?: () => void;
+  title?: string;
 }
 
 export const TestDriveBanner: React.FC<TestDriveBannerProps> = ({

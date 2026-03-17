@@ -4,10 +4,10 @@
  */
 
 export interface VehicleType {
-  id: string;
-  name: string;
   description: string;
+  id: string;
   image: string;
+  name: string;
 }
 
 export const vehicleTypes: VehicleType[] = [

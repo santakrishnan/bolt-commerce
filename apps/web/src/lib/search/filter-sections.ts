@@ -1,31 +1,31 @@
 export interface PriceFilter {
-  min: number;
   max: number;
-  quickRanges: string[];
-  /** Dropdown options shown in the Min price <select> */
-  minDropdown: string[];
   /** Dropdown options shown in the Max price <select> */
   maxDropdown: string[];
+  min: number;
+  /** Dropdown options shown in the Min price <select> */
+  minDropdown: string[];
+  quickRanges: string[];
 }
 
 export interface YearFilter {
-  min: number;
-  max: number;
-  popularRanges: string[];
   /** Ascending list of years for the From <select> */
   fromOptions: number[];
+  max: number;
+  min: number;
+  popularRanges: string[];
   /** Descending list of years for the To <select> */
   toOptions: number[];
 }
 
 export interface MileageFilter {
-  min: number;
   max: number;
-  quickFilters: string[];
-  /** Dropdown options shown in the Min mileage <select> */
-  minDropdown: string[];
   /** Dropdown options shown in the Max mileage <select> */
   maxDropdown: string[];
+  min: number;
+  /** Dropdown options shown in the Min mileage <select> */
+  minDropdown: string[];
+  quickFilters: string[];
 }
 
 /** A chip option that may be marked unavailable (no inventory match) */
@@ -36,26 +36,26 @@ export interface MileageFilter {
 // }
 
 export interface FilterSections {
-  price: PriceFilter;
-  year: YearFilter;
-  mileage: MileageFilter;
   bodyStyle: string[];
-  exteriorColors: string[];
-  interiorColors: string[];
-  popularModels: string[];
-  fuelTypes: string[];
-  safetyFeatures: string[];
   comfortFeatures: string[];
-  techFeatures: string[];
-  exteriorFeatures: string[];
-  performanceFeatures: string[];
-  seatingCapacity: string[];
   drivetrains: string[];
-  transmissions: string[];
-  /** Ordered list of section names used in the sidebar left nav */
-  navItems: string[];
+  exteriorColors: string[];
+  exteriorFeatures: string[];
+  fuelTypes: string[];
+  interiorColors: string[];
   /** Placeholder for the Make & Model search input */
   makeModelSearchPlaceholder: string;
+  mileage: MileageFilter;
+  /** Ordered list of section names used in the sidebar left nav */
+  navItems: string[];
+  performanceFeatures: string[];
+  popularModels: string[];
+  price: PriceFilter;
+  safetyFeatures: string[];
+  seatingCapacity: string[];
+  techFeatures: string[];
+  transmissions: string[];
+  year: YearFilter;
 }
 
 export const filterSections: FilterSections = {

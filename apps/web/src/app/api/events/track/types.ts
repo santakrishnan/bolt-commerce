@@ -12,12 +12,12 @@ export interface EventTrackRequest {
 }
 
 export interface EventTrackResponse {
-  success: boolean;
   eventId: string;
   message: string;
+  success: boolean;
 }
 
 export interface EventTrackError {
-  error: string;
   code: string;
+  error: string;
 }

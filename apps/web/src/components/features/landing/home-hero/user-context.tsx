@@ -178,7 +178,7 @@ export function HomeHeroKnownUserContent({
                           </span>
                         </div>
                         <span className="font-medium text-[10px] text-foreground-900">
-                          {savedCount} SAVED VEHICLE{savedCount !== 1 ? "S" : ""}
+                          {savedCount} SAVED VEHICLE{savedCount === 1 ? "" : "S"}
                         </span>
                       </div>
                       <div className="flex h-12 items-center px-[length:var(--font-size-sm)] md:h-14 min-[1440px]:h-[72px] min-[1440px]:px-[length:var(--font-size-md)]">

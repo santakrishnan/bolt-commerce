@@ -6,14 +6,14 @@ import type React from "react";
 import { useState } from "react";
 
 interface Tab {
+  content: React.ReactNode;
   id: string;
   label: string;
-  content: React.ReactNode;
 }
 
 interface AnimatedTabsProps {
-  tabs: Tab[];
   className?: string;
+  tabs: Tab[];
 }
 
 const AnimatedTabs: React.FC<AnimatedTabsProps> = ({ tabs, className = "" }) => {

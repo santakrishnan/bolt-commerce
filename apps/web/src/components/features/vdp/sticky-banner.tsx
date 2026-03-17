@@ -1,15 +1,15 @@
-import { AppButton } from "~/components/shared/button";
 import type React from "react";
+import { AppButton } from "~/components/shared/button";
 import type { VehicleDetail } from "~/lib/data/vehicle";
 import { buildVdpPath, type VdpParams } from "~/lib/routes";
 import { VehicleActionIcons } from "./vehicle-action-icons";
 export interface VehicleStickyBannerProps {
-  vehicle: VehicleDetail;
-  slugParams: VdpParams;
-  showStickyCTA: boolean;
-  stickyScrollOffset: number;
   scrollDirection: "up" | "down";
+  showStickyCTA: boolean;
+  slugParams: VdpParams;
   stickyHeight?: number;
+  stickyScrollOffset: number;
+  vehicle: VehicleDetail;
 }
 
 export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
@@ -115,10 +115,14 @@ export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
             </div>
           </div>
           {/* Row 4: Full-width button */}
-          <AppButton className="w-full" variant="primary" size="md"
+          <AppButton
+            className="w-full"
             onClick={() => {
               // TODO: wire up pre-qualification flow
-            }}>
+            }}
+            size="md"
+            variant="primary"
+          >
             Get Pre-Qualified
           </AppButton>
         </div>
@@ -200,15 +204,19 @@ export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
               vin={vehicle.vin}
             />
             <div>
-              <AppButton variant="primary" size="md" onClick={() => {
-                // TODO: wire up pre-qualification flow
-              }}>
+              <AppButton
+                onClick={() => {
+                  // TODO: wire up pre-qualification flow
+                }}
+                size="md"
+                variant="primary"
+              >
                 Get Pre-Qualified
               </AppButton>
             </div>
-          </div >
-        </div >
-      </div >
-    </div >
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };

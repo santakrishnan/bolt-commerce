@@ -4,8 +4,8 @@ import { Button } from "@tfs-ucmp/ui";
 import { filterSections } from "~/lib/search/filter-sections";
 
 interface SidebarNavProps {
-  openSection: string | null;
   onToggleSection: (section: string) => void;
+  openSection: string | null;
 }
 
 /**

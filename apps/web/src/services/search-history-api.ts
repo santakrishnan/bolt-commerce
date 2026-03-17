@@ -21,9 +21,9 @@ const MAX_SEARCHES = 10;
 export interface SearchEntry {
   id: string;
   query: string;
-  url: string;
   timestamp: string;
   type: "nlp" | "filter";
+  url: string;
 }
 
 // Key used to persist search history
@@ -101,11 +101,7 @@ export async function addSearchEntry(
   const entries = [...store];
   const existingIdx = entries.findIndex((e) => e.query.toLowerCase() === trimmed.toLowerCase());
 
-  if (existingIdx !== -1) {
-    const existing = entries[existingIdx] as SearchEntry;
-    entries.splice(existingIdx, 1);
-    entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
-  } else {
+  if (existingIdx === -1) {
     entries.unshift({
       id: Date.now().toString(),
       query: trimmed,
@@ -113,6 +109,10 @@ export async function addSearchEntry(
       timestamp: new Date().toISOString(),
       type,
     });
+  } else {
+    const existing = entries[existingIdx] as SearchEntry;
+    entries.splice(existingIdx, 1);
+    entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
   }
 
   store = entries.slice(0, MAX_SEARCHES);

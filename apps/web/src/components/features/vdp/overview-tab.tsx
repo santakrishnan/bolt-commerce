@@ -9,8 +9,8 @@ import {
   TransmissionIcon,
 } from "@tfs-ucmp/ui";
 import type { ReactNode } from "react";
-import type { VehicleSpecData } from "~/lib/data/vehicle";
 import { AppButton } from "~/components/shared/button";
+import type { VehicleSpecData } from "~/lib/data/vehicle";
 
 interface OverviewTabProps {
   specs: VehicleSpecData[];
@@ -54,10 +54,7 @@ export function OverviewTab({ specs }: OverviewTabProps) {
         <h3 className="font-semibold text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)] text-body leading-heading md:px-[var(--spacing-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-heading">
           Overview
         </h3>
-        <AppButton
-          variant="tertiary"
-          size="md"
-        >
+        <AppButton size="md" variant="tertiary">
           View All Specs
         </AppButton>
       </div>

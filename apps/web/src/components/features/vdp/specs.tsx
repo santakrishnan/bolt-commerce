@@ -1,12 +1,12 @@
 import type React from "react";
 
 export interface VehicleSpecsGridProps {
-  miles: string;
+  className?: string;
   drivetrain: string;
+  miles: string;
   mpg: string;
   stock: string;
   vin: string;
-  className?: string;
 }
 
 export const VehicleSpecsGrid: React.FC<VehicleSpecsGridProps> = ({

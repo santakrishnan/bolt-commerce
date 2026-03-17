@@ -54,6 +54,17 @@ function resolveHeroState(zip: string): StateKey {
 }
 
 export interface LocationContextValue {
+  actions: {
+    /**
+     * Manually override the displayed zip and save to cookie.
+     * This takes precedence over fingerprint data.
+     */
+    setZip: (zip: string) => void;
+    /**
+     * Clear manual zip override and revert to fingerprint data.
+     */
+    clearManualZip: () => void;
+  };
   state: {
     /** Fingerprint-detected or user-entered zip code */
     displayZip: string;
@@ -71,17 +82,6 @@ export interface LocationContextValue {
     description?: string;
     /** Whether location has been resolved from cookie or fingerprint (not just the default) */
     isResolved: boolean;
-  };
-  actions: {
-    /**
-     * Manually override the displayed zip and save to cookie.
-     * This takes precedence over fingerprint data.
-     */
-    setZip: (zip: string) => void;
-    /**
-     * Clear manual zip override and revert to fingerprint data.
-     */
-    clearManualZip: () => void;
   };
   // meta removed — no loading flag exposed
 }

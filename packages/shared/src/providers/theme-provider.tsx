@@ -17,9 +17,9 @@ interface ThemeMeta {
 }
 
 interface ThemeContextValue {
-  state: ThemeState;
   actions: ThemeActions;
   meta: ThemeMeta;
+  state: ThemeState;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);

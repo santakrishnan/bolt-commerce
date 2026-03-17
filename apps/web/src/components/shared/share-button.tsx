@@ -5,15 +5,15 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 interface ShareButtonProps {
-  vehicleUrl?: string;
-  src?: string;
   alt?: string;
   className?: string;
-  imageClassName?: string;
   height?: number;
-  width?: number;
+  imageClassName?: string;
   onClick?: (e: React.MouseEvent) => void;
+  src?: string;
   stopPropagation?: boolean;
+  vehicleUrl?: string;
+  width?: number;
 }
 
 const SHARE_COPIED_MESSAGE = "Copied to Clipboard!";

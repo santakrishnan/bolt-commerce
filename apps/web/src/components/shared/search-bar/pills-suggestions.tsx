@@ -13,29 +13,28 @@ import type { Suggestion } from "./types";
  * Props for the PillsSuggestions component
  */
 export interface PillsSuggestionsProps {
-  /** Array of suggestions to display */
-  suggestions: Suggestion[];
+  /** ID of the currently active suggestion for ARIA */
+  activeDescendantId?: string;
 
   /** Whether suggestions are currently animating */
   isAnimating: boolean;
 
+  /** Callback when a quick-filter pill is clicked */
+  onQuickFilterSelect?: (filter: string) => void;
+
   /** Callback when a suggestion is selected */
   onSelect: (suggestion: Suggestion) => void;
-
-  /** Placement of pills relative to search input */
-  pillsPlacement?: "above" | "below";
-
-  /** ID of the currently active suggestion for ARIA */
-  activeDescendantId?: string;
 
   /** Callback when a suggestion is focused via keyboard navigation */
   onSuggestionFocus?: (index: number) => void;
 
+  /** Placement of pills relative to search input */
+  pillsPlacement?: "above" | "below";
+
   /** Quick-filter pill labels to show when there are no suggestions */
   quickFilters?: string[];
-
-  /** Callback when a quick-filter pill is clicked */
-  onQuickFilterSelect?: (filter: string) => void;
+  /** Array of suggestions to display */
+  suggestions: Suggestion[];
 }
 
 /**

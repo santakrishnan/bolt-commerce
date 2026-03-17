@@ -5,8 +5,8 @@ import { Button } from "../../../../../../../packages/ui/src/components/button";
 
 interface FilterChipProps {
   label: string;
-  selected?: boolean;
   onClick?: () => void;
+  selected?: boolean;
 }
 
 /**

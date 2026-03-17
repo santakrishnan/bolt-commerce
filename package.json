@@ -42,14 +42,14 @@
     "gen:package": "turbo gen package"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.13",
+    "@biomejs/biome": "^2.4.7",
     "@turbo/gen": "^2.3.3",
     "husky": "^9.1.7",
     "lint-staged": "^15.2.11",
     "lucide-react": "^0.469.0",
     "turbo": "^2.8.4",
     "typescript": "^5.7.2",
-    "ultracite": "7.1.5"
+    "ultracite": "7.3.1"
   },
   "lint-staged": {
     "*": "biome check --write --no-errors-on-unmatched",

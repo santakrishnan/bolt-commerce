@@ -3,14 +3,14 @@
  */
 
 export interface FooterLink {
-  label: string;
-  href: string;
   external?: boolean;
+  href: string;
+  label: string;
 }
 
 export interface FooterSection {
-  title: string;
   links: FooterLink[];
+  title: string;
 }
 
 export const footerSections: FooterSection[] = [

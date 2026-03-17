@@ -7,8 +7,8 @@ import type { Vehicle } from "~/lib/search/data";
 import {
   buildAllAvailableFilters,
   buildAllFacetCounts,
-  mockSearchVehicles,
   type FacetCounts,
+  mockSearchVehicles,
   type RefineFilter,
 } from "~/lib/search/mock-search-service";
 
@@ -16,9 +16,9 @@ export type { AvailableFilters } from "~/components/features/search/filter-sideb
 export type { FacetCounts, RefineFilter } from "~/lib/search/mock-search-service";
 
 interface FilterPreset {
-  selectedPriceQuick?: string;
-  selectedMileage?: string;
   labelFilter?: string;
+  selectedMileage?: string;
+  selectedPriceQuick?: string;
 }
 
 interface RefineSearchFilter {
@@ -27,36 +27,6 @@ interface RefineSearchFilter {
 }
 
 interface SearchContextValue {
-  vehicles: Vehicle[];
-  vehiclePool: Vehicle[];
-  setVehiclePool: React.Dispatch<React.SetStateAction<Vehicle[]>>;
-  filterState: FilterState;
-  setFilterState: React.Dispatch<React.SetStateAction<FilterState>>;
-  searchQuery: string;
-  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  searchQueryRef: React.MutableRefObject<string>;
-  labelFilter: string;
-  setLabelFilter: React.Dispatch<React.SetStateAction<string>>;
-  refineSearchFilters: RefineSearchFilter[];
-  setRefineSearchFilters: React.Dispatch<React.SetStateAction<RefineSearchFilter[]>>;
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  progress: number;
-  setProgress: React.Dispatch<React.SetStateAction<number>>;
-  isProgressVisible: boolean;
-  setIsProgressVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  isFilterOpen: boolean;
-  setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  sortOption: "recommended" | "low-high" | "high-low";
-  setSortOption: React.Dispatch<React.SetStateAction<"recommended" | "low-high" | "high-low">>;
-  /** Available filter chip values derived from the latest search response */
-  availableFilters: AvailableFilters;
-  /** Per-filter-value vehicle counts from the latest search response */
-  facetCounts: FacetCounts;
-  /** Total matched vehicles before pagination (use for page count display) */
-  totalCount: number;
-  /** True while a mock-search fetch is in flight */
-  isSearching: boolean;
   /**
    * Execute a full filter search via the mock service.
    * Updates `vehiclePool`, `availableFilters`, and resets to page 1.
@@ -70,6 +40,36 @@ interface SearchContextValue {
       refineFilters?: RefineFilter[];
     }
   ) => Promise<void>;
+  /** Available filter chip values derived from the latest search response */
+  availableFilters: AvailableFilters;
+  currentPage: number;
+  /** Per-filter-value vehicle counts from the latest search response */
+  facetCounts: FacetCounts;
+  filterState: FilterState;
+  isFilterOpen: boolean;
+  isProgressVisible: boolean;
+  /** True while a mock-search fetch is in flight */
+  isSearching: boolean;
+  labelFilter: string;
+  progress: number;
+  refineSearchFilters: RefineSearchFilter[];
+  searchQuery: string;
+  searchQueryRef: React.MutableRefObject<string>;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  setFilterState: React.Dispatch<React.SetStateAction<FilterState>>;
+  setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsProgressVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setLabelFilter: React.Dispatch<React.SetStateAction<string>>;
+  setProgress: React.Dispatch<React.SetStateAction<number>>;
+  setRefineSearchFilters: React.Dispatch<React.SetStateAction<RefineSearchFilter[]>>;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  setSortOption: React.Dispatch<React.SetStateAction<"recommended" | "low-high" | "high-low">>;
+  setVehiclePool: React.Dispatch<React.SetStateAction<Vehicle[]>>;
+  sortOption: "recommended" | "low-high" | "high-low";
+  /** Total matched vehicles before pagination (use for page count display) */
+  totalCount: number;
+  vehiclePool: Vehicle[];
+  vehicles: Vehicle[];
 }
 
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
@@ -84,11 +84,11 @@ export function useSearchContext() {
 
 interface SearchProviderProps {
   children: ReactNode;
-  vehicles: Vehicle[];
-  initialBodyStyles?: string[];
-  initialSearchQuery?: string;
-  initialFilterPreset?: FilterPreset;
   defaultFilterState: FilterState;
+  initialBodyStyles?: string[];
+  initialFilterPreset?: FilterPreset;
+  initialSearchQuery?: string;
+  vehicles: Vehicle[];
 }
 
 export function SearchProvider({
@@ -127,9 +127,7 @@ export function SearchProvider({
   const [availableFilters, setAvailableFilters] = useState<AvailableFilters>(() =>
     buildAllAvailableFilters(vehicles)
   );
-  const [facetCounts, setFacetCounts] = useState<FacetCounts>(() =>
-    buildAllFacetCounts(vehicles)
-  );
+  const [facetCounts, setFacetCounts] = useState<FacetCounts>(() => buildAllFacetCounts(vehicles));
   const [totalCount, setTotalCount] = useState<number>(vehicles.length);
   const [isSearching, setIsSearching] = useState(false);
 

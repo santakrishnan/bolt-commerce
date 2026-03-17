@@ -10,9 +10,9 @@ import { ProductCardActions } from "./product-card-actions";
 
 export interface Product {
   id: string;
+  image: string;
   name: string;
   price: number;
-  image: string;
 }
 
 interface ProductCardProps {

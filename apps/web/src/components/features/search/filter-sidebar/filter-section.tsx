@@ -3,11 +3,11 @@
 import { Button } from "@tfs-ucmp/ui";
 
 interface FilterSectionProps {
-  title: string;
   children: React.ReactNode;
   isOpen: boolean;
   onToggle: () => void;
   sectionRef?: React.Ref<HTMLDivElement>;
+  title: string;
 }
 
 /**

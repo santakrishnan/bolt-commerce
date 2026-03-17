@@ -12,31 +12,31 @@
 // ---------------------------------------------------------------------------
 
 export interface VehiclePreviewData {
-  /** Pre-built display title, e.g. "2023 Toyota Corolla Cross". When provided the modal renders it directly instead of assembling from parts. */
-  title?: string;
-  year: number;
-  make: string;
-  model: string;
-  trim?: string;
-  price: number;
-  originalPrice: number;
   condition: string;
-  warranty: boolean;
-  inspected: boolean;
-  miles: string;
+  dealer: string;
+  distance: string;
   drivetrain: string;
-  mpg: string;
-  stock: string;
-  vin: string;
   exterior: string;
   exteriorColorCode: string;
+  features: string[];
+  images: string[];
+  inspected: boolean;
   interior: string;
   interiorColorCode: string;
-  dealer: string;
   location: string;
-  distance: string;
-  images: string[];
-  features: string[];
+  make: string;
+  miles: string;
+  model: string;
+  mpg: string;
+  originalPrice: number;
+  price: number;
+  stock: string;
+  /** Pre-built display title, e.g. "2023 Toyota Corolla Cross". When provided the modal renders it directly instead of assembling from parts. */
+  title?: string;
+  trim?: string;
+  vin: string;
+  warranty: boolean;
+  year: number;
 }
 
 // ---------------------------------------------------------------------------

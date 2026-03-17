@@ -7,12 +7,12 @@ import { AppButton } from "~/components/shared/button";
 import { useSingletonModal } from "~/hooks/use-single-modal";
 
 interface EstimationModalProps {
-  creditScore: string;
   apr: string;
-  termLength: string;
+  creditScore: string;
   estimatedMonthlyPayment: string;
-  onClose: () => void;
   isOpen: boolean;
+  onClose: () => void;
+  termLength: string;
 }
 
 export default function EstimationModal({

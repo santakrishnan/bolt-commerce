@@ -3,8 +3,8 @@ import { fetchVehicleFinderCounts, fetchVehicleFinderOptions } from "~/services/
 import { VehicleQuickLinkCard } from "./vehicle-quick-link-card";
 
 export interface VehicleQuickLinksGridProps {
-  className?: string;
   cardBackgroundColor?: string;
+  className?: string;
 }
 
 export async function VehicleQuickLinksGrid({

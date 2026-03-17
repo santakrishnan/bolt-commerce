@@ -7,23 +7,23 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface FeatureCategory {
-  name: string;
   features: string[];
+  name: string;
 }
 
 type ViewMode = "table" | "grid" | "list" | "accordion" | "compact";
 
 interface FeaturesDisplayProps {
   categories: FeatureCategory[];
-  maxHeight?: number;
   className?: string;
   defaultView?: ViewMode;
+  maxHeight?: number;
 }
 
 interface ViewOption {
+  icon: React.ReactNode;
   id: ViewMode;
   label: string;
-  icon: React.ReactNode;
 }
 
 const viewOptions: ViewOption[] = [

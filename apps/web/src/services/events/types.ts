@@ -6,9 +6,9 @@
 
 /** Tracking identifiers forwarded from the client via request headers. */
 export interface EventTrackingIds {
-  sessionId: string;
   fingerprintId: string | null;
   profileId: string | null;
+  sessionId: string;
 }
 
 /** Normalised payload the service receives from the route handler. */

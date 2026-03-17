@@ -2,13 +2,13 @@ import Image from "next/image";
 import type React from "react";
 
 export interface VehicleDealerInfoProps {
-  dealerName: string;
-  dealerLocation: string;
-  distance: string;
-  className?: string;
   avatarClassName?: string;
-  logoSrc?: string;
+  className?: string;
+  dealerLocation: string;
+  dealerName: string;
+  distance: string;
   logoClassName?: string;
+  logoSrc?: string;
 }
 
 export const VehicleDealerInfo: React.FC<VehicleDealerInfoProps> = ({

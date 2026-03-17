@@ -70,19 +70,19 @@ type ChipProps = ComponentProps<typeof Chip>;
 export type CustomChipType = "selected" | "unselected" | "unavailable" | "applied";
 
 export interface FilterChipProps extends Omit<ChipProps, "removable" | "onRemove" | "prefix"> {
+  /** When true, renders the applied chip in the destructive/refine-search style. */
+  isRefineSearch?: boolean;
   /** Label text displayed inside the chip */
   label: string;
+  onClick?: () => void;
+  /** Called when the X button is clicked — used with type="applied". */
+  onRemove?: () => void;
+  /** Optional leading content rendered before the label (e.g. a color swatch circle). */
+  prefix?: React.ReactNode;
   /** Convenience boolean for the selected state. Ignored when `type` is provided. */
   selected?: boolean;
   /** High-level visual type. When provided, this takes precedence over `selected`. */
   type?: CustomChipType;
-  onClick?: () => void;
-  /** Optional leading content rendered before the label (e.g. a color swatch circle). */
-  prefix?: React.ReactNode;
-  /** Called when the X button is clicked — used with type="applied". */
-  onRemove?: () => void;
-  /** When true, renders the applied chip in the destructive/refine-search style. */
-  isRefineSearch?: boolean;
 }
 
 // ─── State class resolver (avoids nested ternaries) ─────────────────────────

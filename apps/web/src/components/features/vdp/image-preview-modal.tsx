@@ -4,12 +4,12 @@ import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export interface ImagePreviewModalProps {
-  isOpen: boolean;
-  images: string[];
-  currentIndex: number;
-  onIndexChange: (index: number) => void;
-  onClose: () => void;
   alt: string;
+  currentIndex: number;
+  images: string[];
+  isOpen: boolean;
+  onClose: () => void;
+  onIndexChange: (index: number) => void;
 }
 
 export const ImagePreviewModal: React.FC<ImagePreviewModalProps> = ({

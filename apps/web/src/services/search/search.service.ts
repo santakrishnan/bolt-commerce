@@ -136,11 +136,11 @@ async function getMockResults(query: SearchQuery): Promise<SearchResult> {
 // ─── Public API ─────────────────────────────────────────────────────────────
 
 export interface SearchOptions {
-  query: SearchQuery;
-  /** Arrow tracking IDs forwarded as headers to the BED service. */
-  ids?: ArrowServerIds;
   /** Filtered incoming request headers to forward to BED. */
   forwardHeaders?: Record<string, string>;
+  /** Arrow tracking IDs forwarded as headers to the BED service. */
+  ids?: ArrowServerIds;
+  query: SearchQuery;
 }
 
 /**

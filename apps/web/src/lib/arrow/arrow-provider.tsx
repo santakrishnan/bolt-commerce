@@ -29,29 +29,12 @@ import {
 // ─── Arrow context value ────────────────────────────────────────────────────
 
 export interface ArrowContextValue {
-  /** Whether the Arrow system has finished initialising */
-  isReady: boolean;
-  /** Whether initialisation is in progress */
-  isLoading: boolean;
-
-  // ─── IDs ──────────────────────────────────────────────────────────────
-  sessionId: string | null;
-  fingerprintId: string | null;
-  profileId: string | null;
+  /** Initialisation error, if any */
+  error: Error | null;
 
   /** Filtered fingerprint data (only the attributes Arrow needs) */
   fingerprintData: ArrowFingerprintData | undefined;
-
-  // ─── Visitor Profile (cached) ─────────────────────────────────────────
-  /** Cached visitor profile from the BED profile service */
-  visitorProfile: VisitorProfile | null;
-  /** Whether the visitor profile is being fetched */
-  isProfileLoading: boolean;
-  /** Whether the cached profile has been invalidated (stale) */
-  isProfileStale: boolean;
-
-  /** Initialisation error, if any */
-  error: Error | null;
+  fingerprintId: string | null;
 
   // ─── Helpers ──────────────────────────────────────────────────────────
   /** Convenience getter returning all three tracking IDs */
@@ -61,17 +44,33 @@ export interface ArrowContextValue {
     profileId: string | null;
   };
 
-  /** Force-refresh IDs from the fingerprint SDK */
-  refreshIds(): Promise<void>;
-
   /**
    * Invalidate the cached visitor profile and trigger a fresh fetch.
    * Call after performing a mutation / event that changes visitor state.
    */
   invalidateProfile(): Promise<void>;
+  /** Whether initialisation is in progress */
+  isLoading: boolean;
+  /** Whether the visitor profile is being fetched */
+  isProfileLoading: boolean;
+  /** Whether the cached profile has been invalidated (stale) */
+  isProfileStale: boolean;
+  /** Whether the Arrow system has finished initialising */
+  isReady: boolean;
+  profileId: string | null;
+
+  /** Force-refresh IDs from the fingerprint SDK */
+  refreshIds(): Promise<void>;
 
   /** Manually refresh the visitor profile */
   refreshProfile(): Promise<void>;
+
+  // ─── IDs ──────────────────────────────────────────────────────────────
+  sessionId: string | null;
+
+  // ─── Visitor Profile (cached) ─────────────────────────────────────────
+  /** Cached visitor profile from the BED profile service */
+  visitorProfile: VisitorProfile | null;
 }
 
 const ArrowContext = createContext<ArrowContextValue | null>(null);
@@ -106,7 +105,7 @@ function ArrowBridge({ children }: { children: ReactNode }) {
             timezone: fed.location.timezone,
           }
         : undefined,
-      trust: fed.incognito !== undefined ? { incognito: fed.incognito } : undefined,
+      trust: fed.incognito === undefined ? undefined : { incognito: fed.incognito },
       eventId: "", // not exposed to FED
       timestamp: 0, // not exposed to FED
     };

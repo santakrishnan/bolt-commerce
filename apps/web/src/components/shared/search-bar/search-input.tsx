@@ -12,17 +12,29 @@ import { AppButton } from "../button";
  * Props for the SearchInput component
  */
 export interface SearchInputProps {
-  /** Current input value (controlled) */
-  value: string;
+  ariaActiveDescendant?: string;
 
-  /** Callback when input value changes */
-  onChange: (value: string) => void;
+  /** ARIA attributes for accessibility */
+  ariaControls?: string;
+  ariaExpanded?: boolean;
 
-  /** Callback when Enter key is pressed */
-  onSubmit: () => void;
+  /** Additional CSS classes */
+  className?: string;
 
-  /** Callback when Escape key is pressed */
-  onEscape?: () => void;
+  /** Custom placeholder node for styled/rich placeholder content (e.g. partial bold) */
+  customPlaceholder?: React.ReactNode;
+
+  /** Whether voice recognition is enabled */
+  enableVoiceRecognition?: boolean;
+
+  /** Ref to the input element */
+  inputRef?: React.RefObject<HTMLInputElement>;
+
+  /** Whether voice recognition is currently active */
+  isListening?: boolean;
+
+  /** When true, keeps rounded-full even when suggestions are open (used for pills mode) */
+  keepRounded?: boolean;
 
   /** Callback when Arrow Down key is pressed */
   onArrowDown?: () => void;
@@ -30,43 +42,31 @@ export interface SearchInputProps {
   /** Callback when Arrow Up key is pressed */
   onArrowUp?: () => void;
 
-  /** Placeholder text */
-  placeholder?: string;
+  /** Callback when input value changes */
+  onChange: (value: string) => void;
 
-  /** Custom placeholder node for styled/rich placeholder content (e.g. partial bold) */
-  customPlaceholder?: React.ReactNode;
+  /** Callback when Escape key is pressed */
+  onEscape?: () => void;
 
-  /** Whether suggestions are currently open */
-  suggestionsOpen: boolean;
-
-  /** When true, keeps rounded-full even when suggestions are open (used for pills mode) */
-  keepRounded?: boolean;
-
-  /** Whether to show border */
-  withBorder?: boolean;
-
-  /** Whether voice recognition is enabled */
-  enableVoiceRecognition?: boolean;
-
-  /** Whether voice recognition is currently active */
-  isListening?: boolean;
+  /** Callback when Enter key is pressed */
+  onSubmit: () => void;
 
   /** Callback when voice button is clicked */
   onVoiceClick?: () => void;
 
+  /** Placeholder text */
+  placeholder?: string;
+
   /** Whether to show search button */
   showSearchButton?: boolean;
 
-  /** ARIA attributes for accessibility */
-  ariaControls?: string;
-  ariaExpanded?: boolean;
-  ariaActiveDescendant?: string;
+  /** Whether suggestions are currently open */
+  suggestionsOpen: boolean;
+  /** Current input value (controlled) */
+  value: string;
 
-  /** Additional CSS classes */
-  className?: string;
-
-  /** Ref to the input element */
-  inputRef?: React.RefObject<HTMLInputElement>;
+  /** Whether to show border */
+  withBorder?: boolean;
 }
 
 /**

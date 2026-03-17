@@ -5,13 +5,13 @@ import { ShareButton } from "~/components/shared/share-button";
 import type { VehiclePreviewData } from "~/lib/data/vehicle-preview/vehicle-preview";
 
 export interface VehicleActionIconsProps {
+  className?: string;
+  showFav: boolean;
+  showPrint: boolean;
   showShare: boolean;
-  vin?: string;
   vdpUrl?: string;
   vehicle?: Partial<VehiclePreviewData>;
-  showPrint: boolean;
-  showFav: boolean;
-  className?: string;
+  vin?: string;
 }
 
 export const VehicleActionIcons: React.FC<VehicleActionIconsProps> = ({

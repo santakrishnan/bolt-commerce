@@ -5,11 +5,8 @@ import type { AutocompleteService, Suggestion } from "../types";
  * Return type for useSearchSuggestions hook
  */
 export interface UseSearchSuggestionsReturn {
-  /** Current suggestions from autocomplete service */
-  suggestions: Suggestion[];
-
-  /** Whether suggestions are currently being fetched */
-  isLoading: boolean;
+  /** Clear current suggestions */
+  clearSuggestions: () => void;
 
   /** Error state if autocomplete request fails */
   error: Error | null;
@@ -17,8 +14,10 @@ export interface UseSearchSuggestionsReturn {
   /** Manually trigger a suggestions fetch */
   fetchSuggestions: (query: string) => void;
 
-  /** Clear current suggestions */
-  clearSuggestions: () => void;
+  /** Whether suggestions are currently being fetched */
+  isLoading: boolean;
+  /** Current suggestions from autocomplete service */
+  suggestions: Suggestion[];
 }
 
 /**
@@ -28,14 +27,14 @@ export interface UseSearchSuggestionsOptions {
   /** Autocomplete service to use for fetching suggestions */
   autocompleteService?: AutocompleteService;
 
-  /** Minimum characters before fetching suggestions */
-  minCharsForSuggestions?: number;
-
   /** Debounce timeout in milliseconds */
   debounceTimeout?: number;
 
   /** Maximum number of suggestions to fetch */
   maxSuggestions?: number;
+
+  /** Minimum characters before fetching suggestions */
+  minCharsForSuggestions?: number;
 }
 
 /**

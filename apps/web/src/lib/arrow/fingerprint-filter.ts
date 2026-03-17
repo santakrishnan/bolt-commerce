@@ -10,19 +10,19 @@
 
 /** Core identification attributes stored in context */
 export interface ArrowFingerprintIdentity {
-  visitorId: string;
   confidence: number;
-  visitorFound: boolean;
   requestId?: string;
+  visitorFound: boolean;
+  visitorId: string;
 }
 
 /** Browser info subset stored in context */
 export interface ArrowBrowserInfo {
   browserName?: string;
   browserVersion?: string;
+  device?: string;
   os?: string;
   osVersion?: string;
-  device?: string;
 }
 
 /** Geolocation subset stored in context */
@@ -30,35 +30,35 @@ export interface ArrowGeoLocation {
   city?: string;
   country?: string;
   countryCode?: string;
-  state?: string;
-  stateCode?: string;
-  postalCode?: string;
-  timezone?: string;
   latitude?: number;
   longitude?: number;
+  postalCode?: string;
+  state?: string;
+  stateCode?: string;
+  timezone?: string;
 }
 
 /** Security / trust signals stored in context */
 export interface ArrowTrustSignals {
   bot?: string;
   incognito?: boolean;
-  vpn?: boolean;
   proxy?: boolean;
-  tampering?: boolean;
   suspectScore?: number;
+  tampering?: boolean;
+  vpn?: boolean;
 }
 
 /** The complete filtered fingerprint data stored in Arrow context */
 export interface ArrowFingerprintData {
-  identity: ArrowFingerprintIdentity;
   browser?: ArrowBrowserInfo;
-  geo?: ArrowGeoLocation;
-  trust?: ArrowTrustSignals;
-  ip?: string;
   /** Raw event ID for server-side lookups */
   eventId: string;
+  geo?: ArrowGeoLocation;
+  identity: ArrowFingerprintIdentity;
+  ip?: string;
   /** Timestamp of the fingerprint event */
   timestamp: number;
+  trust?: ArrowTrustSignals;
 }
 
 // ─── Utility extractors ─────────────────────────────────────────────────────

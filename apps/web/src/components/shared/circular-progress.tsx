@@ -3,14 +3,14 @@
 import type { FC } from "react";
 
 export interface CircularProgressProps {
-  /** Current value (e.g. days remaining) */
-  value: number;
-  /** Maximum value (default: 30) */
-  total?: number;
   /** Label beneath the number (default: "DAYS") */
   label?: string;
   /** Rendered size in px (default: 48) */
   size?: number;
+  /** Maximum value (default: 30) */
+  total?: number;
+  /** Current value (e.g. days remaining) */
+  value: number;
 }
 
 /** Returns a stroke colour based on remaining days out of total. */

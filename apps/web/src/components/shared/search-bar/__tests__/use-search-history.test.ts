@@ -92,25 +92,32 @@ describe("useSearchHistory", () => {
     expect(result.current.recentSearches).toEqual([]);
   });
 
-  it("adds a search to history optimistically", () => {
+  it("adds a search to history optimistically", async () => {
     const firstEntry = mockSearchEntries[0];
     if (!firstEntry) {
       throw new Error("Mock entry not found");
     }
     vi.mocked(searchHistoryApi.addSearchEntry).mockResolvedValue([firstEntry]);
+    // After mutation, the refetch (triggered by invalidateQueries in onSettled)
+    // should return data consistent with the optimistic update
+    vi.mocked(searchHistoryApi.getAllSearchHistory).mockResolvedValue([firstEntry]);
     const { result } = renderHook(() => useSearchHistory(), { wrapper: createWrapper() });
 
     act(() => {
       result.current.addSearch("SUV under 35k", "/search?q=SUV+under+35k", "nlp");
     });
 
-    // Optimistic update — visible immediately without waiting for the API
-    expect(result.current.recentSearches[0]?.query).toBe("SUV under 35k");
-    expect(searchHistoryApi.addSearchEntry).toHaveBeenCalledWith(
-      "SUV under 35k",
-      "/search?q=SUV+under+35k",
-      "nlp"
-    );
+    // Optimistic update + server confirmation via refetch
+    await waitFor(() => {
+      expect(result.current.recentSearches[0]?.query).toBe("SUV under 35k");
+    });
+    await waitFor(() => {
+      expect(searchHistoryApi.addSearchEntry).toHaveBeenCalledWith(
+        "SUV under 35k",
+        "/search?q=SUV+under+35k",
+        "nlp"
+      );
+    });
   });
 
   it("does not update cache for single-character queries", () => {
@@ -125,23 +132,28 @@ describe("useSearchHistory", () => {
   });
 
   it("removes a search from history optimistically", async () => {
-    vi.mocked(searchHistoryApi.getAllSearchHistory).mockResolvedValue(mockSearchEntries);
     const firstEntry = mockSearchEntries[0];
     const thirdEntry = mockSearchEntries[2];
     if (!(firstEntry && thirdEntry)) {
       throw new Error("Mock entries not found");
     }
+    vi.mocked(searchHistoryApi.getAllSearchHistory).mockResolvedValue(mockSearchEntries);
     vi.mocked(searchHistoryApi.removeSearchEntry).mockResolvedValue([firstEntry, thirdEntry]);
     const { result } = renderHook(() => useSearchHistory(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.recentSearches).toHaveLength(3));
 
+    // Update mock so refetch after invalidation confirms the removal
+    vi.mocked(searchHistoryApi.getAllSearchHistory).mockResolvedValue([firstEntry, thirdEntry]);
+
     act(() => {
       result.current.removeSearch("2");
     });
 
-    // Optimistic removal — entry gone immediately
-    expect(result.current.recentSearches.find((e) => e.id === "2")).toBeUndefined();
+    // Optimistic removal confirmed by refetch
+    await waitFor(() => {
+      expect(result.current.recentSearches.find((e) => e.id === "2")).toBeUndefined();
+    });
     expect(searchHistoryApi.removeSearchEntry).toHaveBeenCalledWith("2");
   });
 
@@ -152,11 +164,17 @@ describe("useSearchHistory", () => {
 
     await waitFor(() => expect(result.current.recentSearches).toHaveLength(3));
 
+    // Update mock so refetch after invalidation confirms the clear
+    vi.mocked(searchHistoryApi.getAllSearchHistory).mockResolvedValue([]);
+
     act(() => {
       result.current.clearHistory();
     });
 
-    expect(result.current.recentSearches).toEqual([]);
+    // Optimistic clear confirmed by refetch
+    await waitFor(() => {
+      expect(result.current.recentSearches).toEqual([]);
+    });
     expect(searchHistoryApi.clearSearchHistory).toHaveBeenCalledTimes(1);
   });
 
@@ -180,18 +198,20 @@ describe("useSearchHistory", () => {
     expect(result.current.toSuggestions()).toEqual([]);
   });
 
-  it("defaults to nlp type when type is not specified", () => {
+  it("defaults to nlp type when type is not specified", async () => {
     const { result } = renderHook(() => useSearchHistory(), { wrapper: createWrapper() });
 
     act(() => {
       result.current.addSearch("test query", "/search?q=test", "nlp");
     });
 
-    expect(searchHistoryApi.addSearchEntry).toHaveBeenCalledWith(
-      "test query",
-      "/search?q=test",
-      "nlp"
-    );
+    await waitFor(() => {
+      expect(searchHistoryApi.addSearchEntry).toHaveBeenCalledWith(
+        "test query",
+        "/search?q=test",
+        "nlp"
+      );
+    });
   });
 
   it("maintains FIFO queue with 10-entry limit (handled by API layer)", async () => {

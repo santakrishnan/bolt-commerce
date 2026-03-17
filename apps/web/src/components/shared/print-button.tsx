@@ -9,10 +9,10 @@ import { type VehiclePrintData, VehiclePrintSheet } from "./vehicle-print-sheet"
 export type { VehiclePrintData } from "./vehicle-print-sheet";
 
 interface PrintButtonProps {
-  vehicle?: VehiclePrintData;
-  onClick?: (e: React.MouseEvent) => void;
-  className?: string;
   ariaLabel?: string;
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+  vehicle?: VehiclePrintData;
 }
 
 function waitForImages(node: HTMLElement, timeout = 5000): Promise<void> {

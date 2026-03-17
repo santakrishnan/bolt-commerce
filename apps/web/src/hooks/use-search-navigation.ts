@@ -42,17 +42,17 @@ import { ROUTES } from "~/lib/routes/constants";
 
 export interface UseSearchNavigationOptions {
   /**
+   * Base path for the search URL. Override when targeting a page other
+   * than `/used-cars` (e.g. a dealer-specific listing page).
+   * @default "/used-cars"
+   */
+  basePath?: string;
+  /**
    * `"push"` (default) adds an entry to the browser history.
    * `"replace"` updates the current entry — used on in-page search bars
    * so the back button doesn't re-run the same search.
    */
   mode?: "push" | "replace";
-  /**
-   * Whether the page should scroll to the top after navigation.
-   * Only applies to `replace` mode (Next.js default is `true` for push).
-   * @default true
-   */
-  scroll?: boolean;
   /**
    * When `true`, records the query in the search history provider.
    * Requires `<SearchHistoryProvider>` to be present in the tree.
@@ -60,11 +60,11 @@ export interface UseSearchNavigationOptions {
    */
   recordHistory?: boolean;
   /**
-   * Base path for the search URL. Override when targeting a page other
-   * than `/used-cars` (e.g. a dealer-specific listing page).
-   * @default "/used-cars"
+   * Whether the page should scroll to the top after navigation.
+   * Only applies to `replace` mode (Next.js default is `true` for push).
+   * @default true
    */
-  basePath?: string;
+  scroll?: boolean;
 }
 
 export interface NavigateOptions {
@@ -74,15 +74,15 @@ export interface NavigateOptions {
 
 export interface UseSearchNavigationReturn {
   /**
-   * Navigate to the search page for the given query.
-   * An empty / whitespace-only query navigates to the base path with no `?q=`.
-   */
-  navigate: (query: string, options?: NavigateOptions) => void;
-  /**
    * Pre-built URL for a given query — useful for generating `<a href>` values
    * or pre-fetching on hover without triggering navigation.
    */
   buildUrl: (query: string) => string;
+  /**
+   * Navigate to the search page for the given query.
+   * An empty / whitespace-only query navigates to the base path with no `?q=`.
+   */
+  navigate: (query: string, options?: NavigateOptions) => void;
 }
 
 export function useSearchNavigation({

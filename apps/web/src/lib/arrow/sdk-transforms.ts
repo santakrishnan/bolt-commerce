@@ -12,20 +12,20 @@
 // ─── v4 SDK result shape ────────────────────────────────────────────────────
 
 export interface SdkV4Result {
-  /** Unique event identifier — used as requestId / eventId. */
-  requestId: string;
-  /** Visitor ID — may be absent when Zero Trust Mode is active. */
-  visitorId?: string;
-  /** Suspect score (0–1) if available from client. */
-  suspectScore?: number;
-  /** Base64-encoded sealed result for server-side decryption. */
-  sealedResult?: string;
   /** Whether this result came from the local SDK cache. */
   cacheHit?: boolean;
   /** Confidence score (may be present in v4 depending on plan). */
   confidence?: { score: number };
+  /** Unique event identifier — used as requestId / eventId. */
+  requestId: string;
+  /** Base64-encoded sealed result for server-side decryption. */
+  sealedResult?: string;
+  /** Suspect score (0–1) if available from client. */
+  suspectScore?: number;
   /** Whether the visitor was actually found. */
   visitorFound?: boolean;
+  /** Visitor ID — may be absent when Zero Trust Mode is active. */
+  visitorId?: string;
 }
 
 // ─── Type guard ─────────────────────────────────────────────────────────────

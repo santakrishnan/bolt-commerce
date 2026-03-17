@@ -1,7 +1,7 @@
 "use client";
 
-import { AppButton } from "~/components/shared/button";
 import Image from "next/image";
+import { AppButton } from "~/components/shared/button";
 
 export const CardTestDrive = () => {
   return (
@@ -40,7 +40,7 @@ export const CardTestDrive = () => {
         </div>
       </div>
       <div className="bg-[var(--color-surface)] pb-[var(--spacing-5)] lg:block lg:pb-0">
-        <AppButton variant="tertiary" size="md" className="w-full">
+        <AppButton className="w-full" size="md" variant="tertiary">
           Book an Appointment
         </AppButton>
       </div>

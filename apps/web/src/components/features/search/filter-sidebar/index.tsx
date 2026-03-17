@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@tfs-ucmp/ui";
-import {AppButton} from "~/components/shared/button";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AppButton } from "~/components/shared/button";
 import { computeAvailableFiltersSync } from "~/lib/search/mock-search-service";
 import { SidebarFilters } from "./sidebar-filters";
 import { SidebarNav } from "./sidebar-nav";
@@ -35,9 +35,12 @@ export function FilterSidebar({
     }
   }, [isOpen, filterState]);
 
-  const handleDraftChange = useCallback((key: keyof FilterState, value: FilterState[keyof FilterState]) => {
-    setDraftState((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  const handleDraftChange = useCallback(
+    (key: keyof FilterState, value: FilterState[keyof FilterState]) => {
+      setDraftState((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
   /**
    * Recompute available filter chips on every draft change so selecting one
@@ -47,7 +50,9 @@ export function FilterSidebar({
    * Falls back to the `availableFilters` prop when no vehicle list is provided.
    */
   const liveAvailableFilters = useMemo(() => {
-    if (!vehicles || vehicles.length === 0) return availableFilters;
+    if (!vehicles || vehicles.length === 0) {
+      return availableFilters;
+    }
     return computeAvailableFiltersSync(vehicles, draftState, {
       searchQuery,
       labelFilter,
@@ -163,18 +168,10 @@ export function FilterSidebar({
               </span>
             </div>
             <div className="flex flex-row items-center gap-2.5">
-              <AppButton
-                onClick={handleApply}
-                variant="primary"
-                size="sm"
-              >
+              <AppButton onClick={handleApply} size="sm" variant="primary">
                 Apply
               </AppButton>
-              <AppButton
-                onClick={handleReset}
-                variant="secondary"
-                size="sm"
-              >
+              <AppButton onClick={handleReset} size="sm" variant="secondary">
                 Reset
               </AppButton>
             </div>
@@ -201,8 +198,8 @@ export function FilterSidebar({
 
           <SidebarFilters
             availableFilters={liveAvailableFilters}
-            facetCounts={facetCounts}
             draftState={draftState}
+            facetCounts={facetCounts}
             handleDraftChange={handleDraftChange}
             handleScroll={handleScroll}
             openSection={openSection}

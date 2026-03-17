@@ -40,16 +40,16 @@ function getBadgeType(
 }
 
 interface MyGarageClientProps {
-  cars: Vehicle[];
   /** Cars specifically for the "Because You Viewed" section */
   becauseViewedCars?: Vehicle[];
+  cars: Vehicle[];
   children?: ReactNode;
-  /** Customer prequalification status - determines which financing card variation to show */
-  isPreQualified?: boolean;
-  /** Customer trade-in submission status - determines which trade-in card variation to show */
-  hasTradeInSubmitted?: boolean;
   /** Days remaining for prequalification offer (out of 30) */
   daysRemaining?: number;
+  /** Customer trade-in submission status - determines which trade-in card variation to show */
+  hasTradeInSubmitted?: boolean;
+  /** Customer prequalification status - determines which financing card variation to show */
+  isPreQualified?: boolean;
 }
 
 export function MyGarageClient({

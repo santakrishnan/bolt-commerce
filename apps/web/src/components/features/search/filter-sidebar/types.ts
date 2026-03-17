@@ -7,23 +7,23 @@ import type { Vehicle } from "~/lib/search/mock-vehicles";
 
 // Filter state types
 export interface FilterState {
-  selectedPriceQuick: string;
-  selectedYearQuick: string;
-  selectedMileage: string;
-  selectedBodyStyles: string[];
-  selectedExteriorColors: string[];
-  selectedInteriorColors: string[];
-  selectedFuelTypes: string[];
-  selectedModels: string[];
-  selectedSafetyFeatures: string[];
-  selectedComfortFeatures: string[];
-  selectedTechFeatures: string[];
-  selectedExteriorFeatures: string[];
-  selectedPerformanceFeatures: string[];
-  selectedSeatingCapacity: string[];
-  selectedDrivetrains: string[];
-  selectedTransmissions: string[];
   inspection160: boolean;
+  selectedBodyStyles: string[];
+  selectedComfortFeatures: string[];
+  selectedDrivetrains: string[];
+  selectedExteriorColors: string[];
+  selectedExteriorFeatures: string[];
+  selectedFuelTypes: string[];
+  selectedInteriorColors: string[];
+  selectedMileage: string;
+  selectedModels: string[];
+  selectedPerformanceFeatures: string[];
+  selectedPriceQuick: string;
+  selectedSafetyFeatures: string[];
+  selectedSeatingCapacity: string[];
+  selectedTechFeatures: string[];
+  selectedTransmissions: string[];
+  selectedYearQuick: string;
 }
 
 export const defaultFilterState: FilterState = {
@@ -53,32 +53,43 @@ export const defaultFilterState: FilterState = {
  */
 export interface AvailableFilters {
   bodyStyles: string[];
+  comfortFeatures: string[];
+  drivetrains: string[];
   exteriorColors: string[];
-  interiorColors: string[];
+  exteriorFeatures: string[];
   /** Short fuel-type key, e.g. "Hybrid" not "Hybrid (Hybrid)" */
   fuelTypes: string[];
-  models: string[];
-  safetyFeatures: string[];
-  comfortFeatures: string[];
-  techFeatures: string[];
-  exteriorFeatures: string[];
-  performanceFeatures: string[];
-  seatingCapacity: string[];
-  drivetrains: string[];
-  transmissions: string[];
   hasInspection160: boolean;
+  interiorColors: string[];
+  models: string[];
+  performanceFeatures: string[];
+  safetyFeatures: string[];
+  seatingCapacity: string[];
+  techFeatures: string[];
   totalCount: number;
+  transmissions: string[];
 }
 
 export interface FilterSidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-  vehicleCount: number;
-  filterState: FilterState;
-  onApply: (newState: FilterState) => void;
-  onReset: () => void;
   /** Dynamic chip availability returned by the last applied search response */
   availableFilters?: AvailableFilters;
+  /**
+   * Per-dimension vehicle counts from the last search response.
+   * Used to render count badges on filter chips, e.g. "Sedan (12)".
+   * Resolve display labels with PRICE_BUCKET_LABELS / MILEAGE_BUCKET_LABELS
+   * / YEAR_BUCKET_LABELS exported from mock-search-service.
+   */
+  facetCounts?: FacetCounts;
+  filterState: FilterState;
+  isOpen: boolean;
+  labelFilter?: string;
+  onApply: (newState: FilterState) => void;
+  onClose: () => void;
+  onReset: () => void;
+  refineFilters?: { id: string; label: string }[];
+  /** Optional live constraints that should be considered when computing draft availability */
+  searchQuery?: string;
+  vehicleCount: number;
   /**
    * Full vehicle list used to compute live cross-dimension chip availability
    * as the user changes draft selections inside the sidebar.
@@ -88,15 +99,4 @@ export interface FilterSidebarProps {
    * When omitted, falls back to the static `availableFilters` prop.
    */
   vehicles?: Vehicle[];
-  /** Optional live constraints that should be considered when computing draft availability */
-  searchQuery?: string;
-  labelFilter?: string;
-  refineFilters?: { id: string; label: string }[];
-  /**
-   * Per-dimension vehicle counts from the last search response.
-   * Used to render count badges on filter chips, e.g. "Sedan (12)".
-   * Resolve display labels with PRICE_BUCKET_LABELS / MILEAGE_BUCKET_LABELS
-   * / YEAR_BUCKET_LABELS exported from mock-search-service.
-   */
-  facetCounts?: FacetCounts;
 }

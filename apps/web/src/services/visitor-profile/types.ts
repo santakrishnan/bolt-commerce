@@ -12,14 +12,14 @@ import type { FingerprintEventData } from "../fingerprint/types";
 
 /** Payload sent to the upstream BED Profile Service for resolution. */
 export interface ProfileResolvePayload {
+  fingerprintDetails: FingerprintEventData | null;
   fingerprintId: string;
-  sessionId: string;
   metadata?: {
     confidence?: number;
     requestId?: string;
     visitorFound?: boolean;
   };
-  fingerprintDetails: FingerprintEventData | null;
+  sessionId: string;
 }
 
 /** Response shape when resolving a profile. */
@@ -29,8 +29,8 @@ export interface ProfileResolveResult {
 
 /** Raw response from the upstream BED /profiles/resolve endpoint. */
 export interface ProfileResolveApiResponse {
-  profileId?: string;
   id?: string;
+  profileId?: string;
 }
 
 // ─── Visitor profile retrieval (new) ────────────────────────────────────────
@@ -38,32 +38,32 @@ export interface ProfileResolveApiResponse {
 /** Location data within a visitor profile. */
 export interface VisitorLocation {
   city?: string;
-  state?: string;
-  stateCode?: string;
   country?: string;
   countryCode?: string;
-  postalCode?: string;
-  timezone?: string;
   latitude?: number;
   longitude?: number;
+  postalCode?: string;
+  state?: string;
+  stateCode?: string;
+  timezone?: string;
 }
 
 /** Device/browser information within a visitor profile. */
 export interface VisitorDevice {
   browserName?: string;
   browserVersion?: string;
+  device?: string;
   os?: string;
   osVersion?: string;
-  device?: string;
 }
 
 /** Trust/risk signals within a visitor profile. */
 export interface VisitorTrustSignals {
-  incognito?: boolean;
   bot?: boolean;
-  vpn?: boolean;
+  incognito?: boolean;
   proxy?: boolean;
   suspectScore?: number;
+  vpn?: boolean;
 }
 
 /**
@@ -74,8 +74,8 @@ export interface VisitorTrustSignals {
  */
 export interface VisitorUserFlags {
   prequalified?: boolean;
-  tradeIn?: boolean;
   testDrive?: boolean;
+  tradeIn?: boolean;
 }
 
 /**
@@ -86,23 +86,23 @@ export interface VisitorUserFlags {
  * Contains aggregated profile data across multiple visits.
  */
 export interface VisitorProfile {
-  visitorId: string;
-  profileId: string | null;
+  device?: VisitorDevice;
   firstSeen: string;
   lastSeen: string;
-  visitCount: number;
   location?: VisitorLocation;
-  device?: VisitorDevice;
+  /** Arbitrary metadata attached to the profile upstream. */
+  metadata?: Record<string, unknown>;
+  profileId: string | null;
+  tags?: string[];
   trust?: VisitorTrustSignals;
   /** User-journey flags (prequalified, tradeIn, testDrive). */
   userFlags?: VisitorUserFlags;
-  tags?: string[];
-  /** Arbitrary metadata attached to the profile upstream. */
-  metadata?: Record<string, unknown>;
+  visitCount: number;
+  visitorId: string;
 }
 
 /** Response from the BED /profiles/:visitorId endpoint. */
 export interface VisitorProfileApiResponse {
-  profile?: VisitorProfile;
   error?: string;
+  profile?: VisitorProfile;
 }

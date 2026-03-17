@@ -6,24 +6,24 @@ import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface ImageCarouselProps {
-  /** Array of image URLs */
-  images: string[];
   /** Alt text for the main images */
   alt: string;
+  /** Class for the Carousel component */
+  carouselClassName?: string;
+  /** Class for the main carousel container */
+  containerClassName?: string;
+  /** Function returning className for thumbnail buttons based on active state */
+  getThumbnailButtonClassName?: (isActive: boolean) => string;
+  /** Optional id for the main carousel container */
+  id?: string;
+  /** Array of image URLs */
+  images: string[];
   /** Called when the main image area is clicked (e.g., to open fullscreen preview) */
   onImageClick?: () => void;
   /** Called when the active image index changes */
   onImageIndexChange?: (index: number) => void;
-  /** Optional id for the main carousel container */
-  id?: string;
-  /** Class for the main carousel container */
-  containerClassName?: string;
-  /** Class for the Carousel component */
-  carouselClassName?: string;
   /** Class for the thumbnail gallery container */
   thumbnailContainerClassName?: string;
-  /** Function returning className for thumbnail buttons based on active state */
-  getThumbnailButtonClassName?: (isActive: boolean) => string;
   /** Class for thumbnail images */
   thumbnailImageClassName?: string;
   /** Thumbnail image dimensions */

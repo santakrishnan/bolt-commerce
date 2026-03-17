@@ -38,23 +38,23 @@ function chipAvail(label: string, list?: string[]): boolean | undefined {
 }
 
 interface SidebarFiltersProps {
-  draftState: FilterState;
-  openSection: string | null;
-  toggleSection: (section: string) => void;
-  handleDraftChange: (key: keyof FilterState, value: FilterState[keyof FilterState]) => void;
-  toggleArrayFilter: (key: keyof FilterState, arr: string[], value: string) => void;
-  sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
-  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
-  scrollInfo: { thumbTop: number; thumbHeight: number };
-  handleScroll: () => void;
   /** Dynamic chip availability returned by the last search response */
   availableFilters?: AvailableFilters;
+  draftState: FilterState;
   /**
    * Per-dimension vehicle counts — use to render count badges on chips,
    * e.g. "Sedan (12)". Resolve display labels via the bucket label maps
    * exported from mock-search-service.
    */
   facetCounts?: FacetCounts;
+  handleDraftChange: (key: keyof FilterState, value: FilterState[keyof FilterState]) => void;
+  handleScroll: () => void;
+  openSection: string | null;
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+  scrollInfo: { thumbTop: number; thumbHeight: number };
+  sectionRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
+  toggleArrayFilter: (key: keyof FilterState, arr: string[], value: string) => void;
+  toggleSection: (section: string) => void;
 }
 
 /**

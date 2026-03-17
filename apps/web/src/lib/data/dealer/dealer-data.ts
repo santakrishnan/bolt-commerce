@@ -1,17 +1,17 @@
 export interface DealerInfo {
+  address: string;
+  dealershipImage: string;
+  hours: string;
   id: string;
   name: string;
-  address: string;
   phone: string;
-  hours: string;
   rating: number;
-  dealershipImage: string;
 }
 
 export interface DealerNotes {
+  dealer: DealerInfo;
   vehicleDescription: string;
   vehicleImage: string;
-  dealer: DealerInfo;
 }
 
 // Sample dealer data

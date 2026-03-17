@@ -1,26 +1,25 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { useOptimisticListMutation } from "~/hooks/use-optimistic-list-mutation";
+import { searchHistoryQueries } from "~/lib/queries/search-history";
 import {
   addSearchEntry,
   clearSearchHistory,
-  getAllSearchHistory,
   removeSearchEntry,
   type SearchEntry,
 } from "~/services/search-history-api";
-import type { SearchHistoryEntry, Suggestion, UseSearchHistoryReturn } from "../types";
+import type { Suggestion, UseSearchHistoryReturn } from "../types";
 
-// Shared query key — must match the one in SearchHistoryProvider so both
-// the provider context and the search-bar hook read from the same cache.
-const SEARCH_HISTORY_KEY = ["search-history"] as const;
+// ── Derived constants from query factory ─────────────────────────────
+
+const queryOpts = searchHistoryQueries.all();
 
 /**
- * Hook for managing search history backed by the mock API + TanStack Query.
+ * Hook for managing search history backed by TanStack Query.
  *
- * Features:
- * - Shares global in-memory state with SearchHistoryProvider via QueryClient
- * - Optimistic updates: UI reflects changes instantly, API call fires in background
- * - Rollback on failure; background re-sync when the mutation settles
- * - Automatically enforces 10-entry FIFO limit (handled by the API layer)
+ * Shares the same QueryClient cache entry as SearchHistoryProvider
+ * via the centralised query key factory. Mutations use the shared
+ * `useOptimisticListMutation` hook — no duplicated boilerplate.
  *
  * @example
  * const { recentSearches, addSearch, toSuggestions } = useSearchHistory();
@@ -28,42 +27,27 @@ const SEARCH_HISTORY_KEY = ["search-history"] as const;
  * const suggestions = toSuggestions();
  */
 export function useSearchHistory(): UseSearchHistoryReturn {
-  const queryClient = useQueryClient();
-
   // ── Read: live-subscribe to the shared cache ────────────────────
-  const { data: recentSearches = [] } = useQuery({
-    queryKey: SEARCH_HISTORY_KEY,
-    queryFn: getAllSearchHistory,
-    initialData: [] as SearchHistoryEntry[],
-  });
+  const { data: recentSearches = [] } = useQuery(queryOpts);
 
-  // ── Helper: always read current cache without stale closure ─────
-  const readCache = useCallback(
-    () => queryClient.getQueryData<SearchEntry[]>(SEARCH_HISTORY_KEY) ?? [],
-    [queryClient]
-  );
+  // ── Mutations using shared optimistic hook ──────────────────────
 
-  // ── Mutation: add ────────────────────────────────────────────────
-  const { mutate: doAdd } = useMutation({
-    mutationFn: ({ query, url, type }: { query: string; url: string; type: "nlp" | "filter" }) =>
-      addSearchEntry(query, url, type),
-    onMutate: async ({ query, url, type }) => {
-      await queryClient.cancelQueries({ queryKey: SEARCH_HISTORY_KEY });
-      const previous = readCache();
-
+  const { mutate: doAdd } = useOptimisticListMutation<
+    SearchEntry,
+    { query: string; url: string; type: "nlp" | "filter" }
+  >({
+    queryKey: queryOpts.queryKey,
+    mutationFn: ({ query, url, type }) => addSearchEntry(query, url, type),
+    updater: (prev, { query, url, type }) => {
       const trimmed = query.trim();
       if (trimmed.length <= 1) {
-        return { previous };
+        return prev;
       }
 
-      const entries = [...previous];
+      const entries = [...prev];
       const existingIdx = entries.findIndex((e) => e.query.toLowerCase() === trimmed.toLowerCase());
 
-      if (existingIdx !== -1) {
-        const existing = entries[existingIdx] as SearchEntry;
-        entries.splice(existingIdx, 1);
-        entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
-      } else {
+      if (existingIdx === -1) {
         entries.unshift({
           id: Date.now().toString(),
           query: trimmed,
@@ -71,54 +55,26 @@ export function useSearchHistory(): UseSearchHistoryReturn {
           timestamp: new Date().toISOString(),
           type,
         });
+      } else {
+        const existing = entries[existingIdx] as SearchEntry;
+        entries.splice(existingIdx, 1);
+        entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
       }
 
-      queryClient.setQueryData<SearchEntry[]>(SEARCH_HISTORY_KEY, entries.slice(0, 10));
-      return { previous };
+      return entries.slice(0, 10);
     },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(SEARCH_HISTORY_KEY, context.previous);
-      }
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: SEARCH_HISTORY_KEY }),
   });
 
-  // ── Mutation: remove ─────────────────────────────────────────────
-  const { mutate: doRemove } = useMutation({
-    mutationFn: removeSearchEntry,
-    onMutate: async (id: string) => {
-      await queryClient.cancelQueries({ queryKey: SEARCH_HISTORY_KEY });
-      const previous = readCache();
-      queryClient.setQueryData<SearchEntry[]>(
-        SEARCH_HISTORY_KEY,
-        previous.filter((e) => e.id !== id)
-      );
-      return { previous };
-    },
-    onError: (_err, _id, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(SEARCH_HISTORY_KEY, context.previous);
-      }
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: SEARCH_HISTORY_KEY }),
+  const { mutate: doRemove } = useOptimisticListMutation<SearchEntry, string>({
+    queryKey: queryOpts.queryKey,
+    mutationFn: (id) => removeSearchEntry(id),
+    updater: (prev, id) => prev.filter((e) => e.id !== id),
   });
 
-  // ── Mutation: clear all ──────────────────────────────────────────
-  const { mutate: doClear } = useMutation({
-    mutationFn: clearSearchHistory,
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: SEARCH_HISTORY_KEY });
-      const previous = readCache();
-      queryClient.setQueryData<SearchEntry[]>(SEARCH_HISTORY_KEY, []);
-      return { previous };
-    },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(SEARCH_HISTORY_KEY, context.previous);
-      }
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: SEARCH_HISTORY_KEY }),
+  const { mutate: doClear } = useOptimisticListMutation<SearchEntry, void>({
+    queryKey: queryOpts.queryKey,
+    mutationFn: () => clearSearchHistory(),
+    updater: () => [],
   });
 
   // ── Stable handlers ──────────────────────────────────────────────

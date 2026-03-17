@@ -13,52 +13,52 @@ export type Drivetrain = "AWD" | "FWD" | "RWD" | "4WD";
 export type Transmission = "Automatic" | "CVT" | "Manual";
 
 export interface VehicleFeatures {
-  safety: string[];
   comfort: string[];
-  tech: string[];
   exterior: string[];
   performance: string[];
+  safety: string[];
+  tech: string[];
 }
 
 export interface VehicleEstimation {
-  creditScore: string;
   apr: string;
-  termLength: string;
+  creditScore: string;
   estimatedMonthlyPayment: string;
+  termLength: string;
 }
 
 export interface Vehicle {
-  // ── Core fields ──
-  id: number;
-  title: string;
-  make: string;
-  model: string;
-  variant: string;
-  year: number;
-  vin: string;
-  price: number;
-  oldPrice?: number;
-  image: string | string[];
-  miles: string;
-  odometer: string;
-  mileage: number;
   bodyType: "Sedan" | "SUV" | "Truck" | "Hatchback" | "Van" | "Convertible" | "Coupe" | "Wagon";
-  match: number;
-  labels: string[];
-  owners: number;
-  extColorName: string;
-  extColorCode: string;
-  intColorName: string;
-  intColorCode: string;
+  drivetrain: Drivetrain;
   estimation?: VehicleEstimation;
+  extColorCode: string;
+  extColorName: string;
+  features: VehicleFeatures;
 
   // ── Enrichment fields (previously in vehicle-enrichments.ts) ──
   fuelType: FuelType;
-  drivetrain: Drivetrain;
-  transmission: Transmission;
+  // ── Core fields ──
+  id: number;
+  image: string | string[];
   inspection160: boolean;
-  features: VehicleFeatures;
+  intColorCode: string;
+  intColorName: string;
+  labels: string[];
+  make: string;
+  match: number;
+  mileage: number;
+  miles: string;
+  model: string;
+  odometer: string;
+  oldPrice?: number;
+  owners: number;
+  price: number;
   seatingCapacity: string[];
+  title: string;
+  transmission: Transmission;
+  variant: string;
+  vin: string;
+  year: number;
 }
 
 /** Compute a default estimation summary from the vehicle price. */
@@ -84,20 +84,33 @@ export function getVehicleEstimation(vehicle: Vehicle): VehicleEstimation {
 
 const BASE_SAFETY = ["PCS", "LDA", "Backup Camera", "FCW"];
 const FULL_SAFETY = [...BASE_SAFETY, "BSM", "ACC", "RCTA", "LTA", "RSA", "Auto High Beams"];
-const TRD_SAFETY  = [...BASE_SAFETY, "BSM", "ACC", "RCTA", "Parking Sensors"];
+const TRD_SAFETY = [...BASE_SAFETY, "BSM", "ACC", "RCTA", "Parking Sensors"];
 
 const BASE_TECH = ["Apple CarPlay", "Android Auto", "Bluetooth", "USB-C"];
-const MID_TECH  = [...BASE_TECH, "Wireless Charging", "Navigation", "Digital Cluster"];
-const FULL_TECH = [...MID_TECH, "Wireless CarPlay", "Wireless Android", "Heads-Up Display", "12+ Screen"];
+const MID_TECH = [...BASE_TECH, "Wireless Charging", "Navigation", "Digital Cluster"];
+const FULL_TECH = [
+  ...MID_TECH,
+  "Wireless CarPlay",
+  "Wireless Android",
+  "Heads-Up Display",
+  "12+ Screen",
+];
 
-const BASE_COMFORT   = ["Keyless", "Push Start", "Dual Climate"];
-const MID_COMFORT    = [...BASE_COMFORT, "Heated Seats", "Power Liftgate", "Heated Wheel"];
-const FULL_COMFORT   = [...MID_COMFORT, "Ventilated", "Heated Rear", "Remote Start", "Moonroof", "Memory Seats"];
+const BASE_COMFORT = ["Keyless", "Push Start", "Dual Climate"];
+const MID_COMFORT = [...BASE_COMFORT, "Heated Seats", "Power Liftgate", "Heated Wheel"];
+const FULL_COMFORT = [
+  ...MID_COMFORT,
+  "Ventilated",
+  "Heated Rear",
+  "Remote Start",
+  "Moonroof",
+  "Memory Seats",
+];
 const LUXURY_COMFORT = [...FULL_COMFORT, "Panoramic", "Tri-Zone", "Hands-Free"];
 
-const BASE_EXT  = ["LED Headlights", "LED Taillights"];
-const FULL_EXT  = [...BASE_EXT, "LED Fog", "Folding Mirrors", "Adaptive Lights"];
-const TRD_EXT   = [...FULL_EXT, "Running Boards", "Roof Rails"];
+const BASE_EXT = ["LED Headlights", "LED Taillights"];
+const FULL_EXT = [...BASE_EXT, "LED Fog", "Folding Mirrors", "Adaptive Lights"];
+const TRD_EXT = [...FULL_EXT, "Running Boards", "Roof Rails"];
 const TRUCK_EXT = [...TRD_EXT, "Tow Package", "Bed Liner"];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -132,7 +145,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: BASE_SAFETY, comfort: MID_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: [] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: MID_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: [],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -160,7 +179,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: [...BASE_SAFETY, "BSM", "RCTA"], comfort: MID_COMFORT, tech: MID_TECH, exterior: BASE_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "RCTA"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -189,7 +214,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -217,7 +248,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: [...BASE_SAFETY, "BSM", "ACC", "RCTA"], comfort: MID_COMFORT, tech: MID_TECH, exterior: BASE_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "ACC", "RCTA"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -245,7 +282,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: MID_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: MID_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -273,7 +316,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Hybrid"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -301,7 +350,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: [...BASE_SAFETY, "BSM", "ACC"], comfort: MID_COMFORT, tech: MID_TECH, exterior: FULL_EXT, performance: ["AWD/4WD"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "ACC"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: FULL_EXT,
+      performance: ["AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -329,7 +384,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: FULL_SAFETY, comfort: MID_COMFORT, tech: MID_TECH, exterior: BASE_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -357,7 +418,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: [],
   },
   {
@@ -385,7 +452,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Hybrid"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -413,7 +486,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["AWD/4WD", "Sport Mode"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["AWD/4WD", "Sport Mode"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -442,7 +521,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: [] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: [],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -470,7 +555,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -498,7 +589,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: [...BASE_SAFETY, "BSM", "ACC", "LDA"], comfort: MID_COMFORT, tech: MID_TECH, exterior: FULL_EXT, performance: ["Sport Mode", "V6"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "ACC", "LDA"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: FULL_EXT,
+      performance: ["Sport Mode", "V6"],
+    },
     seatingCapacity: [],
   },
   {
@@ -534,7 +631,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Third Row", "7 Passenger", "Captain's Chairs", "Split Folding"],
   },
   {
@@ -562,7 +665,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: TRD_SAFETY, comfort: [...BASE_COMFORT, "Heated Seats", "Heated Wheel"], tech: MID_TECH, exterior: TRUCK_EXT, performance: ["AWD/4WD", "TRD Suspension", "Multi-Terrain", "Crawl Control", "Locking Diff"] },
+    features: {
+      safety: TRD_SAFETY,
+      comfort: [...BASE_COMFORT, "Heated Seats", "Heated Wheel"],
+      tech: MID_TECH,
+      exterior: TRUCK_EXT,
+      performance: ["AWD/4WD", "TRD Suspension", "Multi-Terrain", "Crawl Control", "Locking Diff"],
+    },
     seatingCapacity: [],
   },
   {
@@ -590,7 +699,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: [...BASE_SAFETY, "BSM", "RCTA", "360 Camera", "Parking Sensors"], comfort: MID_COMFORT, tech: MID_TECH, exterior: TRUCK_EXT, performance: ["AWD/4WD", "Turbo", "HFORCE MAX"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "RCTA", "360 Camera", "Parking Sensors"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: TRUCK_EXT,
+      performance: ["AWD/4WD", "Turbo", "HFORCE MAX"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -618,7 +733,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: [...MID_COMFORT, "Solar Roof"], tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "PHEV"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: [...MID_COMFORT, "Solar Roof"],
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "PHEV"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -647,7 +768,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: TRD_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: TRD_EXT, performance: ["AWD/4WD", "TRD Suspension", "Multi-Terrain", "Crawl Control", "Locking Diff"] },
+    features: {
+      safety: TRD_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: TRD_EXT,
+      performance: ["AWD/4WD", "TRD Suspension", "Multi-Terrain", "Crawl Control", "Locking Diff"],
+    },
     seatingCapacity: ["Third Row", "7 Passenger", "Split Folding"],
   },
   {
@@ -675,7 +802,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Third Row", "8 Passenger", "Captain's Chairs", "Power Front", "Fold Flat"],
   },
   {
@@ -703,7 +836,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD", "Sport Mode"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD", "Sport Mode"],
+    },
     seatingCapacity: [],
   },
   {
@@ -731,7 +870,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "RWD",
     transmission: "Manual",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Sport Mode"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Sport Mode"],
+    },
     seatingCapacity: [],
   },
   {
@@ -760,7 +905,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: [...BASE_COMFORT, "Heated Seats", "Leather"], tech: BASE_TECH, exterior: BASE_EXT, performance: ["Sport Mode"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: [...BASE_COMFORT, "Heated Seats", "Leather"],
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Sport Mode"],
+    },
     seatingCapacity: [],
   },
   {
@@ -788,7 +939,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -816,7 +973,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: [...BASE_SAFETY, "BSM", "ACC"], comfort: MID_COMFORT, tech: MID_TECH, exterior: [...BASE_EXT, "LED Fog"], performance: ["Sport Mode", "V6"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "ACC"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: [...BASE_EXT, "LED Fog"],
+      performance: ["Sport Mode", "V6"],
+    },
     seatingCapacity: [],
   },
   {
@@ -844,7 +1007,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: [...BASE_EXT, "Folding Mirrors"], performance: [] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: [...BASE_EXT, "Folding Mirrors"],
+      performance: [],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -872,7 +1041,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD", "Trailer Sway"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD", "Trailer Sway"],
+    },
     seatingCapacity: ["Third Row", "8 Passenger", "Captain's Chairs", "Power Front", "Fold Flat"],
   },
   {
@@ -901,7 +1076,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "Manual",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: [...BASE_EXT, "LED Fog"], performance: ["AWD/4WD", "Turbo", "Sport Mode", "Adaptive Suspension"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: [...BASE_EXT, "LED Fog"],
+      performance: ["AWD/4WD", "Turbo", "Sport Mode", "Adaptive Suspension"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -929,7 +1110,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: TRD_EXT, performance: ["AWD/4WD", "Multi-Terrain", "Crawl Control", "Locking Diff", "Trailer Sway"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: TRD_EXT,
+      performance: ["AWD/4WD", "Multi-Terrain", "Crawl Control", "Locking Diff", "Trailer Sway"],
+    },
     seatingCapacity: ["Third Row", "7 Passenger", "Split Folding"],
   },
   {
@@ -957,7 +1144,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: [] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: [],
+    },
     seatingCapacity: [],
   },
   {
@@ -985,7 +1178,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Hybrid"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1013,7 +1212,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Sport Mode"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Sport Mode"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1042,7 +1247,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: MID_COMFORT, tech: MID_TECH, exterior: [...FULL_EXT, "Folding Mirrors"], performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: [...FULL_EXT, "Folding Mirrors"],
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1070,7 +1281,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: [...BASE_SAFETY, "BSM", "ACC", "RCTA"], comfort: MID_COMFORT, tech: MID_TECH, exterior: BASE_EXT, performance: ["Hybrid", "PHEV", "AWD/4WD"] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "ACC", "RCTA"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: BASE_EXT,
+      performance: ["Hybrid", "PHEV", "AWD/4WD"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1098,7 +1315,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: FULL_TECH, exterior: TRD_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: FULL_TECH,
+      exterior: TRD_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: ["Third Row", "7 Passenger", "Captain's Chairs"],
   },
   {
@@ -1126,7 +1349,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: MID_TECH, exterior: TRUCK_EXT, performance: ["AWD/4WD", "Multi-Terrain", "Trailer Sway"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: MID_TECH,
+      exterior: TRUCK_EXT,
+      performance: ["AWD/4WD", "Multi-Terrain", "Trailer Sway"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1155,7 +1384,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: [...BASE_EXT, "Tow Package"], performance: ["AWD/4WD"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: [...BASE_EXT, "Tow Package"],
+      performance: ["AWD/4WD"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1183,7 +1418,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: MID_COMFORT, tech: MID_TECH, exterior: FULL_EXT, performance: ["Hybrid"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1211,7 +1452,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: MID_TECH, exterior: FULL_EXT, performance: ["AWD/4WD", "Multi-Terrain", "Crawl Control"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: MID_TECH,
+      exterior: FULL_EXT,
+      performance: ["AWD/4WD", "Multi-Terrain", "Crawl Control"],
+    },
     seatingCapacity: ["Third Row", "7 Passenger"],
   },
   {
@@ -1239,7 +1486,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "RWD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: [] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: [],
+    },
     seatingCapacity: ["Third Row", "8 Passenger"],
   },
   {
@@ -1268,7 +1521,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "CVT",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["Hybrid", "AWD/4WD"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["Hybrid", "AWD/4WD"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1296,7 +1555,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "RWD",
     transmission: "Manual",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Sport Mode", "Adaptive Suspension"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Sport Mode", "Adaptive Suspension"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1324,7 +1589,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "RWD",
     transmission: "Manual",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: ["Sport Mode", "Turbo"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: ["Sport Mode", "Turbo"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1352,7 +1623,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: [...BASE_SAFETY, "BSM", "RCTA"], comfort: MID_COMFORT, tech: MID_TECH, exterior: BASE_EXT, performance: [] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "RCTA"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: BASE_EXT,
+      performance: [],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1381,7 +1658,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: FULL_EXT, performance: ["V6"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: FULL_EXT,
+      performance: ["V6"],
+    },
     seatingCapacity: [],
   },
   {
@@ -1409,7 +1692,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "CVT",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: BASE_EXT, performance: [] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: BASE_EXT,
+      performance: [],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1437,7 +1726,20 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: FULL_COMFORT, tech: FULL_TECH, exterior: TRD_EXT, performance: ["Hybrid", "AWD/4WD", "TRD Suspension", "Multi-Terrain", "Crawl Control", "Locking Diff"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: FULL_COMFORT,
+      tech: FULL_TECH,
+      exterior: TRD_EXT,
+      performance: [
+        "Hybrid",
+        "AWD/4WD",
+        "TRD Suspension",
+        "Multi-Terrain",
+        "Crawl Control",
+        "Locking Diff",
+      ],
+    },
     seatingCapacity: ["Third Row", "8 Passenger", "Captain's Chairs"],
   },
   {
@@ -1465,7 +1767,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "AWD",
     transmission: "Manual",
     inspection160: false,
-    features: { safety: BASE_SAFETY, comfort: BASE_COMFORT, tech: BASE_TECH, exterior: [...BASE_EXT, "LED Fog"], performance: ["AWD/4WD", "Turbo", "Sport Mode", "Adaptive Suspension"] },
+    features: {
+      safety: BASE_SAFETY,
+      comfort: BASE_COMFORT,
+      tech: BASE_TECH,
+      exterior: [...BASE_EXT, "LED Fog"],
+      performance: ["AWD/4WD", "Turbo", "Sport Mode", "Adaptive Suspension"],
+    },
     seatingCapacity: ["Split Folding"],
   },
   {
@@ -1494,7 +1802,20 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "4WD",
     transmission: "Automatic",
     inspection160: true,
-    features: { safety: FULL_SAFETY, comfort: LUXURY_COMFORT, tech: FULL_TECH, exterior: TRD_EXT, performance: ["Hybrid", "AWD/4WD", "Multi-Terrain", "Crawl Control", "Locking Diff", "Trailer Sway"] },
+    features: {
+      safety: FULL_SAFETY,
+      comfort: LUXURY_COMFORT,
+      tech: FULL_TECH,
+      exterior: TRD_EXT,
+      performance: [
+        "Hybrid",
+        "AWD/4WD",
+        "Multi-Terrain",
+        "Crawl Control",
+        "Locking Diff",
+        "Trailer Sway",
+      ],
+    },
     seatingCapacity: ["Third Row", "7 Passenger", "Split Folding"],
   },
   {
@@ -1522,7 +1843,13 @@ export const mockVehicles: Vehicle[] = [
     drivetrain: "FWD",
     transmission: "Automatic",
     inspection160: false,
-    features: { safety: [...BASE_SAFETY, "BSM", "ACC"], comfort: MID_COMFORT, tech: MID_TECH, exterior: BASE_EXT, performance: [] },
+    features: {
+      safety: [...BASE_SAFETY, "BSM", "ACC"],
+      comfort: MID_COMFORT,
+      tech: MID_TECH,
+      exterior: BASE_EXT,
+      performance: [],
+    },
     seatingCapacity: [],
   },
 ];

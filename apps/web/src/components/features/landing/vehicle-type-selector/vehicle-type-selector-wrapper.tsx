@@ -2,9 +2,9 @@ import { getVehicleTypes } from "~/lib/data";
 import { VehicleTypeSelector } from "./vehicle-type-selector";
 
 export interface VehicleTypeSelectorWrapperProps {
-  onSelect?: (vehicleId: string) => void;
-  defaultSelected?: string;
   className?: string;
+  defaultSelected?: string;
+  onSelect?: (vehicleId: string) => void;
 }
 
 export async function VehicleTypeSelectorWrapper(props: VehicleTypeSelectorWrapperProps) {

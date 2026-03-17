@@ -25,17 +25,17 @@ import type { Vehicle } from "~/lib/search/data";
 import { useSearchContext } from "./search-context";
 
 interface FilterPreset {
-  selectedPriceQuick?: string;
-  selectedMileage?: string;
   /** Background label filter — matches vehicle.labels, not shown in search box */
   labelFilter?: string;
+  selectedMileage?: string;
+  selectedPriceQuick?: string;
 }
 
 interface SearchClientProps {
-  vehicles: Vehicle[];
   initialBodyStyles?: string[];
-  initialSearchQuery?: string;
   initialFilterPreset?: FilterPreset;
+  initialSearchQuery?: string;
+  vehicles: Vehicle[];
 }
 
 function matchesTextQuery(vehicle: Vehicle, query: string): boolean {
@@ -352,14 +352,14 @@ export function SearchClient({ vehicles }: SearchClientProps) {
         availableFilters={availableFilters}
         filterState={filterState}
         isOpen={isFilterOpen}
+        labelFilter={labelFilter}
         onApply={handleApplyFilters}
         onClose={() => setIsFilterOpen(false)}
         onReset={resetFilters}
+        refineFilters={refineSearchFilters}
+        searchQuery={searchQuery}
         vehicleCount={vehicleCount}
         vehicles={vehicles}
-        searchQuery={searchQuery}
-        labelFilter={labelFilter}
-        refineFilters={refineSearchFilters}
       />
       <main className="relative flex-1 bg-gray-100">
         <SearchHero

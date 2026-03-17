@@ -5,14 +5,14 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 
 export interface VehicleKeyFeaturesProps {
-  features: string[];
   className?: string;
   collapsible?: boolean;
-  headingClassName?: string;
+  features: string[];
   gridClassName?: string;
-  itemClassName?: string;
-  iconSrc?: string;
+  headingClassName?: string;
   iconClassName?: string;
+  iconSrc?: string;
+  itemClassName?: string;
   textClassName?: string;
 }
 

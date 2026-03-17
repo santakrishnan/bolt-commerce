@@ -1,14 +1,14 @@
 export interface VehicleFinderOption {
+  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
   id: string;
   title: string;
   vehicleCount: number;
-  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
 }
 
 export interface VehicleFinderOptionStatic {
+  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
   id: string;
   title: string;
-  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
 }
 
 export const vehicleFinderOptions: VehicleFinderOptionStatic[] = [

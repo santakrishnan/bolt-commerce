@@ -8,8 +8,8 @@ import type { UseVoiceRecognitionReturn, VoiceRecognitionError } from "../types"
 
 // Type definitions for Web Speech API (not in standard TypeScript lib)
 interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
   resultIndex: number;
+  results: SpeechRecognitionResultList;
 }
 
 interface SpeechRecognitionErrorEvent extends Event {
@@ -18,16 +18,16 @@ interface SpeechRecognitionErrorEvent extends Event {
 }
 
 interface SpeechRecognition extends EventTarget {
+  abort: () => void;
   continuous: boolean;
   interimResults: boolean;
   lang: string;
+  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
+  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
+  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
+  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
   start: () => void;
   stop: () => void;
-  abort: () => void;
-  onstart: ((this: SpeechRecognition, ev: Event) => void) | null;
-  onend: ((this: SpeechRecognition, ev: Event) => void) | null;
-  onresult: ((this: SpeechRecognition, ev: SpeechRecognitionEvent) => void) | null;
-  onerror: ((this: SpeechRecognition, ev: SpeechRecognitionErrorEvent) => void) | null;
 }
 
 interface SpeechRecognitionConstructor {

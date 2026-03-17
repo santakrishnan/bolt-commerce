@@ -25,12 +25,12 @@ const cardVariants = cva(
 );
 
 export interface VehicleTypeCardProps extends VariantProps<typeof cardVariants> {
+  className?: string;
+  description?: string;
   image: string;
   name: string;
-  description?: string;
   onClick?: () => void;
   selected?: boolean;
-  className?: string;
 }
 
 export function VehicleTypeCard({

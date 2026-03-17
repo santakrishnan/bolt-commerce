@@ -10,37 +10,37 @@ import type {
 type PillTone = "neutral" | "success" | "warning" | "inactive";
 
 export interface VehicleMetaChipProps {
-  value: string;
-  tone?: PillTone;
-  className?: string;
-  chipClassName?: string;
   ariaLabel?: string;
+  chipClassName?: string;
+  className?: string;
+  tone?: PillTone;
+  value: string;
 }
 
 export interface VehicleMetaColorChipProps {
-  label: string;
   colorName: string;
+  label: string;
   swatchHex: string;
 }
 
 export interface VehicleMetaCheckedChipProps {
-  label: string;
   active: boolean;
+  label: string;
 }
 
 export interface VehicleMetaBarChipComponents {
-  MetaChipComponent?: ComponentType<VehicleMetaChipProps>;
-  ColorChipComponent?: ComponentType<VehicleMetaColorChipProps>;
   CheckedChipComponent?: ComponentType<VehicleMetaCheckedChipProps>;
+  ColorChipComponent?: ComponentType<VehicleMetaColorChipProps>;
+  MetaChipComponent?: ComponentType<VehicleMetaChipProps>;
 }
 
 interface VehicleMetaBarProps {
-  vehicle: VehicleDetail;
-  specs: VehicleSpecData[];
-  historyData: HistoryData;
-  vehicleStatus: VehicleStatusData;
-  className?: string;
   chipComponents?: VehicleMetaBarChipComponents;
+  className?: string;
+  historyData: HistoryData;
+  specs: VehicleSpecData[];
+  vehicle: VehicleDetail;
+  vehicleStatus: VehicleStatusData;
 }
 
 const exteriorColorSwatches: Record<string, string> = {

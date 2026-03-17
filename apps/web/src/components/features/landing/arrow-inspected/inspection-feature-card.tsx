@@ -3,8 +3,8 @@ import Image from "next/image";
 import type { InspectionFeature } from "~/data/inspection/features";
 
 export interface InspectionFeatureCardProps {
-  feature: InspectionFeature;
   className?: string;
+  feature: InspectionFeature;
 }
 
 const iconMap = {

@@ -16,6 +16,7 @@ import type {
   FilterState,
 } from "~/components/features/search/filter-sidebar/types";
 import { mockVehicles, type Vehicle } from "./mock-vehicles";
+
 // vehicle-enrichments.ts is no longer needed —
 // all enrichment data is now part of the flat Vehicle document.
 
@@ -39,29 +40,29 @@ export interface RefineFilter {
  */
 export interface SearchFilterRequest {
   filterState: FilterState;
-  searchQuery?: string;
   labelFilter?: string;
-  refineFilters?: RefineFilter[];
-  vehicles?: Vehicle[];
-  /** Sort order to apply to matched results before pagination. Defaults to "recommended". */
-  sortOption?: SortOption;
   /** 1-based page number. Defaults to 1. */
   page?: number;
   /** Results per page. Defaults to 20. */
   pageSize?: number;
+  refineFilters?: RefineFilter[];
+  searchQuery?: string;
+  /** Sort order to apply to matched results before pagination. Defaults to "recommended". */
+  sortOption?: SortOption;
+  vehicles?: Vehicle[];
 }
 
 export interface SearchFilterResult {
-  vehicles: Vehicle[];
-  /** Total matched vehicles before pagination. */
-  totalCount: number;
+  availableFilters: AvailableFilters;
+  /** Per-filter-value counts for the matched result set. */
+  facetCounts: FacetCounts;
   /** Current 1-based page number. */
   page: number;
   /** Results per page used for this response. */
   pageSize: number;
-  availableFilters: AvailableFilters;
-  /** Per-filter-value counts for the matched result set. */
-  facetCounts: FacetCounts;
+  /** Total matched vehicles before pagination. */
+  totalCount: number;
+  vehicles: Vehicle[];
 }
 
 /**
@@ -69,34 +70,34 @@ export interface SearchFilterResult {
  * match each filter value. Use to render "(12)" counters next to filter chips.
  */
 export interface FacetCounts {
-  bodyType:      Record<string, number>;
-  fuelType:      Record<string, number>;
-  drivetrain:    Record<string, number>;
-  transmission:  Record<string, number>;
-  priceRange:    Record<string, number>;
-  mileageRange:  Record<string, number>;
-  yearRange:     Record<string, number>;
+  bodyType: Record<string, number>;
+  drivetrain: Record<string, number>;
   exteriorColor: Record<string, number>;
+  fuelType: Record<string, number>;
   interiorColor: Record<string, number>;
+  mileageRange: Record<string, number>;
+  priceRange: Record<string, number>;
+  transmission: Record<string, number>;
+  yearRange: Record<string, number>;
 }
 
 // ─── Module-level constants (avoids object re-creation on every call) ───
 
 const PRICE_LIMITS: Record<string, number> = {
   "Cars Under $20,000": 19_999,
-  "$10k or less":       10_000,
-  "$20k or less":       20_000,
-  "$30k or less":       30_000,
-  "$40k or less":       40_000,
-  "$50k or less":       50_000,
+  "$10k or less": 10_000,
+  "$20k or less": 20_000,
+  "$30k or less": 30_000,
+  "$40k or less": 40_000,
+  "$50k or less": 50_000,
 };
 
 const MILEAGE_LIMITS: Record<string, number> = {
-  "Low Miles":       19_999,
-  "Under 15k mi":   15_000,
-  "Under 30k mi":   30_000,
-  "Under 50k mi":   50_000,
-  "Under 75k mi":   75_000,
+  "Low Miles": 19_999,
+  "Under 15k mi": 15_000,
+  "Under 30k mi": 30_000,
+  "Under 50k mi": 50_000,
+  "Under 75k mi": 75_000,
   "Under 100k mi": 100_000,
 };
 
@@ -106,9 +107,9 @@ const MILEAGE_LIMITS: Record<string, number> = {
  */
 const YEAR_RANGES: Record<string, { min?: number; max?: number }> = {
   "2023 or newer": { min: 2023 },
-  "2019-2021":     { min: 2019, max: 2021 },
-  "2015-2018":     { min: 2015, max: 2018 },
-  "pre-2015":      { max: 2014 },
+  "2019-2021": { min: 2019, max: 2021 },
+  "2015-2018": { min: 2015, max: 2018 },
+  "pre-2015": { max: 2014 },
 };
 
 /**
@@ -117,11 +118,11 @@ const YEAR_RANGES: Record<string, { min?: number; max?: number }> = {
  */
 export const PRICE_BUCKET_LABELS: Record<string, string> = {
   "under-10k": "Under $10k",
-  "10k-20k":   "$10k–20k",
-  "20k-30k":   "$20k–30k",
-  "30k-40k":   "$30k–40k",
-  "40k-50k":   "$40k–50k",
-  "50k-plus":  "$50k+",
+  "10k-20k": "$10k–20k",
+  "20k-30k": "$20k–30k",
+  "30k-40k": "$30k–40k",
+  "40k-50k": "$40k–50k",
+  "50k-plus": "$50k+",
 };
 
 /**
@@ -130,10 +131,10 @@ export const PRICE_BUCKET_LABELS: Record<string, string> = {
  */
 export const MILEAGE_BUCKET_LABELS: Record<string, string> = {
   "under-15k": "Under 15k mi",
-  "15k-30k":   "15k–30k mi",
-  "30k-50k":   "30k–50k mi",
-  "50k-75k":   "50k–75k mi",
-  "75k-100k":  "75k–100k mi",
+  "15k-30k": "15k–30k mi",
+  "30k-50k": "30k–50k mi",
+  "50k-75k": "50k–75k mi",
+  "75k-100k": "75k–100k mi",
   "100k-plus": "100k+ mi",
 };
 
@@ -143,20 +144,20 @@ export const MILEAGE_BUCKET_LABELS: Record<string, string> = {
  */
 export const YEAR_BUCKET_LABELS: Record<string, string> = {
   "2023-or-newer": "2023 or newer",
-  "2022":          "2022",
-  "2019-2021":     "2019–2021",
-  "2015-2018":     "2015–2018",
-  "pre-2015":      "Pre-2015",
+  "2022": "2022",
+  "2019-2021": "2019–2021",
+  "2015-2018": "2015–2018",
+  "pre-2015": "Pre-2015",
 };
 
 const TEXT_SEARCH_SHORTCUTS: Record<string, (v: Vehicle) => boolean> = {
-  "cars under $20,000":   (v) => v.price < 20_000,
+  "cars under $20,000": (v) => v.price < 20_000,
   "shop excellent deals": (v) => v.labels.some((l) => l.toLowerCase().includes("excellent price")),
   "shop-excellent-deals": (v) => v.labels.some((l) => l.toLowerCase().includes("excellent price")),
-  "low miles":            (v) => v.mileage < 20_000,
-  "low-miles":            (v) => v.mileage < 20_000,
-  "price drop":           (v) => v.labels.some((l) => l.toLowerCase().includes("price drop")),
-  "price-drop":           (v) => v.labels.some((l) => l.toLowerCase().includes("price drop")),
+  "low miles": (v) => v.mileage < 20_000,
+  "low-miles": (v) => v.mileage < 20_000,
+  "price drop": (v) => v.labels.some((l) => l.toLowerCase().includes("price drop")),
+  "price-drop": (v) => v.labels.some((l) => l.toLowerCase().includes("price drop")),
 };
 
 // ─── Helpers ───
@@ -187,20 +188,28 @@ function matchesBodyStyle(vehicle: Vehicle, s: FilterState): boolean {
 
 function matchesPriceFilter(vehicle: Vehicle, s: FilterState): boolean {
   const max = PRICE_LIMITS[s.selectedPriceQuick];
-  return max !== undefined ? vehicle.price <= max : true;
+  return max === undefined ? true : vehicle.price <= max;
 }
 
 function matchesMileageFilter(vehicle: Vehicle, s: FilterState): boolean {
   const max = MILEAGE_LIMITS[s.selectedMileage];
-  return max !== undefined ? vehicle.mileage <= max : true;
+  return max === undefined ? true : vehicle.mileage <= max;
 }
 
 function matchesYearFilter(vehicle: Vehicle, s: FilterState): boolean {
-  if (!s.selectedYearQuick) return true;
+  if (!s.selectedYearQuick) {
+    return true;
+  }
   const range = YEAR_RANGES[s.selectedYearQuick];
-  if (!range) return true;
-  if (range.min !== undefined && vehicle.year < range.min) return false;
-  if (range.max !== undefined && vehicle.year > range.max) return false;
+  if (!range) {
+    return true;
+  }
+  if (range.min !== undefined && vehicle.year < range.min) {
+    return false;
+  }
+  if (range.max !== undefined && vehicle.year > range.max) {
+    return false;
+  }
   return true;
 }
 
@@ -235,7 +244,10 @@ function matchesEnrichmentFilters(vehicle: Vehicle, s: FilterState): boolean {
   if (s.selectedDrivetrains.length > 0 && !s.selectedDrivetrains.includes(vehicle.drivetrain)) {
     return false;
   }
-  if (s.selectedTransmissions.length > 0 && !s.selectedTransmissions.includes(vehicle.transmission)) {
+  if (
+    s.selectedTransmissions.length > 0 &&
+    !s.selectedTransmissions.includes(vehicle.transmission)
+  ) {
     return false;
   }
   if (s.inspection160 && !vehicle.inspection160) {
@@ -253,7 +265,10 @@ function matchesFuelType(vehicle: Vehicle, s: FilterState): boolean {
 }
 
 function matchesFeatureSets(vehicle: Vehicle, s: FilterState): boolean {
-  if (s.selectedSafetyFeatures.length > 0 && !hasAll(vehicle.features.safety, s.selectedSafetyFeatures)) {
+  if (
+    s.selectedSafetyFeatures.length > 0 &&
+    !hasAll(vehicle.features.safety, s.selectedSafetyFeatures)
+  ) {
     return false;
   }
   if (
@@ -286,10 +301,7 @@ function matchesFeatureSets(vehicle: Vehicle, s: FilterState): boolean {
   return true;
 }
 
-function matchesRefineFilters(
-  vehicle: Vehicle,
-  refineFilters: RefineFilter[]
-): boolean {
+function matchesRefineFilters(vehicle: Vehicle, refineFilters: RefineFilter[]): boolean {
   if (refineFilters.length === 0) {
     return true;
   }
@@ -307,11 +319,15 @@ function matchesRefineFilters(
 
 function matchesTextSearch(vehicle: Vehicle, searchQuery: string): boolean {
   const q = searchQuery.trim().toLowerCase();
-  if (!q) return true;
+  if (!q) {
+    return true;
+  }
 
   // Shortcut queries — checked by stable config map, no inline magic strings.
   const shortcut = TEXT_SEARCH_SHORTCUTS[q];
-  if (shortcut) return shortcut(vehicle);
+  if (shortcut) {
+    return shortcut(vehicle);
+  }
 
   return (
     vehicle.title.toLowerCase().includes(q) ||
@@ -355,11 +371,21 @@ function matchesFilters(
  * Display label resolved in UI via PRICE_BUCKET_LABELS.
  */
 function getVehiclePriceBucket(price: number): string {
-  if (price < 10_000) return "under-10k";
-  if (price < 20_000) return "10k-20k";
-  if (price < 30_000) return "20k-30k";
-  if (price < 40_000) return "30k-40k";
-  if (price < 50_000) return "40k-50k";
+  if (price < 10_000) {
+    return "under-10k";
+  }
+  if (price < 20_000) {
+    return "10k-20k";
+  }
+  if (price < 30_000) {
+    return "20k-30k";
+  }
+  if (price < 40_000) {
+    return "30k-40k";
+  }
+  if (price < 50_000) {
+    return "40k-50k";
+  }
   return "50k-plus";
 }
 
@@ -368,11 +394,21 @@ function getVehiclePriceBucket(price: number): string {
  * Display label resolved in UI via MILEAGE_BUCKET_LABELS.
  */
 function getVehicleMileageBucket(mileage: number): string {
-  if (mileage <  15_000) return "under-15k";
-  if (mileage <  30_000) return "15k-30k";
-  if (mileage <  50_000) return "30k-50k";
-  if (mileage <  75_000) return "50k-75k";
-  if (mileage < 100_000) return "75k-100k";
+  if (mileage < 15_000) {
+    return "under-15k";
+  }
+  if (mileage < 30_000) {
+    return "15k-30k";
+  }
+  if (mileage < 50_000) {
+    return "30k-50k";
+  }
+  if (mileage < 75_000) {
+    return "50k-75k";
+  }
+  if (mileage < 100_000) {
+    return "75k-100k";
+  }
   return "100k-plus";
 }
 
@@ -381,10 +417,18 @@ function getVehicleMileageBucket(mileage: number): string {
  * Display label resolved in UI via YEAR_BUCKET_LABELS.
  */
 function getVehicleYearBucket(year: number): string {
-  if (year >= 2023)                 return "2023-or-newer";
-  if (year === 2022)                return "2022";
-  if (year >= 2019 && year <= 2021) return "2019-2021";
-  if (year >= 2015 && year <= 2018) return "2015-2018";
+  if (year >= 2023) {
+    return "2023-or-newer";
+  }
+  if (year === 2022) {
+    return "2022";
+  }
+  if (year >= 2019 && year <= 2021) {
+    return "2019-2021";
+  }
+  if (year >= 2015 && year <= 2018) {
+    return "2015-2018";
+  }
   return "pre-2015";
 }
 
@@ -401,47 +445,47 @@ function computeFiltersAndFacets(vehicles: Vehicle[]): {
   facetCounts: FacetCounts;
 } {
   // ── Facet count accumulators ──
-  const bodyTypeCount:      Record<string, number> = {};
-  const fuelTypeCount:      Record<string, number> = {};
-  const drivetrainCount:    Record<string, number> = {};
-  const transmissionCount:  Record<string, number> = {};
-  const priceRangeCount:    Record<string, number> = {};
-  const mileageRangeCount:  Record<string, number> = {};
-  const yearRangeCount:     Record<string, number> = {};
+  const bodyTypeCount: Record<string, number> = {};
+  const fuelTypeCount: Record<string, number> = {};
+  const drivetrainCount: Record<string, number> = {};
+  const transmissionCount: Record<string, number> = {};
+  const priceRangeCount: Record<string, number> = {};
+  const mileageRangeCount: Record<string, number> = {};
+  const yearRangeCount: Record<string, number> = {};
   const exteriorColorCount: Record<string, number> = {};
   const interiorColorCount: Record<string, number> = {};
 
   // ── Available filter set accumulators ──
-  const bodyStyles       = new Set<string>();
-  const fuelTypes        = new Set<string>();
-  const drivetrains      = new Set<string>();
-  const transmissions    = new Set<string>();
-  const exteriorColors   = new Set<string>();
-  const interiorColors   = new Set<string>();
-  const models           = new Set<string>();
-  const safetyFeatures   = new Set<string>();
-  const comfortFeatures  = new Set<string>();
-  const techFeatures     = new Set<string>();
+  const bodyStyles = new Set<string>();
+  const fuelTypes = new Set<string>();
+  const drivetrains = new Set<string>();
+  const transmissions = new Set<string>();
+  const exteriorColors = new Set<string>();
+  const interiorColors = new Set<string>();
+  const models = new Set<string>();
+  const safetyFeatures = new Set<string>();
+  const comfortFeatures = new Set<string>();
+  const techFeatures = new Set<string>();
   const exteriorFeatures = new Set<string>();
-  const perfFeatures     = new Set<string>();
-  const seatingCap       = new Set<string>();
-  let   hasInspection160 = false;
+  const perfFeatures = new Set<string>();
+  const seatingCap = new Set<string>();
+  let hasInspection160 = false;
 
   for (const v of vehicles) {
     // Facet counts (slug keys — resolved to display strings in UI)
-    const priceBucket   = getVehiclePriceBucket(v.price);
+    const priceBucket = getVehiclePriceBucket(v.price);
     const mileageBucket = getVehicleMileageBucket(v.mileage);
-    const yearBucket    = getVehicleYearBucket(v.year);
+    const yearBucket = getVehicleYearBucket(v.year);
 
-    bodyTypeCount[v.bodyType]        = (bodyTypeCount[v.bodyType]        ?? 0) + 1;
-    fuelTypeCount[v.fuelType]        = (fuelTypeCount[v.fuelType]        ?? 0) + 1;
-    drivetrainCount[v.drivetrain]    = (drivetrainCount[v.drivetrain]    ?? 0) + 1;
-    transmissionCount[v.transmission]= (transmissionCount[v.transmission]?? 0) + 1;
-    exteriorColorCount[v.extColorName]=(exteriorColorCount[v.extColorName]?? 0) + 1;
-    interiorColorCount[v.intColorName]=(interiorColorCount[v.intColorName]?? 0) + 1;
-    priceRangeCount[priceBucket]     = (priceRangeCount[priceBucket]     ?? 0) + 1;
+    bodyTypeCount[v.bodyType] = (bodyTypeCount[v.bodyType] ?? 0) + 1;
+    fuelTypeCount[v.fuelType] = (fuelTypeCount[v.fuelType] ?? 0) + 1;
+    drivetrainCount[v.drivetrain] = (drivetrainCount[v.drivetrain] ?? 0) + 1;
+    transmissionCount[v.transmission] = (transmissionCount[v.transmission] ?? 0) + 1;
+    exteriorColorCount[v.extColorName] = (exteriorColorCount[v.extColorName] ?? 0) + 1;
+    interiorColorCount[v.intColorName] = (interiorColorCount[v.intColorName] ?? 0) + 1;
+    priceRangeCount[priceBucket] = (priceRangeCount[priceBucket] ?? 0) + 1;
     mileageRangeCount[mileageBucket] = (mileageRangeCount[mileageBucket] ?? 0) + 1;
-    yearRangeCount[yearBucket]       = (yearRangeCount[yearBucket]       ?? 0) + 1;
+    yearRangeCount[yearBucket] = (yearRangeCount[yearBucket] ?? 0) + 1;
 
     // Available filters (derived from the same pass — no second loop needed)
     bodyStyles.add(v.bodyType);
@@ -451,41 +495,55 @@ function computeFiltersAndFacets(vehicles: Vehicle[]): {
     exteriorColors.add(v.extColorName);
     interiorColors.add(v.intColorName);
     models.add(v.model);
-    if (v.inspection160) hasInspection160 = true;
-    for (const f of v.features.safety)      safetyFeatures.add(f);
-    for (const f of v.features.comfort)     comfortFeatures.add(f);
-    for (const f of v.features.tech)        techFeatures.add(f);
-    for (const f of v.features.exterior)    exteriorFeatures.add(f);
-    for (const f of v.features.performance) perfFeatures.add(f);
-    for (const s of v.seatingCapacity)      seatingCap.add(s);
+    if (v.inspection160) {
+      hasInspection160 = true;
+    }
+    for (const f of v.features.safety) {
+      safetyFeatures.add(f);
+    }
+    for (const f of v.features.comfort) {
+      comfortFeatures.add(f);
+    }
+    for (const f of v.features.tech) {
+      techFeatures.add(f);
+    }
+    for (const f of v.features.exterior) {
+      exteriorFeatures.add(f);
+    }
+    for (const f of v.features.performance) {
+      perfFeatures.add(f);
+    }
+    for (const s of v.seatingCapacity) {
+      seatingCap.add(s);
+    }
   }
 
   return {
     availableFilters: {
-      totalCount:          vehicles.length,
+      totalCount: vehicles.length,
       hasInspection160,
-      bodyStyles:          [...bodyStyles],
-      fuelTypes:           [...fuelTypes],
-      drivetrains:         [...drivetrains],
-      transmissions:       [...transmissions],
-      exteriorColors:      [...exteriorColors],
-      interiorColors:      [...interiorColors],
-      models:              [...models],
-      safetyFeatures:      [...safetyFeatures],
-      comfortFeatures:     [...comfortFeatures],
-      techFeatures:        [...techFeatures],
-      exteriorFeatures:    [...exteriorFeatures],
+      bodyStyles: [...bodyStyles],
+      fuelTypes: [...fuelTypes],
+      drivetrains: [...drivetrains],
+      transmissions: [...transmissions],
+      exteriorColors: [...exteriorColors],
+      interiorColors: [...interiorColors],
+      models: [...models],
+      safetyFeatures: [...safetyFeatures],
+      comfortFeatures: [...comfortFeatures],
+      techFeatures: [...techFeatures],
+      exteriorFeatures: [...exteriorFeatures],
       performanceFeatures: [...perfFeatures],
-      seatingCapacity:     [...seatingCap],
+      seatingCapacity: [...seatingCap],
     },
     facetCounts: {
-      bodyType:      bodyTypeCount,
-      fuelType:      fuelTypeCount,
-      drivetrain:    drivetrainCount,
-      transmission:  transmissionCount,
-      priceRange:    priceRangeCount,
-      mileageRange:  mileageRangeCount,
-      yearRange:     yearRangeCount,
+      bodyType: bodyTypeCount,
+      fuelType: fuelTypeCount,
+      drivetrain: drivetrainCount,
+      transmission: transmissionCount,
+      priceRange: priceRangeCount,
+      mileageRange: mileageRangeCount,
+      yearRange: yearRangeCount,
       exteriorColor: exteriorColorCount,
       interiorColor: interiorColorCount,
     },
@@ -497,8 +555,12 @@ function computeFiltersAndFacets(vehicles: Vehicle[]): {
  * "recommended" preserves the original relevance order from the data.
  */
 function applySortOption(vehicles: Vehicle[], sortOption: SortOption): Vehicle[] {
-  if (sortOption === "low-high")  return [...vehicles].sort((a, b) => a.price - b.price);
-  if (sortOption === "high-low")  return [...vehicles].sort((a, b) => b.price - a.price);
+  if (sortOption === "low-high") {
+    return [...vehicles].sort((a, b) => a.price - b.price);
+  }
+  if (sortOption === "high-low") {
+    return [...vehicles].sort((a, b) => b.price - a.price);
+  }
   return vehicles; // "recommended" — preserve data order
 }
 
@@ -539,8 +601,8 @@ export function computeAvailableFiltersSync(
   filterState: FilterState,
   opts?: { searchQuery?: string; labelFilter?: string; refineFilters?: RefineFilter[] }
 ): { availableFilters: AvailableFilters; facetCounts: FacetCounts } {
-  const sq = opts?.searchQuery   ?? "";
-  const lf = opts?.labelFilter   ?? "";
+  const sq = opts?.searchQuery ?? "";
+  const lf = opts?.labelFilter ?? "";
   const rf = opts?.refineFilters ?? [];
 
   /** Filter with an override applied on top of the current filterState. */
@@ -554,45 +616,45 @@ export function computeAvailableFiltersSync(
 
   // ── Fully-matched set → used for count badges (facetCounts) ──────────────
   const fullyMatched = allVehicles.filter((v) => matchesFilters(v, filterState, sq, lf, rf));
-  const countSource  = fullyMatched.length > 0 ? fullyMatched : allVehicles;
+  const countSource = fullyMatched.length > 0 ? fullyMatched : allVehicles;
   const { facetCounts } = computeFiltersAndFacets(countSource);
 
   // ── Per-dimension disjunctive sets ────────────────────────────────────────
   // Each multi-select dimension is computed by excluding its OWN filter so
   // users can keep adding values in the same dimension (OR within a dim,
   // AND across dims).
-  const forBodyStyles    = filterWith({ selectedBodyStyles:          [] });
-  const forFuelTypes     = filterWith({ selectedFuelTypes:           [] });
-  const forExtColors     = filterWith({ selectedExteriorColors:      [] });
-  const forIntColors     = filterWith({ selectedInteriorColors:      [] });
-  const forModels        = filterWith({ selectedModels:              [] });
-  const forDrivetrains   = filterWith({ selectedDrivetrains:         [] });
-  const forTransmissions = filterWith({ selectedTransmissions:       [] });
-  const forSafety        = filterWith({ selectedSafetyFeatures:      [] });
-  const forComfort       = filterWith({ selectedComfortFeatures:     [] });
-  const forTech          = filterWith({ selectedTechFeatures:        [] });
-  const forExterior      = filterWith({ selectedExteriorFeatures:    [] });
-  const forPerf          = filterWith({ selectedPerformanceFeatures: [] });
-  const forSeating       = filterWith({ selectedSeatingCapacity:     [] });
-  const forInspection    = filterWith({ inspection160:               false });
+  const forBodyStyles = filterWith({ selectedBodyStyles: [] });
+  const forFuelTypes = filterWith({ selectedFuelTypes: [] });
+  const forExtColors = filterWith({ selectedExteriorColors: [] });
+  const forIntColors = filterWith({ selectedInteriorColors: [] });
+  const forModels = filterWith({ selectedModels: [] });
+  const forDrivetrains = filterWith({ selectedDrivetrains: [] });
+  const forTransmissions = filterWith({ selectedTransmissions: [] });
+  const forSafety = filterWith({ selectedSafetyFeatures: [] });
+  const forComfort = filterWith({ selectedComfortFeatures: [] });
+  const forTech = filterWith({ selectedTechFeatures: [] });
+  const forExterior = filterWith({ selectedExteriorFeatures: [] });
+  const forPerf = filterWith({ selectedPerformanceFeatures: [] });
+  const forSeating = filterWith({ selectedSeatingCapacity: [] });
+  const forInspection = filterWith({ inspection160: false });
 
   const availableFilters: AvailableFilters = {
     // totalCount = actual fully-matched count (what Apply would produce)
-    totalCount:          fullyMatched.length,
-    hasInspection160:    forInspection.some((v) => v.inspection160),
-    bodyStyles:          [...new Set(forBodyStyles.map((v)    => v.bodyType))],
-    fuelTypes:           [...new Set(forFuelTypes.map((v)     => v.fuelType))],
-    exteriorColors:      [...new Set(forExtColors.map((v)     => v.extColorName))],
-    interiorColors:      [...new Set(forIntColors.map((v)     => v.intColorName))],
-    models:              [...new Set(forModels.map((v)        => v.model))],
-    drivetrains:         [...new Set(forDrivetrains.map((v)   => v.drivetrain))],
-    transmissions:       [...new Set(forTransmissions.map((v) => v.transmission))],
-    safetyFeatures:      [...new Set(forSafety.flatMap((v)    => v.features.safety))],
-    comfortFeatures:     [...new Set(forComfort.flatMap((v)   => v.features.comfort))],
-    techFeatures:        [...new Set(forTech.flatMap((v)      => v.features.tech))],
-    exteriorFeatures:    [...new Set(forExterior.flatMap((v)  => v.features.exterior))],
-    performanceFeatures: [...new Set(forPerf.flatMap((v)      => v.features.performance))],
-    seatingCapacity:     [...new Set(forSeating.flatMap((v)   => v.seatingCapacity))],
+    totalCount: fullyMatched.length,
+    hasInspection160: forInspection.some((v) => v.inspection160),
+    bodyStyles: [...new Set(forBodyStyles.map((v) => v.bodyType))],
+    fuelTypes: [...new Set(forFuelTypes.map((v) => v.fuelType))],
+    exteriorColors: [...new Set(forExtColors.map((v) => v.extColorName))],
+    interiorColors: [...new Set(forIntColors.map((v) => v.intColorName))],
+    models: [...new Set(forModels.map((v) => v.model))],
+    drivetrains: [...new Set(forDrivetrains.map((v) => v.drivetrain))],
+    transmissions: [...new Set(forTransmissions.map((v) => v.transmission))],
+    safetyFeatures: [...new Set(forSafety.flatMap((v) => v.features.safety))],
+    comfortFeatures: [...new Set(forComfort.flatMap((v) => v.features.comfort))],
+    techFeatures: [...new Set(forTech.flatMap((v) => v.features.tech))],
+    exteriorFeatures: [...new Set(forExterior.flatMap((v) => v.features.exterior))],
+    performanceFeatures: [...new Set(forPerf.flatMap((v) => v.features.performance))],
+    seatingCapacity: [...new Set(forSeating.flatMap((v) => v.seatingCapacity))],
   };
 
   return { availableFilters, facetCounts };
@@ -613,13 +675,13 @@ export async function mockSearchVehicles(req: SearchFilterRequest): Promise<Sear
 
   const {
     filterState,
-    searchQuery   = "",
-    labelFilter   = "",
+    searchQuery = "",
+    labelFilter = "",
     refineFilters = [],
-    vehicles      = mockVehicles,
-    sortOption    = "recommended",
-    page          = 1,
-    pageSize      = 20,
+    vehicles = mockVehicles,
+    sortOption = "recommended",
+    page = 1,
+    pageSize = 20,
   } = req;
 
   const matched = vehicles.filter((v) =>
@@ -636,12 +698,12 @@ export async function mockSearchVehicles(req: SearchFilterRequest): Promise<Sear
   const sorted = applySortOption(matched, sortOption);
 
   // Paginate
-  const offset    = (page - 1) * pageSize;
+  const offset = (page - 1) * pageSize;
   const paginated = sorted.slice(offset, offset + pageSize);
 
   return {
-    vehicles:         paginated,
-    totalCount:       matched.length,
+    vehicles: paginated,
+    totalCount: matched.length,
     page,
     pageSize,
     availableFilters,

@@ -7,8 +7,8 @@ export type { Vehicle } from "~/components/shared/types";
 export type { FilterSections, MileageFilter, PriceFilter, YearFilter } from "./filter-sections";
 
 export interface SearchPageData {
-  vehicles: Vehicle[];
   filterSections: FilterSections;
+  vehicles: Vehicle[];
 }
 
 /**

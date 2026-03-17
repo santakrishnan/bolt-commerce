@@ -22,8 +22,8 @@ import {
 export interface VehiclePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
-  vehicle?: Partial<VehiclePreviewData>;
   vdpUrl?: string;
+  vehicle?: Partial<VehiclePreviewData>;
   /** VIN used by the FavoriteButton for global toggle. */
   vin?: string;
 }

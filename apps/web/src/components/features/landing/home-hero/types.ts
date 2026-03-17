@@ -3,31 +3,31 @@ import type { HeroStat } from "~/services/landing";
 // ─── Shared primitive interfaces ────────────────────────────────────────────
 
 export interface SavedVehicle {
-  year: number;
+  image?: string;
   make: string;
+  mileage?: number;
   model: string;
   price: number;
-  image?: string;
-  vin?: string;
-  mileage?: number;
   stockNumber?: string;
+  vin?: string;
+  year: number;
 }
 
 export interface TradeInOffer {
-  year: number;
+  expiresInDays: number;
   make: string;
   model: string;
   offerAmount: number;
-  expiresInDays: number;
+  year: number;
 }
 
 // ─── Component prop interfaces ───────────────────────────────────────────────
 
 export interface HomeHeroTitleProps {
-  title?: string;
-  subtitle?: string;
-  showSubtitle?: boolean;
   className?: string;
+  showSubtitle?: boolean;
+  subtitle?: string;
+  title?: string;
 }
 
 export interface ParsedStatValue {
@@ -46,27 +46,27 @@ export interface HomeHeroStaticProps {
 }
 
 export interface HomeHeroKnownUserContentProps {
-  userName: string;
   isPreQualified?: boolean;
-  savedVehicle?: SavedVehicle;
-  preQualifiedVehicle?: SavedVehicle;
-  tradeInOffer?: TradeInOffer;
-  onBuyOnline?: () => void;
-  onScheduleTestDrive?: () => void;
   onAcceptOffer?: () => void;
+  onBuyOnline?: () => void;
   onContinueShopping?: () => void;
+  onScheduleTestDrive?: () => void;
+  preQualifiedVehicle?: SavedVehicle;
+  savedVehicle?: SavedVehicle;
   showCards?: boolean;
-  showSubtitle?: boolean;
   showContinueShopping?: boolean;
+  showSubtitle?: boolean;
+  tradeInOffer?: TradeInOffer;
+  userName: string;
 }
 
 export interface HomeHeroProps {
-  title?: string;
-  subtitle?: string;
-  showSubtitle?: boolean;
-  showStats?: boolean;
-  showSearch?: boolean;
   heightClassName?: string;
   knownUser?: HomeHeroKnownUserContentProps;
+  showSearch?: boolean;
+  showStats?: boolean;
+  showSubtitle?: boolean;
+  subtitle?: string;
+  title?: string;
   useLocationBackground?: boolean;
 }

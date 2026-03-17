@@ -11,14 +11,13 @@ import { cn } from "@/lib/utils";
  * Props for the SearchBackdrop component
  */
 export interface SearchBackdropProps {
+  /** Whether the backdrop is currently animating */
+  isAnimating?: boolean;
   /** Whether the backdrop is visible */
   isVisible: boolean;
 
   /** Callback when the backdrop is clicked */
   onClose: () => void;
-
-  /** Whether the backdrop is currently animating */
-  isAnimating?: boolean;
 
   /** Whether to apply blur to the backdrop layer */
   withBlur?: boolean;

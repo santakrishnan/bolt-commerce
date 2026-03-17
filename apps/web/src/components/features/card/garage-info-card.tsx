@@ -3,18 +3,18 @@ import type React from "react";
 import { AppButton } from "../../shared/button";
 
 export interface GarageInfoCardProps {
-  /** Card heading shown on the left - can be string or ReactNode for custom content */
-  heading: React.ReactNode;
   /** Optional badge rendered on the right of the header */
   badge?: React.ReactNode;
   /** Content area (icon/image + text) rendered between header and CTA */
   children: React.ReactNode;
   /** Label for the CTA button */
   ctaLabel: string;
-  /** CTA click handler */
-  onCtaClick?: () => void;
   /** Button variant - defaults to "primary" */
   ctaVariant?: "primary" | "secondary" | "tertiary";
+  /** Card heading shown on the left - can be string or ReactNode for custom content */
+  heading: React.ReactNode;
+  /** CTA click handler */
+  onCtaClick?: () => void;
 }
 
 export const GarageInfoCard: React.FC<GarageInfoCardProps> = ({

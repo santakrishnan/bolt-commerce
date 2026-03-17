@@ -11,39 +11,39 @@
 
 /** A single hero banner stat displayed in the info strip. */
 export interface HeroStat {
-  id: string;
-  value: string;
-  label: string;
   icon: string;
+  id: string;
+  label: string;
+  value: string;
 }
 
 /** Vehicle finder option with a live vehicle count. */
 export interface VehicleFinderOption {
+  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
   id: string;
   title: string;
   vehicleCount: number;
-  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
 }
 
 /** Static finder option metadata (without count). */
 export interface VehicleFinderOptionStatic {
+  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
   id: string;
   title: string;
-  icon: "price-tag" | "badge" | "arrow-down" | "speedometer";
 }
 
 /** Vehicle finder count map keyed by option id. */
 export interface VehicleFinderCounts {
-  "under-20k": number;
   "excellent-deals": number;
-  "price-drop": number;
   "low-miles": number;
+  "price-drop": number;
+  "under-20k": number;
 }
 
 /** Combined vehicle finder response from the service. */
 export interface VehicleFinderData {
-  options: VehicleFinderOptionStatic[];
   counts: VehicleFinderCounts;
+  options: VehicleFinderOptionStatic[];
 }
 
 // ─── Raw upstream API shapes ────────────────────────────────────────────────
@@ -53,23 +53,23 @@ export interface VehicleFinderData {
 
 /** Raw upstream shape for a single hero stat. */
 export interface RawHeroStat {
-  id?: string;
-  key?: string;
-  value?: string | number;
-  metric_value?: string | number;
-  label?: string;
   display_name?: string;
   icon?: string;
   icon_url?: string;
+  id?: string;
+  key?: string;
+  label?: string;
+  metric_value?: string | number;
+  value?: string | number;
 }
 
 /** Raw upstream response for hero stats endpoint. */
 export interface RawHeroStatsResponse {
+  data?: RawHeroStat[];
   /** Upstream may nest under "features", "stats", "metrics", or "data" */
   features?: RawHeroStat[];
-  stats?: RawHeroStat[];
   metrics?: RawHeroStat[];
-  data?: RawHeroStat[];
+  stats?: RawHeroStat[];
 }
 
 /** Raw upstream shape for vehicle finder counts. */

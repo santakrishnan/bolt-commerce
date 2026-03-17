@@ -33,11 +33,11 @@ export interface FingerprintMetadata {
  */
 export interface FedLocationData {
   city?: string;
-  state?: string;
-  stateCode?: string;
   country?: string;
   countryCode?: string;
   postalCode?: string;
+  state?: string;
+  stateCode?: string;
   timezone?: string;
 }
 
@@ -56,9 +56,9 @@ export interface FedLocationData {
  * - `location` — needed for dealer proximity / localization
  */
 export interface FedFingerprintData {
-  visitorId: string;
   incognito?: boolean;
   location?: FedLocationData;
+  visitorId: string;
 }
 
 // ============================================================================
@@ -73,15 +73,15 @@ export interface FedFingerprintData {
  * and loading/error flags.
  */
 export interface ProfileContextState {
-  isInitialized: boolean;
-  isLoading: boolean;
-  sessionId: string | null;
-  fingerprintId: string | null;
-  profileId: string | null;
-  fingerprintMetadata?: FingerprintMetadata;
+  error: Error | null;
   /** FED-safe fingerprint data: only visitorId, incognito, and location. */
   fingerprintDetails?: FedFingerprintData;
-  error: Error | null;
+  fingerprintId: string | null;
+  fingerprintMetadata?: FingerprintMetadata;
+  isInitialized: boolean;
+  isLoading: boolean;
+  profileId: string | null;
+  sessionId: string | null;
 }
 
 /**
@@ -105,9 +105,9 @@ export interface ProfileContextValue extends ProfileContextState {
  */
 export interface EventTrackerRequest {
   eventName: string;
-  properties?: Record<string, unknown>;
-  sessionId: string;
   fingerprintId: string | null;
   profileId: string | null;
+  properties?: Record<string, unknown>;
+  sessionId: string;
   timestamp: number;
 }

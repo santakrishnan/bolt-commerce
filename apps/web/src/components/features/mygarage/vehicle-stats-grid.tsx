@@ -2,12 +2,12 @@ import { Heading } from "@tfs-ucmp/ui";
 import type React from "react";
 
 export interface VehicleStatCardProps {
-  icon: React.ReactNode;
-  title: string;
   count: string;
   countColor?: string;
-  subtitle?: string;
+  icon: React.ReactNode;
   onClick?: () => void;
+  subtitle?: string;
+  title: string;
 }
 
 export const VehicleStatCard: React.FC<VehicleStatCardProps> = ({

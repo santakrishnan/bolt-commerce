@@ -6,8 +6,8 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { getPriceCategory } from "~/lib/formatters";
 
 interface PriceRangeMeterProps {
-  currentPrice: number;
   avgPrice: number;
+  currentPrice: number;
 }
 
 /**

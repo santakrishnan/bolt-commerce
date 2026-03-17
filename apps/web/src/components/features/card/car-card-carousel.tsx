@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 
 interface CarouselProps {
-  images: string[];
   carName: string;
+  images: string[];
 }
 
 export function Carousel({ images, carName }: CarouselProps) {
