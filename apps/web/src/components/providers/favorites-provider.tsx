@@ -1,7 +1,8 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useMemo } from "react";
+import { useOptimisticListMutation } from "~/hooks/use-optimistic-list-mutation";
 import {
   clearAllSavedVehicles,
   getAllSavedVehicles,
@@ -49,82 +50,27 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     initialData: [] as string[],
   });
 
-  // ── Helper: always read the freshest cache value ──────────────────
-  // Avoids stale-closure issues inside mutation callbacks and handlers.
-  const readCache = useCallback(
-    () => queryClient.getQueryData<string[]>(SAVED_VEHICLES_KEY) ?? [],
-    [queryClient]
-  );
+  // ── Mutations using shared optimistic hook ──────────────────────────
 
-  // ── Mutation: save (like) a vehicle — fire-and-forget ─────────────
-  const { mutate: doSave } = useMutation({
+  const { mutate: doSave } = useOptimisticListMutation<string, string>({
+    queryKey: SAVED_VEHICLES_KEY,
     mutationFn: saveVehicle,
-    onMutate: async (vin: string) => {
-      // Cancel outstanding fetches so they don't overwrite our optimistic update
-      await queryClient.cancelQueries({ queryKey: SAVED_VEHICLES_KEY });
-      const previous = readCache();
-      // Optimistic update — add immediately
-      if (!previous.includes(vin)) {
-        queryClient.setQueryData<string[]>(SAVED_VEHICLES_KEY, [...previous, vin]);
-      }
-      return { previous };
-    },
-    onError: (_err, _vin, context) => {
-      // Rollback on failure
-      if (context?.previous) {
-        queryClient.setQueryData(SAVED_VEHICLES_KEY, context.previous);
-      }
-    },
-    onSettled: () => {
-      // Re-sync with server truth in background
-      queryClient.invalidateQueries({ queryKey: SAVED_VEHICLES_KEY });
-    },
+    updater: (prev, vin) => (prev.includes(vin) ? prev : [...prev, vin]),
   });
 
-  // ── Mutation: unsave (unlike) a vehicle — fire-and-forget ─────────
-  const { mutate: doUnsave } = useMutation({
+  const { mutate: doUnsave } = useOptimisticListMutation<string, string>({
+    queryKey: SAVED_VEHICLES_KEY,
     mutationFn: unsaveVehicle,
-    onMutate: async (vin: string) => {
-      await queryClient.cancelQueries({ queryKey: SAVED_VEHICLES_KEY });
-      const previous = readCache();
-      queryClient.setQueryData<string[]>(
-        SAVED_VEHICLES_KEY,
-        previous.filter((v) => v !== vin)
-      );
-      return { previous };
-    },
-    onError: (_err, _vin, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(SAVED_VEHICLES_KEY, context.previous);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: SAVED_VEHICLES_KEY });
-    },
+    updater: (prev, vin) => prev.filter((v) => v !== vin),
   });
 
-  // ── Mutation: clear all — fire-and-forget ─────────────────────────
-  const { mutate: doClear } = useMutation({
+  const { mutate: doClear } = useOptimisticListMutation<string, void>({
+    queryKey: SAVED_VEHICLES_KEY,
     mutationFn: clearAllSavedVehicles,
-    onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: SAVED_VEHICLES_KEY });
-      const previous = readCache();
-      queryClient.setQueryData<string[]>(SAVED_VEHICLES_KEY, []);
-      return { previous };
-    },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(SAVED_VEHICLES_KEY, context.previous);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: SAVED_VEHICLES_KEY });
-    },
+    updater: () => [],
   });
 
   // ── Stable action handlers ────────────────────────────────────────
-  // doSave / doUnsave / doClear are stable references from useMutation,
-  // so these callbacks won't trigger unnecessary re-renders.
 
   const handleAdd = useCallback((vin: string) => doSave(vin), [doSave]);
 
@@ -133,14 +79,14 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   /** Toggle reads directly from the query cache so it never uses a stale closure. */
   const handleToggle = useCallback(
     (vin: string) => {
-      const current = readCache();
+      const current = queryClient.getQueryData<string[]>(SAVED_VEHICLES_KEY) ?? [];
       if (current.includes(vin)) {
         doUnsave(vin);
       } else {
         doSave(vin);
       }
     },
-    [readCache, doSave, doUnsave]
+    [queryClient, doSave, doUnsave]
   );
 
   const handleIsVehicleSaved = useCallback((vin: string) => savedVins.includes(vin), [savedVins]);
@@ -148,9 +94,6 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const handleClearAll = useCallback(() => doClear(), [doClear]);
 
   // ── Context value (same shape — no consumer changes needed) ───────
-  // isLoaded is always true: initialData guarantees data is present on
-  // the very first render, so gating on isFetched is unnecessary and
-  // could hide the badge when the mock-API fetch hasn't resolved yet.
 
   const value = useMemo<FavoritesContextValue>(
     () => ({

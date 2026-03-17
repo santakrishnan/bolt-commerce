@@ -22,6 +22,8 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
           queries: {
             // Keep server data fresh for 30 s before refetching in background
             staleTime: 30 * 1000,
+            // Keep unused query data in cache for 5 minutes (TanStack default, made explicit)
+            gcTime: 5 * 60 * 1000,
             // Retry once on failure then surface the error
             retry: 1,
           },

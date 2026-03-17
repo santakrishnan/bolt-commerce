@@ -21,6 +21,9 @@ async function callEventServiceApi(
   serviceUrl: string,
   payload: TrackEventPayload
 ): Promise<TrackEventResult | null> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10_000);
+
   try {
     const response = await fetch(serviceUrl, {
       method: "POST",
@@ -29,6 +32,7 @@ async function callEventServiceApi(
         Authorization: `Bearer ${process.env.EVENT_API_KEY}`,
       },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -45,6 +49,8 @@ async function callEventServiceApi(
   } catch (error) {
     console.error("[EventsService] Upstream event service unavailable:", error);
     return null;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

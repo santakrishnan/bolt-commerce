@@ -49,11 +49,7 @@ export async function POST(request: NextRequest) {
     // Bust the server-side visitor-profile cache so the next page load
     // fetches a fresh profile reflecting any state changes from this event.
     if (fingerprintId) {
-      revalidateTag(`visitor-profile-${fingerprintId}`, {
-        stale: 300,
-        revalidate: 600,
-        expire: 3600,
-      });
+      revalidateTag(`visitor-profile-${fingerprintId}`);
     }
 
     return NextResponse.json<EventTrackResponse>({
