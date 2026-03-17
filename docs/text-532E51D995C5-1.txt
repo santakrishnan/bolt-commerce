@@ -1,0 +1,281 @@
+Toyota Web App Prototype Architecture Review
+
+Summary:
+Meeting Summary
+
+Date: March 17th, 2026
+
+Participants:
+
+• Andrew
+
+• Gonzi
+
+• Doncy
+
+• Evandro
+
+• Others (names not always specified)
+
+Project: Toyota Web Application Prototype
+
+Purpose: Technical walkthrough, architectural/code review, establishing access, discussing best practices and next steps.
+
+Main Topics Discussed
+
+1. Access & Onboarding
+
+• Andrew requested to share the list of team members onboarded into Toyota, specifically noting members with official Toyota emails.
+
+• Action initiated to begin kit/access setup, noting Toyota’s internal approval processes can be time consuming.
+
+• Initial focus is on onboarding Gonzi and Andrew.
+
+2. Demonstration of Current Progress
+
+• Overview of prototype progress and walkthrough of three main pages:
+
+• Landing/Home page (with multiple dynamic variations)
+
+• Vehicle Listing page
+
+• Vehicle Detail page
+
+• The demonstration is based on a Figma design and implemented screens.
+
+3. Landing Page Variations & Personalization Logic
+
+Overview of Variations
+
+• Three main landing page variations tailored to different user contexts:
+
+• First time user experience:
+
+• Identified using fingerprint.com for device fingerprinting; along with session ID, creates a unique user profile.
+
+• Client-side and server-side calls coordinate to gather fingerprint, IP, geolocation, and session info.
+
+• Info is stored in cookies with a 24-hour lifetime.
+
+• Returning user (unauthenticated or not logged in):
+
+• Determines time since last activity using cookie-stored info.
+
+• 
+
+3 hours inactivity triggers a different landing page experience.
+
+• Dynamic ID information; actual data retrieved from backend APIs using IDs.
+
+• Returning user (authenticated):
+
+• Personalized landing page, e.g., “Welcome back James”, shows recent activity, CTA to complete unfinished steps (e.g. prequalification, test drive booking not completed).
+
+• If authentication remains after 3+ hours, user still gets personalized landing.
+
+Feature Flags & API Integration
+
+• Demo version uses a feature flag to swap between landing page variations, but in production, personalized landing will be decided by API responses.
+
+• The plan is for backend APIs to return contextual user info (e.g., new/returning/authenticated).
+
+Questions & Clarifications
+
+• Clarification on when client vs. server uses Fingerprint API.
+
+• Data in cookies is primarily IDs; actual info is retrieved on demand via backend calls.
+
+• Location and best-match vehicle calls: Discussion on optimal server/client handling.
+
+4. State Management & Data Fetching
+
+• Use of Tanstack Query for persistent state on the client.
+
+• On saving/favoriting vehicles:
+
+• State is updated via Tanstack, which manages API sync.
+
+• Removal/fallback behavior if API calls fail is in place.
+
+• Recommendation was given to pre-fetch server state (e.g., saved vehicles) and pass as initial state to Tanstack on first render, with normal client management thereafter.
+
+5. Dynamic vs. Static Rendering & Caching Patterns
+
+• Use of Next.js 16 (Turbopack, App Router, Cache Components) is confirmed.
+
+• Landing page includes dynamic components (e.g., “HERO banner” block with live ratings, vehicle stats) and discussion centers on optimizing server vs. client data delivery, suspense boundaries, and revalidation/caching.
+
+• Some blocks can be statically rendered and revalidated (&quot;revalidate it&quot;), others are dynamic.
+
+• Guidance around cache strategy: Centralizing cache configuration in next.config, establishing “cache profiles” for reuse (e.g., for images, vehicles).
+
+• Noted that with cache components, not all dynamic child components force the parent to be non-static.
+
+6. Stack & Tooling Overview
+
+• Stack highlights:
+
+• Next.js 16, cache components, Turbopack monorepo
+
+• Tailwind, PNPM, Biome, Ultrasight (linter), Tanstack Query, Framer Motion, JOS (encryption), Zod (schema validation), Vitest
+
+• Encrypted event tracking (using JOS) for client events
+
+• Localized font loading with next/font from the public directory
+
+• All code is in TypeScript
+
+• Mock APIs currently in use; plan is to proxy all backend API calls through app-level API wrappers for modularity, logging, encryption, future-proofing.
+
+7. Monorepo & Folder Structure
+
+• Current structure:
+
+• Reusable primitives/components in a UI package (meant to be “very thin” for now, makes white-labeling/theming easy in future)
+
+• Application-specific components kept separate but may be migrated to UI/UI-theme if generalized/reusable.
+
+• Use of theming (Figma-driven), with the ability to override base tokens for rapid white labeling.
+
+• Request for feedback and recommendations, especially around centralized caching and extensibility.
+
+8. SEO Routing & Catch-All Segments
+
+• Current page routing uses a &quot;used-car&quot; catch-all segment for vehicle listing/detail pages.
+
+• Partial page reactivity (only user-context specifics, e.g., the right-side summary block, are dynamic).
+
+• Open for SEO recommendations; aim to cache most content server-side and only personalize or vary required blocks.
+
+9. Provider Structure & Application Context
+
+• List of application-level providers was reviewed (e.g., PaperProvider, CardProvider, SearchProvider).
+
+• Recommendation: Only wrap what is needed with each provider; overuse could cause unnecessary re-renders.
+
+• Action: Review and modularize providers to reduce unnecessary state passing.
+
+• Discussion about centralizing providers vs. colocating only where required.
+
+10. Component/Feature Organization: Screaming Architecture
+
+• Concerns raised about scalability of the current “giant components folder” as features grow.
+
+• Suggestion (screaming architecture pattern):
+
+• Organize by feature/module (“feature folders”) each with its own components, hooks, data, etc.
+
+• Benefits: Easier navigation, modularity, portability (move a feature, not just a component), better encapsulation.
+
+• Andrew and Gonzi to review sample reference repo implementing this pattern, access given post-meeting.
+
+• Debate on how/when to migrate generic UI logic to the UI package if cross-app reuse is required.
+
+11. Composition Patterns & Best Practices
+
+• Discussion of React composition patterns, notably “Vercel Composition Patterns” (from talk by Fernando).
+
+• Desire for code samples or whitepapers demonstrating such patterns for composable, clean home/pages.
+
+• Use of root/context composition in the sample (screaming architecture) shared.
+
+• Open request to share recommended patterns for homepage componentization.
+
+12. Next Steps, Code Review & Guidance
+
+• Immediate recommendation: Review all the information and patterns discussed before making major refactors.
+
+• Code review access to be prepared for Gonzi and team; Andrew to help facilitate.
+
+• Encourage internal review/discussion of recommendations (Screaming Architecture, provider scopes, caching strategies).
+
+13. Scheduling & Follow-Ups
+
+• Proposed next working session: Monday, March 23rd, 2026 (morning)
+
+• Timing accommodates team travel.
+
+• Code access setup to be completed prior, with ad-hoc sessions available if issues/questions arise.
+
+• Additional follow-ups:
+
+• Provider structure documentation or reference to be shared by Gonzi.
+
+• Reference Screaming Architecture repo access provided.
+
+• Team to share GitHub usernames for access.
+
+Action Items
+
+• 
+Access/Onboarding:
+
+• Andrew to collect and share Toyota emails for newly onboarded team members.
+
+• Initiate kit/access requests in Toyota system (in progress for Gonzi and Andrew).
+
+• 
+Documentation & Resource Sharing:
+
+• Gonzi to share sample repository and code structure showcasing Screaming Architecture.
+
+• Team members to share GitHub usernames.
+
+• Gonzi to share any provider/composition pattern references or notes.
+
+• 
+Code Review:
+
+• Team to grant access to codebase for review.
+
+• Internal review (by Gonzi/Andrew) to evaluate recommendations before refactoring.
+
+• 
+Structural Refactors:
+
+• Assess feasibility and impact of Screaming Architecture/feature-folder organization.
+
+• Review and potentially reduce provider scope/application-wide wrapping where unnecessary.
+
+• 
+Best Practices:
+
+• Evaluate centralized cache profiles in next.config or similar.
+
+• Review composition and modularization patterns for homepage and landing components.
+
+• 
+Decision on Font Loading:
+
+• Determine which fonts are necessary and ensure only used fonts are loaded, for performance.
+
+• 
+Mock API Integration:
+
+• Continue development of API wrappers; ensure all client/server external calls go through thin, centralized interfaces (with future logging, encryption, etc.).
+
+Follow-up Points & Next Meetings
+
+• Next Session: Monday, March 23rd, 2026, morning (final sync before travel).
+
+• Ad-hoc 30-minute syncs are available before then if the team needs additional reviews or discussions.
+
+• Once code access is confirmed, Gonzi’s team to review code and document findings/questions for next session.
+
+• Gonzi to provide feedback or reference on provider/feature organization patterns.
+
+Additional Notes
+
+• Overall consensus from the external reviewers:
+
+• Very positive feedback on stack choice, code cleanliness, and setup.
+
+• Special mention of team being “way better than expected.”
+
+• Encouragement to not rush into refactoring, but to “process, review, then act.”
+
+• Open and ongoing attitude to iteration and improvement based on feedback.
+
+• Agreed upon sharing of sample architectures and knowledge artifacts for continued skill-up and knowledge transfer.
+
+END OF SUMMARY

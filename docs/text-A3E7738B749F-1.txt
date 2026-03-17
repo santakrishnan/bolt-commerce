@@ -1,0 +1,450 @@
+Toyota Web App Prototype Architecture Review
+
+Transcript:
+[0:00] Speaker Host (unspecified project lead): My recordings in phone and then we can take it forward. Is that okay guys? And then, and then like Andrew, like maybe after this call, if you can share your teams, like either Doncy or anyone of your team has been onboarded into Toyota and if you have Toyota email address, if you can share it with me, I can work within the Toyota system and get all the kit and access. I know you, you need it later, but I can start working on it, put in a request because it takes time in Toyota to get it approved and all that sorted out. So I'll work on.
+
+[0:37] Speaker Andrew: Yeah, for now it'll be just Gonzi and, and me.
+
+[0:40] Speaker Gonçalo (consultant / technical reviewer): I said well, we'll.
+
+[0:41] Speaker Andrew: I'll share our Toyota deals with you.
+
+[0:43] Speaker Host (unspecified project lead): Sounds great. Yeah, sounds great. But I will, I will as I said right, I will. I'll make sure that I will get all the things set up for you guys. Okay, so let me share my screen and then pretty much we can go into the. The code and, and then any point of time if I need to stop or anything that is not. You need more information like please let me know. Okay, I put on again. I shared an quick readme yesterday before going into readme. Do you want me to quickly show a demo of what we have done so far? Is that okay?
+
+[1:27] Speaker Gonçalo (consultant / technical reviewer): Yeah, please.
+
+[1:27] Speaker Host (unspecified project lead): Okay, let me share my screen so far. You might have seen the screens yesterday what Evander showed from the figma. The different journey pages as part of this prototype is considered right? We are. We are taking into scope at least like the March 31 deadline is three pages. One is the landing page with different variations of landing page or on homepage with different variations of homepage and then the vehicle listing page and then the vehicle detail page.
+
+[2:08] Speaker Gonçalo (consultant / technical reviewer): Sorry, one. One question. So it will be one page with three variations at the same time in production or you still have to decide which one of those three will make it to production.
+
+[2:17] Speaker Host (unspecified project lead): No, so. So no, all three will be in production. But depending on the feature flags feature or I would say like right now we. We have built this page to show a demo with the feature flag. But ideally like when we go live, when we have the actual backend APIs are ready. This is. This is personalized based on the response that we get from the API. Everything is. Everything is driven through an API. So the API will say hey, whether this user is returning user or returning user with some context available. So based on that like this landing page experience will be changing. A first time user coming to the website, we try to identify that user through an integration called fingerprint fingerprint.com that's an integration that will help us to identify the device Fingerprint. Along with that we send a session ID to a backend API which tries to combine these two and create a unique profile to identify the customer. But again, that backend API is still in development and other team is developing. But just to give you a context. Right. First time a user comes in.
+
+[3:48] Speaker Gonçalo (consultant / technical reviewer): Sorry, sorry if I interrupt you a lot. Just want to have like a little.
+
+[3:54] Speaker Host (unspecified project lead): No problem. No, no, please go ahead. Like this is like this is open article, right? Any questions you share, it will help us. So please go ahead.
+
+[4:05] Speaker Gonçalo (consultant / technical reviewer): Perfect. So you mentioned that you have to do a request to identify the kind of user. So is that a request that happens on the client is a request that you do just when you identify the user the first time and then the type of user lives in the cookie itself. How's that process?
+
+[4:25] Speaker Host (unspecified project lead): So basically if you look into our. Just one second, we just created. So you can see. Right. So this ID is a fingerprint id. We have a profile ID and session id. So everything is put it in a cookie with a lifetime. After this call, I think I have created a readme of all this. I can share it with you so that you can review it. So the way it happens is when the pages gets. When the first time the page gets loaded, we have to make a client side API call to Fingerprint to get an initial fingerprint id. Okay. That client side API call from the browser doesn't return all the details, so it just returns only the fingerprint id. Using this id, we make a server API call to Fingerprint, get this IP address, get this zip code, the location details, everything. And then using our server side, we are setting the client cookie which I will walk through the code like once.
+
+[5:40] Speaker Gonçalo (consultant / technical reviewer): Okay. But that request don't involve like huge changes in the UI in that case, just the small thing with the location on top. Yes, but it doesn't shift.
+
+[5:52] Speaker Host (unspecified project lead): Okay. Yeah, that's what we are doing. So basically this is like a entire thing is a server component and this is like a rendering of that component. We do when that response comes in this, the page doesn't. The page. The page technically doesn't get stopped because of the server call. Okay, so I'll keep continuing. So this is the initial page experience or like for the system. It's a known user, but they are coming in for the first time and we have a second experience of this feature. So if you see right. Like it's a returning user unauthenticated. So say for example, I Came to the website, I browsed a couple of pages, I did a couple of searches on this website. I left the website and then came back after three hours. Okay, so we look into the cookie and if the last activity time is greater than three hours, right?
+
+[6:52] Speaker Bobby: Yeah, less than three. This is less than three hours.
+
+[6:54] Speaker Host (unspecified project lead): Oh, this. No, this is greater than three hours, right? Greater than three hours, Right. Say for example, they have done the website, but they are coming back after three years.
+
+[7:04] Speaker Gonçalo (consultant / technical reviewer): Sorry. Okay, another question. So I saw that in the cookies you only have like IDs you don't actually have information. So every time you need this information, you have to get some of the IDs and send a request to Fingerprint to actually get, for example, how long.
+
+[7:20] Speaker Host (unspecified project lead): Correct. Correct. Yes. Yes. So basically not fingerprint. So basically when we. When we send it out to. We send it out to a backend API to get all these best matches.
+
+[7:37] Speaker Gonçalo (consultant / technical reviewer): And that request happened from the client. From the server. Sorry.
+
+[7:41] Speaker Host (unspecified project lead): Yes. Yeah. No, right now, this, this one, this request, this request, the one for getting
+
+[7:49] Speaker Gonçalo (consultant / technical reviewer): the matches happened on the client.
+
+[7:52] Speaker Host (unspecified project lead): Yeah, the best matches. We are making now a call from the client, but it has been proxied through proxy through our API indexed.
+
+[8:08] Speaker Gonçalo (consultant / technical reviewer): Okay. And did you sign that for any reason?
+
+[8:12] Speaker Host (unspecified project lead): Looking into this best matches, is it making a server API call? Gansi, Let me quickly check this and I'll come back. But sure. But the saved vehicle and react searches, we use the Tanstack state management pretty much. It will try to before making an API call and get the data refreshed. These two will get the data, try to get the data locally from the Tanstack persistent state. Persistent. And then it will keep that state refreshed by making an API call.
+
+[8:53] Speaker Gonçalo (consultant / technical reviewer): Okay. And you get that information from Tansta query. But that information comes from request from Tansta. Or you get information from the server and then you initialize the state from Tanzan.
+
+[9:04] Speaker Host (unspecified project lead): Yes. So if you see right when I keep. When I favorites. Right. So if I put Favorites here, you can see that saved vehicle getting refreshed. So when I click on it, right. That Tanstack gets filled began. This is Tanstack also like makes the API sync. Because whatever I'm taking over here, it also need to send it to a backend API to say, hey, this user has added these four vehicles in the save not only on the client, we also need to send it to the backend API. And that is done through the Tanstack setup.
+
+[9:34] Speaker Gonçalo (consultant / technical reviewer): Okay, but the initial request, like the initial state you get. Can you refresh the page?
+
+[9:40] Speaker Host (unspecified project lead): Yeah, When I refresh the page, the initial state is loaded from the tanstack but behind the scenes it also makes the API call to refresh it.
+
+[9:48] Speaker Gonçalo (consultant / technical reviewer): Okay, so what I think can be done in those cases, I assume this will be a dynamic page. So no static, no pre compute, nothing related to that. I mean this can be a static page, but it doesn't matter. Something you can do is in the server you can fetch the saved vehicles for this specific page, you can get the state and you can pass it to Tanstack query as your initial state and then you continue the handling on your application, on the client. So you start adding and modifying shaft the local state plus doing this request to the server to keep it in sync. But you don't lose this state, vehicles being zero every time. So you refresh the page, you will see four and then you continue the execution on the grind.
+
+[10:40] Speaker Host (unspecified project lead): Okay, okay, that makes sense. Also when I click remove it removed from the tank stack but also behind the scenes it makes the API call
+
+[10:52] Speaker Gonçalo (consultant / technical reviewer): and it has fallback. So if something fails adding or removing it actually fallbacks to the current state.
+
+[11:01] Speaker Host (unspecified project lead): Okay, okay, so again if I refresh, right, you can see it's two data. So. So this is the second.
+
+[11:13] Speaker Gonçalo (consultant / technical reviewer): Let me.
+
+[11:14] Speaker Host (unspecified project lead): This is the second. Oh my God. Okay, sorry, I should have turned off all this. So this is the second variation of a landing page and this the third variation. Again there are two more variations. So for example, right, I can be an authenticated user. Let's say I have signed in and then I have done a pre qual and trade in. And then when I'm visiting this website within the three hour window, right, like meaning like I signed in and I also did a pre qualification or and then like either as part of the pre qualification when I say pre qualification I liked one vehicle, I wanted to buy it. So I went to the next step of putting in my number and did like a soft will check and like everything I have, I've gone into the final stage of like booking in for a test drive and somehow like I left it on that particular point where I put in all the details and then I went to the final step but I didn't complete that final step. But if I come back within the three hour window I will see this landing page which says hey, welcome back James. With with the vehicle that I recently been pre qualified and then with the call to action to complete the step where I left it. Okay, so this is just a personalized state again with an authenticated station available. Okay. And then the final Thing is like say for example, it's more than three hours, the user has not shown interest or even prompting them with that different variation of landing page. But if they come back after three hours or six hours, but their authentication still authentication session already exists, we still show this same variation of landing page, but we will have something called welcome back James. Even though it's not showing up here, it will say welcome Back James. And you can see it's a logged in state and the header and pretty much everything will remain the same. Similar to the anonymous or a known user. But the only thing is like it will be personalized with their name.
+
+[13:27] Speaker Bobby: And the My Garage wrapper has a
+
+[13:29] Speaker Host (unspecified project lead): use client that's wrapping the entire page. It's in the client. Okay, so this is the different variation of the landing page. I will quickly go through the other pages and then I'll move on to the code and then I will show you.
+
+[13:42] Speaker Bobby: Okay.
+
+[13:44] Speaker Gonçalo (consultant / technical reviewer): Yeah. And one question, because you are currently using feature flag, so every time you refresh the page you actually see the like the el state from the server. So you have this kind this type of user without doing a request on the client. So from the server you already know which screen you have to show to the user. Right. Without doing a request to this service Fingerprint, right?
+
+[14:14] Speaker Host (unspecified project lead): Yes, yes, we will know. We will know. We can identify the user.
+
+[14:19] Speaker Gonçalo (consultant / technical reviewer): Okay, you don't need a request to fingerprint to know the type of.
+
+[14:23] Speaker Host (unspecified project lead): Yes, the request to fingerprint is only required every 24 hours because we keep the cookie as 24 hours.
+
+[14:29] Speaker Gonçalo (consultant / technical reviewer): Okay, good.
+
+[14:31] Speaker Host (unspecified project lead): Okay, so can I keep going and then I will, I'll come back and then we can deep dive. Okay. And then when I click on the search right, this is like the. I'll turn off this. So this is like our vehicle listing page, as you can see, right, this is the listing page with the various filters with all the different facets. Again, everything is a mock data. Now we don't have a actual API to connect. Oh these are all click any one of the click Apply. So this is. And then when I click Apply it makes a call and then the results are filtered. And then, and then like pretty much like when I go into this you have like a quick view which gives a quick overview of the vehicle. And then when I click on this full details, it goes to the vehicle detail page.
+
+[15:32] Speaker Gonçalo (consultant / technical reviewer): Okay, perfect.
+
+[15:34] Speaker Host (unspecified project lead): So these are the three key pages. And again in that right, like everything is like all this is are like key things like that are applicable to the product. So this, this is like. And then we we have this catch all segment to handle different. Related to this and then I have back to cells and then I will also just quick quick summary. I think it is in the. Let me go to the anonymous homepage and then quickly show this variation and we can. Okay, so on this anonymous or the first time user landing page. Right. As I said there are a couple of things which are dynamic. This particular block as I said the top block which is related to zip code and this location details. Pretty much we make a call to fingerprint and from fingerprint we get this IP location or geo location details to build this component on the top where I'm putting my cursor and then when I come over here all the statistics that what you see 20,847 this 4.93 rating. All this is a dynamic. We use this next day as patterns the 16 pattern of suspense with await cache. So the entire thing is a server component. This is the. This only thing is like we. We use this suspense boundary to render this particular. This particular dynamic data that you see at the bottom and then the similar.
+
+[17:20] Speaker Gonçalo (consultant / technical reviewer): Okay, so this. This page won't be static, it will be dynamic.
+
+[17:24] Speaker Host (unspecified project lead): It is. It is dynamic. The dynamic content is this particular 20847 4.93 that block is dynamic. Okay.
+
+[17:34] Speaker Gonçalo (consultant / technical reviewer): Yeah, just one. One small thing that when you have a dynamic part on your. On your page talking about cache. Sorry, a router without cache components. If you have one part that is dynamic on your page, your entire page is dynamic.
+
+[17:47] Speaker Host (unspecified project lead): Okay. Or the entire page is dynamic.
+
+[17:49] Speaker Gonçalo (consultant / technical reviewer): Okay.
+
+[17:49] Speaker Host (unspecified project lead): Okay. Okay.
+
+[17:50] Speaker Gonçalo (consultant / technical reviewer): This one we can talk more about that. Yeah.
+
+[17:53] Speaker Host (unspecified project lead): Okay. So again I'm just going into the component so that we can talk about it. So on this HERO banner component you see this 2100% 74.93 that is a dynamic component. It changes. We are caching this API call. We have put suspend boundaries. But that is a dynamic data. And when I come down on this page on this find your vehicle, you see the four vehicles. Shop excellence eight vehicles price drop 11 vehicles and then slow miles like 35 vehicles. That number is again like a dynamic data. It changes
+
+[18:37] Speaker Gonçalo (consultant / technical reviewer): and it has to be dynamic or can be static but revalidable.
+
+[18:43] Speaker Bobby: It can be SATA can revalidate it.
+
+[18:45] Speaker Host (unspecified project lead): Yeah. It can be static and rew. That's what we have been doing even on this component. Even though we put it. When I say static. Sorry even though I say dynamic. But we are caching and revalidating it. Perfect.
+
+[19:00] Speaker Gonçalo (consultant / technical reviewer): Yeah. If that's the case, you can give it as A static page and then just set time based revaluation.
+
+[19:08] Speaker Host (unspecified project lead): That's what we are trying to do. Which I will. When you review the code, when you go to the code you can see. So this is a dynamic data and this is still in a discussion, right? Probably because this is not on the landing page. This is this particular company. Yeah. So rest of the other things are pretty much static. Nothing changes. Even on like even on the initial. Maybe on the initial go live. We might be putting. We might not have external cms, we might be just creating a JSON and using it in the component. So right now it's mock data that we are having. So that's how this page is set up. Okay.
+
+[19:58] Speaker Bobby: Can you click into the search just to show that? I mean obviously this is click into the search and start typing suv.
+
+[20:03] Speaker Host (unspecified project lead): Yeah.
+
+[20:04] Speaker Bobby: So this would be just type in Texas.
+
+[20:07] Speaker Host (unspecified project lead): Yeah.
+
+[20:08] Speaker Bobby: And then there you go. So it performs the API call once you start entering in.
+
+[20:13] Speaker Host (unspecified project lead): So all this, it's an auto suggest. We will be connecting with the backend API when we start typing it. And whatever that NLP search provides that we show as auto suggest and then user has to select that keyword and then when they click on search, type ahead.
+
+[20:30] Speaker Gonçalo (consultant / technical reviewer): Right.
+
+[20:31] Speaker Host (unspecified project lead): Sorry. Yeah. Type again. Yeah, Auto suggestion.
+
+[20:33] Speaker Gonçalo (consultant / technical reviewer): Type ahead.
+
+[20:33] Speaker Host (unspecified project lead): Yeah, type again. Yep, you're absolutely right. And then that search term is carried into this page. So that's. That's all, that's all on this page. I'll quickly hop on to this code for now and you can stop me. So I just at an eye level. Right. This gives you our setup. Basically we are using the latest next 16 turbopak monorepo setup.
+
+[21:01] Speaker Gonçalo (consultant / technical reviewer): Sorry. Then the latest next JS16 shaft app router or app router plus cache components.
+
+[21:08] Speaker Host (unspecified project lead): Sorry. App app router plus component.
+
+[21:10] Speaker Gonçalo (consultant / technical reviewer): Yeah, can you go to the next config check.
+
+[21:14] Speaker Host (unspecified project lead): Yeah.
+
+[21:14] Speaker Gonçalo (consultant / technical reviewer): For a second.
+
+[21:15] Speaker Host (unspecified project lead): Yeah, yeah. Yes sir. Yes. Yes. You want nix config set? Yes.
+
+[21:21] Speaker Gonçalo (consultant / technical reviewer): Okay. So you have cache components enabled.
+
+[21:23] Speaker Host (unspecified project lead): Yes, yes, we are using it. Yep.
+
+[21:27] Speaker Gonçalo (consultant / technical reviewer): Oh, awesome.
+
+[21:30] Speaker Host (unspecified project lead): Okay. And just for the centralized purpose, again this is where we are looking for your best inputs and ideas. For example, right now some of the revalidate in order to centralize we are putting it in next config. But is there any other better option we would look for the guidance like how to centralize this?
+
+[21:48] Speaker Gonçalo (consultant / technical reviewer): Yeah, I think that usually I recommend having cache like profiles for things that are meant to be reused in several places. Like instead of landing profile, something like image or vehicle or something like that. But it's not like a hard recommendation you can have whatever you want. If you say I don't want to have this specifically in my pages, I want to have it in another place. Is it perfect. So I won't go too deep in this one like.
+
+[22:25] Speaker Host (unspecified project lead): Yeah, yeah, yeah, I know, I know it's an initial introduction, so to give a quick overview.
+
+[22:32] Speaker Gonçalo (consultant / technical reviewer): Yeah, no, perfect. Now I understand that you are using cache components, which is a really big difference. What I said before about your page being fully dynamic when you use a dynamic component is not true when you use cache components. So this is really useful.
+
+[22:46] Speaker Host (unspecified project lead): Okay, so again we are using Tailwind for all the Shaq cdn For our primitive components we are using PNPM and for Lint we are using Biome and then we are using the ultrasight for. For our other Linux ultrasight.
+
+[23:03] Speaker Gonçalo (consultant / technical reviewer): Yesterday they released a new version that can be used with Biome, eslint and oxc.
+
+[23:12] Speaker Host (unspecified project lead): Okay.
+
+[23:13] Speaker Gonçalo (consultant / technical reviewer): So you can use whatever you want with ultrasight.
+
+[23:16] Speaker Host (unspecified project lead): Okay, I'll quickly. Again, I have not updated the package. Let me, let me look into it. So that's our.
+
+[23:21] Speaker Gonçalo (consultant / technical reviewer): It's perfect. If you use Wagon it should be fine. I mean bioam is one of the best ones.
+
+[23:25] Speaker Host (unspecified project lead): Okay. And we use Tanstack for the server state management and we have certain animation on the website. So for that we are using Framer Motion. We are using JOS for encryption. The reason is like there are certain click events or the events that are getting fired from the website. Like when you click on the button or click on some of the. It's like fire and forget. But one of the requirement was to make sure that the body text or the data that is getting passed from the client is being encrypted just for the security purpose.
+
+[24:00] Speaker Gonçalo (consultant / technical reviewer): It's a really good stack.
+
+[24:02] Speaker Host (unspecified project lead): Yeah. So we have used JAWS and for any kind of a schema validation from the APIs or anything around our application we use Zod and then VTEST is our unit testing framework and ASCII for pre and then pretty much the pretty much typescript. Everything is typescript. Okay. I scroll down this at least from a folder structure how we have organized again if there are any recommendation changes, keep us posted. We are looking forward for your inputs. Again I'm just giving an overview. Once you get it into the code you will pretty much able to hands on and review it. As I said we gone with the mono repo setup. UI is where we are putting in all the reusable chat CDN primitive components is part of UI again for now we are keeping UIs very very thin. Only shared CDN components are available in UI folder anything around the application specific components. We are keeping it in the app specific for now, but down the road that can change when a component and
+
+[25:15] Speaker Gonçalo (consultant / technical reviewer): in Uxim you get like the CSS configuration, your global CSS file that matches the variables for.
+
+[25:24] Speaker Host (unspecified project lead): Yeah, that is coming from the UI theme and again when in the UI theme. Right. We have created a structure that if this application has to be white labeled tomorrow and if needs to have a different theme. So inside that package. Right. You will see.
+
+[25:42] Speaker Gonçalo (consultant / technical reviewer): Yeah. Then on the components JSON from the main repository you point to the utils and the.
+
+[25:48] Speaker Host (unspecified project lead): Correct. Correct. Yes. So for example, right. You see there is a base theme and then like we have something called Arrow and Acme. The idea is tomorrow if we white label, we should be able to theme switch it because we are overriding everything from the base token. So pretty much if you want to have a different color, different font, we can use it. And also.
+
+[26:11] Speaker Gonçalo (consultant / technical reviewer): And you got this structure using AI or you actually went and tried because like setting up like a theme and a component library with a monorail repo in a next JS application. It's quite hard. So I'm wondering how do you do it? How do you find this structure?
+
+[26:28] Speaker Host (unspecified project lead): Inputs from Evandro and some of our input collaboration between both the teams and especially the idea of UI theme came from Evandro and just we put this idea and then expanded it and set up this.
+
+[26:43] Speaker Gonçalo (consultant / technical reviewer): Nice.
+
+[26:44] Speaker Host (unspecified project lead): Okay, and then one more thing, I just want to give you a quick update is on the app level we use font ts and then we wanted to use the next font so that the font is localized from our public directory. So this is another thing we are using on this application to make sure that the font is localized or local within the application. So we are using the next one.
+
+[27:13] Speaker Gonçalo (consultant / technical reviewer): Perfect.
+
+[27:14] Speaker Host (unspecified project lead): Okay, so I just.
+
+[27:15] Speaker Gonçalo (consultant / technical reviewer): Yeah, so and you download all of those? Yeah. What I'm wondering if you are loading all of those types, all of those fonts when anyone loads the application or you just load them when the specific language requires it.
+
+[27:37] Speaker Host (unspecified project lead): That's a great question. I think we need to load one. Can we find out which one is used in our application? I can come back on that. Dilgune. I don't know what that answer is, but right now, right now we just added this. Whatever we got we saw from our Figma design system. But that's a great question. Right. We might not require all these fonts. Right. Like even though that's there in the Figma and also in the page wise, like we can we can change if it is required.
+
+[28:04] Speaker Gonçalo (consultant / technical reviewer): Right,
+
+[28:06] Speaker Host (unspecified project lead): but. Right. I can get that answer right now. I don't have it in top of my head, but we can. We can find it out.
+
+[28:14] Speaker Gonçalo (consultant / technical reviewer): Awesome.
+
+[28:14] Speaker Host (unspecified project lead): Okay.
+
+[28:15] Speaker Gonçalo (consultant / technical reviewer): Yeah, I think that it looks great, at least in the structure. I only have one recommendation for the Monorepo structure, but it's more like a personal recommendation based on C customers. But we can go through the rest of the app and then I can come back.
+
+[28:32] Speaker Host (unspecified project lead): So again, I just want to give a quick overview. Again, one of the things that we have set up as part of this application, right. Is this the. Is that search. Right, Sorry, use. We have this Catch all segment for used car which handles both the VDP vehicle detail page and the vehicle listing page or the. The search result page. If I go back right. If I can. If you see the URL right. The. The URL is Used car and then. And then when I click on any one of this and then go into the details right. You can see the URL is still retained. Used cars.
+
+[29:21] Speaker Gonçalo (consultant / technical reviewer): Yeah, that's perfect.
+
+[29:22] Speaker Host (unspecified project lead): Details.
+
+[29:22] Speaker Gonçalo (consultant / technical reviewer): So that's on catcher route, right?
+
+[29:24] Speaker Host (unspecified project lead): Sorry. Yeah, that's on the catch all row. So. So again, if you have any recommendation from SEO Best practice, this is one of the things that Evandro wants to review it with your team to see if there is any better recommendation. Because our goal was to make sure this VDP is like cached server side rendered. So because on this page, right. Only this particular section on the right changes especially this area, what I'm highlighting is what changes based on the user profile. But rest of the other things. Also the location might change but rest of the other details are.
+
+[30:07] Speaker Gonçalo (consultant / technical reviewer): Yeah, because you're using cache components, you can generate all the shell with the static information and just keep the dynamic part on it. So you are on a good track.
+
+[30:15] Speaker Host (unspecified project lead): Okay. And again I put down like a quick overview of different providers that we are set up in our application. Again, I will expand this further. How we are used and those details but at an eye level. Right. These are our. Again, I got some.
+
+[30:40] Speaker Gonçalo (consultant / technical reviewer): Yeah, I usually don't like the structure above. I think that providers should only wrap what it's needing application. I don't think for example, the paper is provided. Well, probably that one is. It's needed everywhere but the car provider or the.
+
+[30:57] Speaker Host (unspecified project lead): Yeah, yeah, the card provider or something
+
+[31:00] Speaker Gonçalo (consultant / technical reviewer): might not be needed searches.
+
+[31:02] Speaker Host (unspecified project lead): Okay. So again this is existing currently in the layout Txt. Again if you can provide some idea guidance to us.
+
+[31:12] Speaker Gonçalo (consultant / technical reviewer): Yeah, we can try it.
+
+[31:13] Speaker Host (unspecified project lead): So that's why I thought like let me Put down how we are structured right now and based on your guidance and inputs from your team, we will change it.
+
+[31:23] Speaker Gonçalo (consultant / technical reviewer): Yeah, we can review it.
+
+[31:24] Speaker Host (unspecified project lead): So these are the providers currently we have set up and usage of each of these providers. And pretty much I also put down some details around some of the mock APIs that we have been creating. One of the. Requests from Evandro is like any of the the service calls that we are making from the website, whether it is search or events that we are firing or getting the profile of the customer. Even though there is a backend API that has been built by a separate team, the connection has to be routed through or I would say the proxy, the API within our next application. So that's why we created like the search, visitor profile and event wrappers. Again, these wrappers are just a placeholder with a mock data. Okay. And then.
+
+[32:30] Speaker Gonçalo (consultant / technical reviewer): Yeah, so currently it receives information, but it doesn't send it anywhere.
+
+[32:33] Speaker Host (unspecified project lead): Correct, Correct. And as part of this application we have also created two client APIs. Again, this is like a more of a thin client wrapper. An idea came from Evandro, but we expanded it and when we showed him this idea and this is what he also added in his mind, every API call, either from the client component or from the server API, it's been rendered or it's been initialized and the API calls have been made through these two client wrappers. Sorry, two thin wrappers. One is for the client, another one is for the server. The whole idea is tomorrow we need to add logging or tomorrow if we turn on encryption on certain client side body request and certain body request doesn't require an encryption. All that in order to centralized and have a full control managed at one centralized place. Anything around this application, any libraries that are utils that we needed, we have put under this folder called Arrow. But pretty much the two keys is the client and the server APIs in the server APIs. Again, it's a. It's the same thing, but. But the only thing is like more around centralizing the logging, the timeouts.
+
+[34:05] Speaker Gonçalo (consultant / technical reviewer): Okay, so you have an interface that it's like, let's call it the API. And you have one for the server, one for the client to avoid contamination between them. And every request that goes from the client to an external service or from the server to external service, go through there.
+
+[34:21] Speaker Host (unspecified project lead): Goes through this interface. Yeah, Yep, goes through this interface.
+
+[34:24] Speaker Gonçalo (consultant / technical reviewer): Perfect.
+
+[34:24] Speaker Host (unspecified project lead): Okay. So that's how we are structured. I don't think pretty much. I think I covered. Yeah, I think I covered everything. And as part of the application, one of the ask from Evander was also like see pretty much add any of the skills from the skills such we have added some vercel best practices react best practices skills so that our developers when they develop they made sure that those skills have been tested against the code as much as possible.
+
+[34:55] Speaker Gonçalo (consultant / technical reviewer): Again everything is changing the official ones. Can you show me which which skills you have?
+
+[35:04] Speaker Host (unspecified project lead): So so pretty much like we have the the next best practices Versal composition.
+
+[35:11] Speaker Gonçalo (consultant / technical reviewer): I love the Versal composition patterns. I don't know if you saw the. Oh yeah, the talk from Fernando.
+
+[35:17] Speaker Host (unspecified project lead): Yep. Really and really great and this that was eye opener for us because in X15 we have been struggling with that the cache and that was eye opener
+
+[35:28] Speaker Gonçalo (consultant / technical reviewer): and it's a really good one. I personally like a variation from Fernando's composition idea. Fernando has this like the root. It's not called root. I can't remember the name that he uses for handling the state of all the internal components. I do it a little bit different but it's pretty similar and I think it's the most powerful component composition pattern that we have.
+
+[35:57] Speaker Host (unspecified project lead): Okay, sounds we would love to hear from you on that and maybe if you can punch list with some ideas maybe again you are going to review it but if you can share some white paper or like whatever you have from a code snippet we would like to look into it and see if we can apply and share it across team at least for the homepage company.
+
+[36:16] Speaker Gonçalo (consultant / technical reviewer): Yes. I think that the biggest personal recommendation I can give you on what I said I think that you have a really good application. It's really good structure, the stack is awesome, it's really modern and I think you tackled it in a really good way. The other thing that worries me a little bit is how can it scale with. Can you open the components folder?
+
+[36:39] Speaker Host (unspecified project lead): Yep. Yes sir. Just give me one second. Yep. App components. Yes. In the components we have broken down
+
+[36:49] Speaker Gonçalo (consultant / technical reviewer): into so you have for example features and you start having that kind of components like card landing, my garage search which are like global stuff. Global stuff. You have automation model, garage info card. But what if you start having like a lot of components inside and you say I'm seeing the application and I'm seeing the cart component and I'm seeing the var info card that is inside the cart itself. So now you have to go through all the components folder and all the feature and all the components inside to actually find. So it's hard to map from your mind to what you are seeing to actually where's the component I have to find for so in those cases I prefer the screening architecture or a variation from the screening architecture where you have or in your root folder different features. Like in your application will be user, it will be car, it will be cart, and that kind of information. And inside each of those modules you have a full structure. So you have components, you have context, you have state, you have hooks, you have API and then you can have your API service that actually what it does is import like bar API from modules core. So you have another layer of abstraction, but it's quite thin and it contributes to readability of the code. So when you have to find the car card in the cart, I really, I like found the worst scenario for explaining this. But you only have to go to modules, cart or card and you will find your component in there. So it's easier to identify or map from your mind to where the component or the file that you want to find is.
+
+[38:47] Speaker Host (unspecified project lead): Okay, okay. So so pretty much under the app you are saying like, let's create something like landing.
+
+[38:53] Speaker Gonçalo (consultant / technical reviewer): Yeah. Usually outside of app. Yeah,
+
+[38:57] Speaker Host (unspecified project lead): Outside of apps, for example, like I create something like landing and then like. And put all.
+
+[39:05] Speaker Gonçalo (consultant / technical reviewer): Not landing, it's more like.
+
+[39:07] Speaker Host (unspecified project lead): Yeah, yeah, feature. Features. Features. Yeah, yeah, features. Reusable features.
+
+[39:11] Speaker Gonçalo (consultant / technical reviewer): Yeah, yep. Yeah. And if you expand SRC again.
+
+[39:14] Speaker Host (unspecified project lead): Yep.
+
+[39:15] Speaker Gonçalo (consultant / technical reviewer): So currently you have components, data, hooks, link services, test, you will have that per module.
+
+[39:23] Speaker Host (unspecified project lead): So it's easier to map modules you're
+
+[39:26] Speaker Bobby: not able to jump around. Basically you would have app features and then within features you're going to have hooks.
+
+[39:34] Speaker Gonçalo (consultant / technical reviewer): Yeah. The main idea of this is because components is like across all your features, if you go to components and you have all the components for all your features, you will have a lot of components per folder. If you do it per module, per feature, it will be easier to find and also to abstract. So if you say tomorrow we will start another application and I want to have all the logic related to the cart itself, I only copy the cart module to somewhere else and that's it. You don't have to start picking the components or the features you want to
+
+[40:07] Speaker Host (unspecified project lead): move to your application from the folders and also from the middle of the code in the Scriven architecture is usually
+
+[40:14] Speaker Gonçalo (consultant / technical reviewer): used in backend services. But I think it really aligns to composability, like the composability that React gives you itself.
+
+[40:23] Speaker Host (unspecified project lead): Okay, that's a great idea. I think that's better because we can inhouse all these data hooks related to that particular module inside that folder. So pretty much if you need to create a separate app, shut A heads
+
+[40:38] Speaker Gonçalo (consultant / technical reviewer): up, it's not required at all. It's just like an idea that if you like you can implement it.
+
+[40:44] Speaker Host (unspecified project lead): Okay, yeah, I will think through as a team again, it's a great idea because if this but only question is I'm just thinking out loud because we might tomorrow we might have another app. Today we have E commerce app. Tomorrow we might have an origination app with a separate set of pages which might use these components. So in that case we have to push that component into the ui.
+
+[41:15] Speaker Gonçalo (consultant / technical reviewer): If the meant should be reused across application it should be a package structure is just to organize your application.
+
+[41:23] Speaker Host (unspecified project lead): Yeah, it should move into a different package. So in that case just moving that folder into a package will just solve all our issues kind of.
+
+[41:33] Speaker Gonçalo (consultant / technical reviewer): I mean I think that a reusable component library should be more like generic so it shouldn't have like business logic. If you want to have like a car components package, totally fine. You just move that component to a package and that's it. But usually most of the code that you will have inside a module in your application itself is meant to be used in your application. Like it has a lot of dive things from the application to the service itself. If you usually have to move it through a package you will have to modify it a lot to be generic enough to be used in several places. But of course you can do it.
+
+[42:14] Speaker Host (unspecified project lead): Okay, sounds great. Thank you. Thank you so much. The latest idea of this packet modules at least this feature specific folder and then putting in this amplifier. Definitely a great idea. Let me idle with the team. Definitely agree.
+
+[42:31] Speaker Gonçalo (consultant / technical reviewer): Yeah, I can try to share screaming architecture. To be honest, I haven't seen a screaming architecture post ever in my life. So I will share a link with you but I have never read about it.
+
+[42:47] Speaker Host (unspecified project lead): Okay.
+
+[42:48] Speaker Gonçalo (consultant / technical reviewer): And also it's in Spanish so sorry, don't use that one. I think that localized results are definitely for some reason. Yeah, yeah. Okay. There's one in here.
+
+[43:05] Speaker Host (unspecified project lead): Okay.
+
+[43:06] Speaker Gonçalo (consultant / technical reviewer): But you can just search about Scriven architecture and just remember that it's not super structured so you can create your own version of the Scriven architecture.
+
+[43:17] Speaker Host (unspecified project lead): Got it, got it. So yeah, makes sense.
+
+[43:20] Speaker Gonçalo (consultant / technical reviewer): Yeah, I will. Do you have like GitHub username? I can give you access to a repository of mine that uses.
+
+[43:31] Speaker Host (unspecified project lead): Yes, yes.
+
+[43:32] Speaker Gonçalo (consultant / technical reviewer): Yep.
+
+[43:33] Speaker Host (unspecified project lead): I'm sending it to you right now.
+
+[43:37] Speaker Gonçalo (consultant / technical reviewer): This is nothing related. It's a like shim application but it has the screening architecture implemented in it in a way that I think it's that you have. So I can give you access to it just for you to review.
+
+[43:53] Speaker Host (unspecified project lead): Thank you. I'm just putting in mine. Bobby, can you share yours? Your GitHub?
+
+[43:59] Speaker Bobby: Oh, yes, I can
+
+[44:03] Speaker Gonçalo (consultant / technical reviewer): authenticate.
+
+[44:04] Speaker Bobby: Sorry, I was looking at screaming architecture.
+
+[44:05] Speaker Host (unspecified project lead): Oh, thank you for sharing the screening architecture. Okay. Looks interesting.
+
+[44:09] Speaker Gonçalo (consultant / technical reviewer): No, no worries. Okay, good. So I will add you and feel free to like download the thing as a zip file if you want and share. I'm totally fine with it. Okay. This is the repository. You should already have access to it. Okay.
+
+[44:30] Speaker Host (unspecified project lead): Okay,
+
+[44:33] Speaker Gonçalo (consultant / technical reviewer): let me add your over to it.
+
+[44:35] Speaker Host (unspecified project lead): Okay.
+
+[44:36] Speaker Gonçalo (consultant / technical reviewer): Okay, good. Also share with you.
+
+[44:39] Speaker Host (unspecified project lead): Thank you. Thank you. Yeah, let me look into it. Thank you.
+
+[44:49] Speaker Gonçalo (consultant / technical reviewer): Yeah, in. In that case. Okay, let me share screen for a minute. I can give you like a. Where is this screen? This one? Okay. Can you see my screen?
+
+[45:06] Speaker Host (unspecified project lead): Yep. Yeah, I can see your screen. I will.
+
+[45:08] Speaker Gonçalo (consultant / technical reviewer): I can give you like a really small overview of what the screen architecture is in like a. An app. I don't know if I even have access to this right now. I can't remember if it's even hosted. Yeah, I think it is. Okay, so I mean, login. So you have like, routines, exercise, and trainings. So every page shows like a different set of like cards for it.
+
+[45:40] Speaker Host (unspecified project lead): Okay.
+
+[45:41] Speaker Gonçalo (consultant / technical reviewer): If you open one of them, you will have like a detail for it. For example, for a routine, you have a form and you can like modify it. And for trainings, trainings are basically like sets of routines. So if you open one of them, you will see all the information for it. And in the code itself, you have a monorepo. This is a dual repo monorepo with a web application in it. If you go to src, you will have app with all the pages and everything. And you will have modules. For example, I have routine, I have a workout, I have an exercise. And each of them have a components folder with like routine, card, routine, import, routine in machine dialogue. And you have API ts that exports methods to, for example, get information.
+
+[46:33] Speaker Host (unspecified project lead): Oh, okay. Okay. Makes sense.
+
+[46:35] Speaker Gonçalo (consultant / technical reviewer): Then like schemas
+
+[46:39] Speaker Host (unspecified project lead): specific to that. Specific to that application or specific to that feature.
+
+[46:44] Speaker Gonçalo (consultant / technical reviewer): Yes. And you can see that it imports the database schemas directly from a package, so it extends the original schema. So you have something that is meant to be generic, like your database schema, but then the application and each feature extends the original one to add or modify whatever you want. So then the API ts of each package imports the package table, like the table itself, where it starts to import stuff, but it also imports the schema from the feature itself.
+
+[47:19] Speaker Host (unspecified project lead): Feature itself. Oh, from the package itself. Okay.
+
+[47:21] Speaker Gonçalo (consultant / technical reviewer): Yeah.
+
+[47:21] Speaker Host (unspecified project lead): Oh, okay. Okay. Oh, sorry. Go ahead.
+
+[47:28] Speaker Gonçalo (consultant / technical reviewer): Yeah. So you import the table from the package, you import the schema from your module. So when you do something like for example, create, you just do db. Insert the table you want to insert to that. It's the one you import from the package and you insert based on the schema you have. So you pass information and then you get like a tag for it and you return the parser result for it. So you can see that every method you have to interact with the entity itself is pretty simple. Like listing is this is the user. Get the information from the user and return the values. Find same thing, create something, update. So it ends up being really simple. When you see for example, again, routine, you have utils that are like create an empty routine. Create a routine from a workout so you can start having these shared things between packages. So you always import from other modules. Like my rules are if I'm importing something from the same module, I will import it relatively. If I import it from another module, I just do.
+
+[48:46] Speaker Host (unspecified project lead): Yeah, yeah, that's what we do.
+
+[48:50] Speaker Gonçalo (consultant / technical reviewer): So that this is what. It also makes it really easy to get the entire routine folder and move it to another project because it always references other packages or other modules.
+
+[49:03] Speaker Host (unspecified project lead): That totally makes sense.
+
+[49:04] Speaker Gonçalo (consultant / technical reviewer): Yeah, but yeah, then the pages are also really simple. For example, I have one root param that it's the language and then I use middleware to rewrite to those I'm using pre computed. So every time a user is signed in, it has a like identifier on the URL that it's not shown to the user. So every page is a static page, but you don't see it on the URL. And then you have for example exercise routines or workouts. And then I have a route group for the homepage, a folder for the new and a folder for the slack itself. So you have actions that are meant to be used as a thin layer between the module itself. It's something that it's just relevant to the page. So I don't like contaminate the whole module with something that is relevant just to this page. Do I have a star workout that imports things from the module itself and then does whatever it has to do. Then you have layout loading and page client and some of them like in this one, the layout has information and then just render children and you have some of them like for example routines new which also have a parallel route that in this case is emachine. So what emachine does is when you create for example a routine, you have this like form in here. Or you have an imagine thing. So I can ask, hey, create a routine for like legs. And I don't think this will actually work because it has like two years, I don't know. And it actually, okay, it worked. So it pre fills the form with all information so I don't have to do it myself. And then I can continue working on it. And then click Create routine and will actually go to the database and create the routine. So in this case the ZimashinButton lives in parallel route that it's this one. So the layout, all the information that it needs in here, the routing provider is the one that handles the shared state between the children, like the page itself and the parallel route. So you have children and a machine. And imagine because it's a parallel route, has its own page and it can have its own loading or error page. And it just uses the routine machine dialog with the compound components stuff. And because it's using compound components, you can see that for example, the page itself is really simple to understand. This receives, this follows the input schema, that it's a value being T and unchanged being a function that receives T and returns void. And because it receives this value, all these components can receive and can get all that information without worrying about where that information comes from. And I can just reorder them as I want and it doesn't matter.
+
+[52:34] Speaker Host (unspecified project lead): Oh, this is really great structure. We'll play around. Oh, this is a great screaming setup. I think we can clean it up. Okay, that's a great gonsal. Thanks for sharing this. Probably, probably we can try this for a landing page. Start with. And before trying out other pages, we'll start with the landing page. I know like next week you guys are having office meeting, but in case Andrew and you tell me that we have some time this week, we can look into the code. I'll check what I can do to find access. But so far, what you feel like, are we on the right track? Are we using the best in standards or like, again, you have to look into the code, but are we on the right track? Just wanted to get your inputs.
+
+[53:36] Speaker Gonçalo (consultant / technical reviewer): Yeah.
+
+[53:37] Speaker Host (unspecified project lead): From looking at the initial look. From initial look, what do you feel like? Are we on a right track? Where is the setup done properly?
+
+[53:43] Speaker Gonçalo (consultant / technical reviewer): I think you are way better than I expected you to be. So you have a next JS16 application with cache components, a really good stack and it's organized and it works. I mean you have your flags, you can select the one you want, you have everything and you have mocket service for your backend. So when things are ready, you have this thin layer that will be in charge of just getting information. So I think that you are in a really good spot.
+
+[54:09] Speaker Host (unspecified project lead): Okay.
+
+[54:09] Speaker Andrew: Yeah, you guys would be surprised. We see some really messy stuff sometimes.
+
+[54:13] Speaker Gonçalo (consultant / technical reviewer): So you will be surprised.
+
+[54:15] Speaker Host (unspecified project lead): Yeah.
+
+[54:16] Speaker Andrew: Anyway, in terms of next steps, Gonzi, do you think that another call would be helpful or would you prefer just move right to like more hands on code review?
+
+[54:26] Speaker Gonçalo (consultant / technical reviewer): Whatever the team prefers. My recommendation is you just got like a lot of information. So just process it, use it internally, have goals, think again and come again when you need to discuss again. We can set some candidates if you think it's important. But my recommendation is don't rush on a solution. Don't go and implement something or related to what you just saw in this meeting. Just give it five minutes and then
+
+[54:59] Speaker Host (unspecified project lead): we'll let you know.
+
+[54:59] Speaker Gonçalo (consultant / technical reviewer): Just get back to us. We are here to help whenever you need.
+
+[55:04] Speaker Host (unspecified project lead): Thank you so much.
+
+[55:05] Speaker Andrew: Why don't we for next session Monday, because that'll be the last day that we're available before. You're not flying during the day on Monday, right?
+
+[55:12] Speaker Gonçalo (consultant / technical reviewer): You can, you can Monday night.
+
+[55:15] Speaker Andrew: Okay, so let's say for next session Monday morning. And in the meantime if you can work on the code access, that would be great. And if you guys do want to talk before that we can always schedule something ad hoc, like 30 minute sessions, something like that.
+
+[55:27] Speaker Host (unspecified project lead): Thank you.
+
+[55:27] Speaker Gonçalo (consultant / technical reviewer): Okay.
+
+[55:27] Speaker Host (unspecified project lead): The only, the only thing before ending the call goncy is like maybe offline, maybe you can share your idea or like maybe like your reference file somewhere like to get an idea on this. Different providers you mentioned, right? Like you don't like the idea of having multiple providers cluttered together. I will look into the code that you shared. I know you have implemented a pattern but if there is any other ideas.
+
+[55:53] Speaker Gonçalo (consultant / technical reviewer): Yeah, I mean what you did is not wrong. If all the providers are needed for all the given pages that it's wrapped that are wrapping. Because remember that every time you change something in a provider it will re render everything. And same thing with the information you pass from the server to the client. Maybe you are fetching information to pass to a provider and then that provider has information and it's being sent to the client. But the page that it's using it, I mean that you are rendering, it's not even using it.
+
+[56:23] Speaker Host (unspecified project lead): Okay.
+
+[56:23] Speaker Gonçalo (consultant / technical reviewer): So just having that in mind, not passing more information than the one you need.
+
+[56:27] Speaker Host (unspecified project lead): Okay. Okay, sounds great. Thank you. Thanks a lot. Thank you. Thanks Indra. Thank you. Great meeting.
+
+[56:32] Speaker Bobby: Thank you all very much for this.
+
+[56:33] Speaker Host (unspecified project lead): Thank you. Thanks a lot. Thank you.
+
+[56:38] Speaker Gonçalo (consultant / technical reviewer): Bye.
+
+[56:40] Speaker Bobby: I got to do.
