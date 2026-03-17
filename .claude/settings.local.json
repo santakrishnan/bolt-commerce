@@ -1,5 +1,8 @@
 {
   "permissions": {
-    "allow": ["Bash(npx tsc --noEmit --project apps/web/tsconfig.json)"]
+    "allow": [
+      "Bash(npx tsc --noEmit --project apps/web/tsconfig.json)",
+      "Bash(pnpm install --filter web)"
+    ]
   }
 }

@@ -1,61 +1,80 @@
 # Arrow E-commerce Monorepo
 
-A modern, production-ready e-commerce monorepo built with Next.js 16, Turborepo, Tailwind CSS 4, shadcn/ui, PNPM, and Biome.
+A modern, production-ready e-commerce monorepo built with Next.js 16, React 19, Turborepo, Tailwind CSS 4, shadcn/ui, TanStack Query, and Biome.
 
+## Tech Stack
 
-## 🚀 Tech Stack
+| Category | Technology | Version |
+|----------|-----------|---------|
+| Framework | Next.js (App Router, Turbopack) | 16.1.x |
+| UI Library | React (Server Components, `use()` API) | 19.2.x |
+| Styling | Tailwind CSS (CSS-first config) | 4.1.x |
+| Components | shadcn/ui + Radix UI primitives | latest |
+| Server State | TanStack React Query | 5.90.x |
+| Animation | Framer Motion | 12.x |
+| Monorepo | Turborepo + PNPM workspaces | 2.8.x / 10.29.x |
+| Linting/Formatting | Biome v2 + Ultracite presets | 2.3.x |
+| Testing | Vitest + Testing Library | 2.1.x |
+| Type Safety | TypeScript (strict mode) | 5.7.x |
+| Identity | Fingerprint.js Pro (sealed results) | 2.7.x / 4.1.x |
+| Encryption | jose (JWE A256KW + A256GCM) | 6.1.x |
+| Validation | Zod | 4.3.x |
+| Git Hooks | Husky + lint-staged | 9.x / 15.x |
+| Deployment | Docker (standalone) / Vercel | - |
 
-- ⚡️ **Next.js 16** - React framework with App Router
-- 🔥 **Turbopack** - Next-gen bundler for faster development
-- 🏗️ **Turborepo** - High-performance build system for monorepos
-- ⚛️ **React 19** - Latest React with server components
-- 🎨 **Tailwind CSS 4** - Latest utility-first CSS framework
-- 🧩 **shadcn/ui** - Re-usable components built with Radix UI & Tailwind
-- 📦 **PNPM** - Fast, disk space efficient package manager
-- 🔍 **Biome v2** - Unified linter and formatter (replaces ESLint + Prettier)
-- ✨ **Ultracite** - Zero-config tooling wrapper for Biome with optimized presets
-- 🧪 **Vitest** - Fast unit test framework
-- 🐕 **Husky** - Git hooks for pre-commit checks
-- 🚨 **TypeScript** - Type safety across the monorepo
+## Monorepo Structure
 
-## 📁 Monorepo Structure
-
-```plaintext
+```
 arrow-ecommerce/
 ├── apps/
-│   └── web/                 # Next.js e-commerce application
+│   └── web/                          # Next.js e-commerce app
 │       ├── src/
-│       │   ├── app/         # App router pages
-│       │   ├── components/   # App-specific components
-│       │   └── lib/         # App utilities
-│       ├── components.json  # shadcn/ui config for web app
-│       └── package.json
+│       │   ├── app/                  # App Router pages & API routes
+│       │   ├── components/
+│       │   │   ├── features/         # Domain-specific components
+│       │   │   │   ├── card/         # Car card components
+│       │   │   │   ├── landing/      # Landing page sections
+│       │   │   │   ├── mygarage/     # My Garage feature
+│       │   │   │   ├── search/       # Search & filter sidebar
+│       │   │   │   ├── vdp/          # Vehicle Detail Page
+│       │   │   │   └── vehicle-preview-modal/
+│       │   │   ├── layout/           # Header, footer, page wrappers
+│       │   │   ├── providers/        # React context providers
+│       │   │   └── shared/           # Reusable app-level components
+│       │   ├── hooks/                # Custom React hooks
+│       │   ├── lib/                  # Business logic & utilities
+│       │   │   ├── arrow/            # Arrow tracking / Fingerprint SDK
+│       │   │   ├── auth/             # Auth (sealed cookies)
+│       │   │   ├── data/             # Static & mock data
+│       │   │   ├── flags/            # Feature flags (Vercel flags SDK)
+│       │   │   ├── routes/           # URL builders & constants
+│       │   │   └── search/           # Search logic & filters
+│       │   ├── services/             # API service layer
+│       │   │   ├── events/           # Event tracking service
+│       │   │   ├── fingerprint/      # Fingerprint resolution (sealed + server API)
+│       │   │   ├── landing/          # Landing page data service
+│       │   │   ├── search/           # Vehicle search service
+│       │   │   ├── vdp/              # Vehicle Detail Page service
+│       │   │   └── visitor-profile/  # Visitor profile service
+│       │   └── data/                 # JSON configs & mock datasets
+│       └── public/                   # Static assets (fonts, images)
 ├── packages/
-│   ├── ui/                  # Shared UI components (shadcn/ui + custom)
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   ├── lib/         # Utilities (cn, etc.)
-│   │   │   └── hooks/       # Shared React hooks
-|   |   |   └── primatives/  # shadcn base components + custom base components
-│   │   ├── components.json  # shadcn/ui config
-│   │   └── package.json
-│   ├── utils/               # Shared utilities
-│   ├── ui-theme/            # Design system with CSS-first Tailwind theme
-│   └── config/              # Centralized configurations
-│       ├── typescript/      # TypeScript configs (base, nextjs, react-library)
-│       └── vitest/          # Vitest test configs with Next.js mocks
-├── turbo.json              # Turborepo configuration
-├── pnpm-workspace.yaml     # PNPM workspace configuration
-├── biome.json              # Biome linter & formatter config
-└── package.json            # Root package.json
+│   ├── ui/                           # Shared component library (@tfs-ucmp/ui)
+│   ├── ui-theme/                     # CSS-only design tokens (@tfs-ucmp/ui-theme)
+│   ├── shared/                       # Shared hooks, providers, utils (@tfs-ucmp/shared)
+│   ├── utils/                        # cn, formatters, slugify, validators
+│   └── config/
+│       ├── typescript/               # Shared tsconfig (base, nextjs, react-library)
+│       └── vitest/                   # Shared Vitest configs + test utils
+├── turbo.json
+├── pnpm-workspace.yaml
+├── biome.json
+├── Dockerfile
+├── docker-compose.yml
+└── package.json
 ```
 
-## 🎯 Getting Started
-
-### Coding Standards and Team Patterns
-For in-depth design decisions, architecture patterns, and team conventions, please review our Confluence documentation:
-
-📚 [Team Design Decisions & Patterns](https://toyotafinancial.atlassian.net/wiki/spaces/~7120204247c50333f14156bee901a50c7e3b51/folder/2605023254?atlOrigin=eyJpIjoiOGZhOGE1MmI0YWY2NDgzYzk2YjQ4MDU1ODdjYjFhZjMiLCJwIjoiYyJ9)
+## Getting Started
 
 ### Prerequisites
 
@@ -68,7 +87,10 @@ For in-depth design decisions, architecture patterns, and team conventions, plea
 # Install dependencies
 pnpm install
 
-# Start development server
+# Copy environment variables
+cp apps/web/.env.local.example apps/web/.env.local
+
+# Start development server (uses Turbopack)
 pnpm dev
 
 # Build all apps and packages
@@ -76,402 +98,329 @@ pnpm build
 
 # Run tests
 pnpm test
-
-# Lint and format
-pnpm check
 ```
 
-## 🧩 Adding shadcn/ui Components
+## App Router Pages
 
-shadcn/ui components are managed in the `packages/ui` package and can be used across all apps.
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page (Server Component) |
+| `/used-cars` | Vehicle search results (SRP) |
+| `/used-cars/:make/:model/:trim/:year/:vin` | Vehicle Detail Page (VDP) |
+| `/favorites` | Saved vehicles |
+| `/my-garage` | Personalized garage |
+| `/dealer-notes` | Dealer notes |
+| `/api/session` | Session bootstrap (fingerprint) |
+| `/api/events/track` | Event tracking endpoint |
+| `/api/search` | Vehicle search API |
+| `/api/visitor-profile` | Visitor profile API |
+| `/api/health` | Health check |
 
-### Add a new component to the UI package:
+The `/used-cars/[[...params]]` catch-all route handles both the SRP (search results) and VDP (vehicle details) based on URL shape.
 
-```bash
-# From packages/ui directory
-cd packages/ui
-npx shadcn@latest add button
+## Provider Architecture
 
-# Or from root
-npx shadcn@latest add button --cwd packages/ui
+Providers are composed in the root layout using a `composeProviders` utility. The nesting order (outermost to innermost):
+
+```
+ThemeProvider                         # Light/dark mode (CSS class toggle)
+  ArrowProvider                       # Composite: 4 nested layers
+    FingerprintClientProvider          #   Fingerprint.js Pro SDK wrapper
+      ProfileProvider                  #   Session bootstrap + ID resolution
+        VisitorProfileProvider         #   Auto-fetches visitor profile (5-min TTL)
+          ArrowBridge                  #   Merges into unified ArrowContext
+            LocationInit               # Async Server Component (reads zip cookie)
+              LocationProvider         # Zip code, hero state, background images
+                QueryProvider          # TanStack QueryClient + IndexedDB persistence
+                  FavoritesProvider    # Saved vehicles (optimistic mutations)
+                    SearchHistoryProvider  # Recent searches (optimistic mutations)
+                      CartProvider     # Shopping cart (in-memory)
+                        Header + {children}
+Footer (outside providers — pure Server Component)
 ```
 
-### Use in your app:
+`LocationInit` is an async Server Component that reads the manual-zip cookie via `cookies()` inside a `<Suspense>` boundary, passing `initialZip` to `LocationProvider` so the first HTML paint contains the correct zip code with zero client-side flash.
+
+### Provider Summary
+
+| Provider | State Type | Persistence | Exposed Hook |
+|----------|-----------|-------------|--------------|
+| `ThemeProvider` | Client (React state) | None | `useTheme()` |
+| `ArrowProvider` | Client (React state) | httpOnly cookies | `useArrow()`, `useArrowSafe()`, `useArrowClient()`, `useEventTracking()` |
+| `LocationProvider` | Client (React state) | Cookie (`arrow_manual_zip`, 30 days) | `useLocation()` |
+| `QueryProvider` | N/A (infrastructure) | IndexedDB (2 keys) | TanStack hooks |
+| `FavoritesProvider` | Server (TanStack Query) | IndexedDB via mock API | `useFavorites()` |
+| `SearchHistoryProvider` | Server (TanStack Query) | IndexedDB via mock API | `useSearchHistory()` |
+| `CartProvider` | Client (React state) | None | `useCart()` |
+| `SearchProvider` | Client (React state) | None (route-level) | `useSearchContext()` |
+
+### State Management Strategy
+
+- **Server state** (data from APIs): TanStack React Query with optimistic mutations, `staleTime: 30s`, `gcTime: 5min`, `retry: 1`
+- **Client state** (UI/preferences): React Context + `useState`/`useCallback`/`useMemo`
+- **Shared mutation pattern**: `useOptimisticListMutation` hook extracts the cancel-snapshot-update-rollback-invalidate boilerplate used by both `FavoritesProvider` and `SearchHistoryProvider`
+
+## Arrow Tracking System
+
+The Arrow SDK is a multi-layer abstraction over Fingerprint.js Pro for visitor identification, session management, and event tracking.
+
+### Session Bootstrap Flow
+
+1. Client POSTs `{ mode: "bootstrap" }` to `/api/session`
+2. If valid httpOnly cookies exist, server returns tracking IDs + FED-safe data (no SDK call)
+3. If not, client calls Fingerprint SDK, extracts sealed result, POSTs `{ mode: "initialize", sealedResult }` to `/api/session`
+4. Server decrypts sealed result (AES-256-GCM), resolves/creates profile, sets httpOnly cookies
+
+### Event Tracking
+
+Events are **fire-and-forget** at all call sites. The `useEventTracking()` hook:
+- Reads IDs from `useArrowSafe()` (degrades to `"anonymous"` outside ArrowProvider)
+- POSTs to `/api/events/track` (or `NEXT_PUBLIC_EVENT_SERVICE_URL`) with a 10-second timeout
+- Supports optional JWE encryption of event payloads
+- Calls `invalidateProfile()` after each event to bust the visitor profile cache
+
+The BFF route handler validates the request, forwards to the upstream analytics service (or logs locally in mock mode with a 10-second timeout), then calls `revalidateTag` to bust the server-side profile cache.
+
+### Security Design
+
+Full fingerprint event data (IP, user-agent, bot scores, VPN, proxy, tampering) **never reaches the client**. Only `visitorId`, `incognito`, and `location` are exposed in React state. All sensitive data stays server-side in httpOnly cookies.
+
+## Services Layer
+
+All services follow the same pattern: upstream API call with auth header, graceful fallback to mock data when the service URL env var is unset.
+
+| Service | Mock When | Upstream Endpoint | Caching |
+|---------|-----------|-------------------|---------|
+| Landing | `LANDING_SERVICE_URL` unset | `/stats`, `/vehicle-finder/*` | `use cache` — `cacheLife("landing")` (15 min stale) |
+| Search | `SEARCH_SERVICE_URL` unset | `/vehicles/search` | None (dynamic) |
+| VDP | `VDP_SERVICE_URL` unset | `/vehicles/:id`, `/vehicles/vin/:vin` | `use cache` (5 min stale) |
+| Visitor Profile | `PROFILE_SERVICE_URL` unset | `/profiles/resolve`, `/profiles/:id` | `use cache` — `cacheLife("profile")` (5 min stale) |
+| Events | `EVENT_TRACKING_URL` unset | POST to upstream | None |
+| Fingerprint | `FINGERPRINT_SECRET_API_KEY` unset | Fingerprint Server API v4 | `use cache` — `cacheLife("days")` |
+| Saved Vehicles | Always mock | IndexedDB-backed in-memory | TanStack Query cache |
+| Search History | Always mock | IndexedDB-backed in-memory | TanStack Query cache |
+
+## Packages
+
+### `@tfs-ucmp/ui`
+
+Shared React component library built on Radix UI primitives, CVA, and Tailwind. Exports:
+
+- **Components**: Accordion, AlertDialog, Badge, Breadcrumb, Button, Card, Carousel, Chip, Collapsible, Dialog, DropdownMenu, Heading, Input, Pagination, ScrollArea, Select, Tabs
+- **Hooks**: `use-debounce`, `use-media-query`
+- **Lib**: `cn` utility, vehicle types, inspection features
+- **Icons**: Lucide icons re-exported
 
 ```tsx
-import { Button } from 'ui'
+import { Button, Heading, cn } from "@tfs-ucmp/ui";
+```
 
-export default function MyComponent() {
-  return <Button>Click me</Button>
+### `@tfs-ucmp/ui-theme`
+
+CSS-only design token package. No JavaScript — pure CSS using Tailwind v4's `@theme` directive.
+
+- **Multi-brand**: `arrow` theme (Toyota red, ToyotaType font) and `acme` theme
+- **Light/dark mode**: CSS custom properties with prefers-color-scheme
+- **Token categories**: Colors, spacing, radius, typography, shadows
+
+```css
+/* In your app's globals.css */
+@import "@tfs-ucmp/ui-theme/themes/arrow";
+```
+
+### `@tfs-ucmp/shared`
+
+Shared hooks (`use-debounce`, `use-media-query`), providers (`ThemeProvider`), and utils (`formatters`, `strings`, `validators`).
+
+### `utils`
+
+Lightweight utilities: `cn` (clsx + tailwind-merge), `formatters`, `slugify`, `validators`.
+
+### `@arrow/tsconfig`
+
+Shared TypeScript configs: `base.json`, `nextjs.json`, `react-library.json`. Strict mode enabled with `noUnusedLocals`, `noUnusedParameters`, `noUncheckedIndexedAccess`.
+
+### `@arrow/vitest-config`
+
+Shared Vitest configs with built-in Next.js mocks (`next/navigation`, `next/image`, `matchMedia`, `IntersectionObserver`).
+
+## Styling
+
+Tailwind CSS 4 with CSS-first configuration. No `tailwind.config.js` at runtime.
+
+```css
+/* apps/web/src/app/globals.css */
+@import "@tfs-ucmp/ui-theme/themes/arrow";     /* Theme + Tailwind entry */
+@source "../../../../packages/ui/src";           /* Scan UI package for classes */
+
+@theme inline {
+  --font-sans: var(--font-toyota-type), system-ui, -apple-system, sans-serif;
 }
 ```
 
-## 🛠️ Available Commands
+**Custom font**: ToyotaType (12 weights/styles) loaded via `next/font/local` with `display: swap` and `preload: true` for zero layout shift.
+
+## Environment Variables
+
+Create `.env.local` in `apps/web/`:
+
+### Required
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_FINGERPRINT_API_KEY` | Fingerprint.js Pro public API key |
+
+### Optional — Client
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_EVENT_SERVICE_URL` | Event tracking endpoint (default: `/api/events`) |
+| `NEXT_PUBLIC_FINGERPRINT_REGION` | Fingerprint region: `us`, `eu`, `ap` |
+| `NEXT_PUBLIC_FINGERPRINT_ENDPOINT` | Custom Fingerprint endpoint |
+| `NEXT_PUBLIC_USE_FPJS_PROXY` | Route FP requests through `/api/fpjs` proxy (`"true"`) |
+| `NEXT_PUBLIC_ARROW_ENCRYPTION_KEY` | JWE encryption key for event payloads |
+| `NEXT_PUBLIC_PROFILE_SERVICE_URL` | Profile service URL |
+| `NEXT_PUBLIC_API_URL` | Public API base URL |
+
+### Optional — Server
+
+| Variable | Description |
+|----------|-------------|
+| `FINGERPRINT_SECRET_API_KEY` | Fingerprint Server API v4 secret key |
+| `FINGERPRINT_SEALED_KEY` | AES-256-GCM sealed result decryption key |
+| `ARROW_ENCRYPTION_KEY` | Server-side JWE decryption key |
+| `PROFILE_SERVICE_URL` | Visitor profile service URL (mock if unset) |
+| `PROFILE_API_KEY` | Profile service auth token |
+| `EVENT_TRACKING_URL` | Upstream analytics service URL (mock if unset) |
+| `EVENT_API_KEY` | Event service auth token |
+| `SEARCH_SERVICE_URL` | Vehicle search service URL (mock if unset) |
+| `SEARCH_API_KEY` | Search service auth token |
+| `LANDING_SERVICE_URL` | Landing data service URL (mock if unset) |
+| `LANDING_API_KEY` | Landing service auth token |
+| `VDP_SERVICE_URL` | Vehicle Detail Page service URL (mock if unset) |
+| `VDP_API_KEY` | VDP service auth token |
+
+### Mock Mode Flags
+
+| Variable | Description |
+|----------|-------------|
+| `USE_MOCK_PROFILE` | Force mock profile service |
+| `USE_MOCK_SEARCH` | Force mock search service |
+| `USE_MOCK_LANDING` | Force mock landing service |
+| `USE_MOCK_VDP` | Force mock VDP service |
+
+See `apps/web/.env.local.example` for all available variables.
+
+## Available Commands
 
 ```bash
 # Development
-pnpm dev              # Start all apps in dev mode
+pnpm dev              # Start all apps in dev mode (Turbopack)
 pnpm build            # Build all apps and packages
 pnpm start            # Start production server
 
 # Code Quality
-pnpm check            # Check code for issues (via Ultracite)
-pnpm fix              # Auto-fix issues (via Ultracite)
+pnpm check            # Check code for issues (Biome + Ultracite)
+pnpm fix              # Auto-fix issues
 pnpm fix:unsafe       # Apply unsafe fixes
 pnpm doctor           # Validate tooling setup
-pnpm format           # Format and fix code
-pnpm format:check     # Check formatting only
-pnpm check:ci         # Check for CI (no modifications)
-pnpm type-check       # Type check all packages
+pnpm type-check       # Type-check all packages
 
 # Testing
-pnpm test             # Run all tests
-pnpm test:watch       # Run tests in watch mode
-pnpm test:ui          # Run tests with UI
+pnpm test             # Run all tests (Vitest)
+pnpm test:watch       # Watch mode
+pnpm test:ui          # Vitest UI
+pnpm test:coverage    # With coverage report (in apps/web)
 
 # Utilities
 pnpm clean            # Clean all build artifacts
-pnpm gen              # Run Turbo generators
+pnpm gen              # Run Turbo code generators
+pnpm ui:add           # Add shadcn/ui component to packages/ui
 ```
 
-## 🤖 AI-Assisted Development
+## Linting & Formatting
 
-This project is configured with **agent skills** to enhance AI-assisted development with best practices and guidelines.
+This project uses **Biome v2** with **Ultracite** presets (replaces ESLint + Prettier).
 
-### Quick Setup
+**Presets**: `ultracite/biome/core`, `ultracite/biome/next`, `ultracite/biome/react`
 
-Install recommended agent skills for optimal AI assistance:
+Key rules:
+- `useExhaustiveDependencies`: error
+- `useImportType`: error
+- `noArrayIndexKey`: error
+- `noForEach`: error
+- `noExplicitAny`: warn
+- `noNonNullAssertion`: warn
+
+Formatting: 2 spaces, double quotes, trailing commas (ES5), semicolons always, 100 char line width.
+
+Pre-commit hooks via Husky + lint-staged run `biome check --write` and `ultracite fix` on staged files.
+
+## Testing
+
+Vitest with `@testing-library/react` and built-in Next.js mocks.
+
+```typescript
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+
+describe("MyComponent", () => {
+  it("should render", () => {
+    render(<MyComponent />);
+    expect(screen.getByText("Hello")).toBeInTheDocument();
+  });
+});
+```
+
+Built-in mocks (auto-configured): `next/navigation`, `next/image`, `matchMedia`, `IntersectionObserver`.
+
+## Deployment
+
+### Docker
 
 ```bash
-# Install all skills (one command)
-npx skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y && \
-npx skills add vercel-labs/next-skills@next-best-practices -g -y && \
-npx skills add vercel-labs/agent-skills@vercel-composition-patterns -g -y && \
-npx skills add vercel-labs/agent-skills@web-design-guidelines -g -y && \
+docker compose up --build
+```
+
+Multi-stage Dockerfile: Node 22 Alpine, PNPM corepack, `output: "standalone"` for minimal production image. Health check: `GET /api/health`.
+
+### Vercel
+
+1. Connect repository to Vercel
+2. Set root directory to `apps/web`
+3. Vercel auto-detects Next.js and configures build settings
+
+## AI-Assisted Development
+
+This project includes agent skills in `.agents/` for AI-assisted development:
+
+| Skill | Description |
+|-------|-------------|
+| `vercel-react-best-practices` | React/Next.js performance patterns (57 rules) |
+| `next-best-practices` | Next.js framework conventions |
+| `tanstack-query` | TanStack Query patterns (caching, optimistic updates, SSR) |
+| `tanstack-integration` | TanStack Query + Next.js integration |
+| `web-design-guidelines` | Accessibility and UX guidelines |
+| `find-skills` | Discover additional skills |
+
+```bash
+# Install all skills
+npx skills add vercel-labs/agent-skills@vercel-react-best-practices -g -y
+npx skills add vercel-labs/next-skills@next-best-practices -g -y
+npx skills add vercel-labs/agent-skills@web-design-guidelines -g -y
 npx skills add vercel-labs/skills@find-skills -g -y
 ```
 
-### Configured Skills
-
-- **vercel-react-best-practices** - React/Next.js performance optimization (57 rules)
-- **next-best-practices** - Next.js framework patterns
-- **vercel-composition-patterns** - Component architecture guidelines
-- **web-design-guidelines** - UI/UX best practices
-- **find-skills** - Discover additional skills
-
-### Configuration Files
-
-- `.clinerules` - Agent skills and project guidelines
-- `.cursorrules` - Symlink for Cursor IDE compatibility
-
-These files help AI assistants understand:
-- Project structure and tech stack
-- Multi-brand theming architecture
-- Performance optimization priorities
-- Component composition patterns
-- Testing and code quality standards
-
-**Learn more**: [docs/AGENT_SKILLS.md](docs/AGENT_SKILLS.md)
-
-## 📦 Packages
-
-### `apps/web`
-Main Next.js e-commerce application with App Router.
-
-### `packages/ui`
-Shared UI component library with shadcn/ui components and custom components. All UI components are built with:
-- Radix UI primitives
-- Tailwind CSS for styling
-- Class Variance Authority for variants
-- TypeScript for type safety
-
-### `packages/utils`
-Shared utility functions used across the monorepo.
-
-### `packages/config/*`
-Centralized configuration packages for scalable monorepo management:
-
-#### `@arrow/tsconfig`
-Shared TypeScript configurations:
-- **base.json** - Base config for non-React packages
-- **nextjs.json** - Next.js-specific settings with App Router support
-- **react-library.json** - React component library configuration
-
-#### `@arrow/ui-theme`
-Arrow Design System - CSS-first Tailwind v4 theme:
-- **Design Tokens** - Structured color, spacing, and typography tokens
-- **Theme Variants** - Light and dark mode support via CSS custom properties
-- **Custom Utilities** - Brand-specific utility classes (container-arrow, glass, text-gradient)
-- **Zero JS Config** - Pure CSS approach using Tailwind v4's `@theme` directive
-- **Runtime Theming** - Dynamic theme switching via CSS variables
-
-**Token Structure:**
-```
-src/
-├── index.css           # Main export
-├── tokens/             # Design tokens (colors, spacing, typography)
-├── themes/             # Light/dark theme variants
-└── utilities/          # Custom utility classes
-```
-
-#### `@arrow/vitest-config`
-Shared Vitest test configurations:
-- **base.ts** - Base test configuration
-- **react.ts** - React component testing with jsdom
-- **nextjs.ts** - Next.js testing with built-in mocks (router, Image, etc.)
-- **test-utils/** - Shared testing utilities and setup
-
-## 🔧 Configuration System
-
-### Centralized Configurations
-
-This monorepo uses a **centralized configuration approach** for scalability and consistency:
-
-#### TypeScript
-All packages extend from `@arrow/tsconfig` based on their type:
-```json
-// For Next.js apps
-{
-  "extends": "../../packages/config/typescript/nextjs.json"
-}
-
-// For React libraries
-{
-  "extends": "../config/typescript/react-library.json"
-}
-
-// For utility packages
-{
-  "extends": "../config/typescript/base.json"
-}
-```
-
-#### Tailwind CSS (CSS-First Approach)
-Apps import the theme directly in their CSS:
-```css
-/* app/globals.css */
-@import "@arrow/ui-theme";
-
-/* Optional: Override tokens */
-@theme {
-  --color-primary: 220 70% 50%; /* Custom blue */
-}
-```
-
-No JavaScript config needed! The `@arrow/ui-theme` package provides:
-- All design tokens via `@theme` directive
-- Light/dark mode support
-- Custom utilities automatically included
-
-#### Testing
-Tests use shared Vitest configurations:
-```typescript
-import { mergeConfig } from 'vitest/config'
-import nextjsConfig from '@arrow/vitest-config/nextjs'
-
-export default mergeConfig(nextjsConfig, {
-  // App-specific overrides
-})
-```
-
-### Root Configuration Files
-
-- **biome.json** - Unified linter and formatter config (with Ultracite presets)
-- **turbo.json** - Turborepo pipeline configuration
-- **pnpm-workspace.yaml** - PNPM workspace setup
-- **.husky/** - Git hooks configuration
-
-### Why Biome + Ultracite?
-
-This project uses **Biome v2** with **Ultracite** for optimal developer experience:
-
-#### Biome Benefits:
-- ⚡ **3x faster** than ESLint + Prettier combined
-- 🎯 **Single tool** for both linting and formatting
-- 🔋 **Better TypeScript support** and error messages
-- 🚀 **Modern** - built in Rust for performance
-
-#### Ultracite Enhancements:
-- ✨ **Zero-config presets** for Next.js, React, and more
-- 🔧 **Unified CLI** - works seamlessly across different linters
-- 🎨 **IDE integration** - auto-format on save via VS Code settings
-- 📦 **Framework-aware** - optimized rules for your stack
-- 🏥 **Health checks** - `doctor` command validates your setup
-
-```bash
-# Check for issues (read-only)
-pnpm check
-
-# Auto-fix issues
-pnpm fix
-
-# Apply unsafe fixes (may change behavior)
-pnpm fix:unsafe
-
-# Validate tooling setup
-pnpm doctor
-```
-
-### Ultracite Presets
-
-The `biome.json` extends these Ultracite presets:
-- `ultracite/biome/core` - Core Biome rules
-- `ultracite/biome/next` - Next.js-specific rules
-- `ultracite/biome/react` - React best practices
-
-These presets are maintained and updated by Ultracite, ensuring you always have optimal configurations.
-
-## 🎨 Styling
-
-This project uses Tailwind CSS 4 with CSS variables for theming. The theme is defined in `apps/web/src/app/globals.css` and can be easily customized.
-
-Theme variables:
-- Support for light/dark mode
-- HSL color system
-- Border radius variables
-- Custom chart colors
-
-## 📦 Adding a New Package
-
-When creating a new package, leverage the centralized configs:
-
-### 1. Create Package Structure
-```bash
-mkdir -p packages/my-package/src
-cd packages/my-package
-```
-
-### 2. Setup package.json
-```json
-{
-  "name": "my-package",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./src/index.ts",
-  "devDependencies": {
-    "@arrow/tsconfig": "workspace:*",
-    "typescript": "^5.7.2"
-  }
-}
-```
-
-### 3. Extend TypeScript Config
-```json
-// tsconfig.json
-{
-  "extends": "../config/typescript/base.json",
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src"
-  }
-}
-```
-
-### 4. Add to Turbo Tasks
-Update `turbo.json` to include your package in build/test pipelines.
-
-### 5. Install Dependencies
-```bash
-pnpm install
-```
-
-## 🧪 Testing
-
-Tests use **Vitest** with centralized configurations and utilities from `@arrow/vitest-config`:
-
-```bash
-# Run tests
-pnpm test
-
-# Watch mode
-pnpm test:watch
-
-# With UI
-pnpm test:ui
-```
-
-### Writing Tests
-
-Import test utilities from the shared package:
-
-```typescript
-import { render, screen, userEvent, describe, it, expect } from '@arrow/vitest-config/test-utils'
-
-describe('MyComponent', () => {
-  it('should render', () => {
-    render(<MyComponent />)
-    expect(screen.getByText('Hello')).toBeInTheDocument()
-  })
-})
-```
-
-**Built-in Next.js Mocks:**
-- `next/navigation` (useRouter, usePathname, useSearchParams, etc.)
-- `next/image` (Image component)
-- `window.matchMedia`
-- `IntersectionObserver`
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Connect your repository to Vercel
-2. Set the root directory to `apps/web`
-3. Vercel will automatically detect Next.js and configure build settings
-
-### Other Platforms
-
-```bash
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
-```
-
-## 📝 Environment Variables
-
-Create `.env.local` in `apps/web/` for local development:
-
-```env
-# Example environment variables
-NEXT_PUBLIC_API_URL=https://api.example.com
-DATABASE_URL=postgresql://...
-```
-
-See `apps/web/.env.local.example` for all available variables.
-
-## 🤝 Contributing
+## Contributing
 
 1. Create a feature branch
 2. Make your changes
-3. Run `pnpm fix` to auto-fix issues
+3. Run `pnpm fix` to auto-fix lint issues
 4. Run `pnpm test` to ensure tests pass
-5. Run `pnpm doctor` to validate setup (optional)
-6. Commit your changes (husky will run pre-commit checks)
+5. Run `pnpm type-check` to verify types
+6. Commit (Husky runs pre-commit checks automatically)
 7. Push and create a Pull Request
 
-### Pre-commit Hooks
-
-Husky is configured to run on every commit:
-- **Format & fix** - Ultracite auto-fixes your staged files
-- **Type check** - Ensures TypeScript compilation
-- **Tests** - Runs related tests for changed files
-
-If pre-commit checks fail, fix the issues and try again.
-
-## 📄 License
+## License
 
 MIT
-
-## 🙏 Credits
-
-Built with:
-- [Next.js](https://nextjs.org/)
-- [Turborepo](https://turbo.build/repo)
-- [shadcn/ui](https://ui.shadcn.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Radix UI](https://www.radix-ui.com/)
-- [Biome](https://biomejs.dev/)
-- [Ultracite](https://docs.ultracite.ai/)
-- [Vitest](https://vitest.dev/)
