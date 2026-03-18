@@ -3,8 +3,30 @@
  * @module search-bar/services/vehicle-autocomplete
  */
 
-import type { Vehicle } from "~/components/shared/types";
+import type { Vehicle as SharedVehicle } from "~/components/shared/types";
 import type { AutocompleteService, Suggestion } from "../types";
+
+export type Vehicle = Pick<
+  SharedVehicle,
+  | "id"
+  | "title"
+  | "make"
+  | "model"
+  | "variant"
+  | "year"
+  | "vin"
+  | "price"
+  | "image"
+  | "miles"
+  | "odometer"
+  | "match"
+  | "labels"
+  | "owners"
+  | "extColorName"
+  | "extColorCode"
+  | "intColorName"
+  | "intColorCode"
+>;
 
 /**
  * Production implementation of AutocompleteService using vehicle data.

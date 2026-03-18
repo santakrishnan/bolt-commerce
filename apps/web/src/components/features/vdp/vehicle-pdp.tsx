@@ -16,16 +16,13 @@ import { VehicleStickyBanner } from "~/components/features/vdp/sticky-banner";
 import { VehicleTitle } from "~/components/features/vdp/title";
 import { VehicleActionIcons } from "~/components/features/vdp/vehicle-action-icons";
 import { VehicleBreadcrumbList } from "~/components/features/vdp/vehicle-breadcrumb";
-import { VehicleCTAButtons } from "~/components/features/vdp/vehicle-status";
-import type { VehicleDetail, VehicleStatusData } from "~/lib/data/vehicle";
+import type { VehicleDetail } from "~/lib/data/vehicle";
 import { buildVdpPath, type VdpParams } from "~/lib/routes";
-
-// import { VehicleStatusBanners } from "./vehicle-status-banners";
+import { VdpPromotionCards } from "./vdp-promotion-cards";
 
 interface VehiclePDPProps {
   slugParams: VdpParams;
   vehicle: VehicleDetail;
-  vehicleStatus: VehicleStatusData;
 }
 
 export const VehiclePDP: React.FC<VehiclePDPProps> = ({
@@ -204,7 +201,7 @@ export const VehiclePDP: React.FC<VehiclePDPProps> = ({
 
           {/* Key Highlights - Desktop only */}
           <VehicleKeyFeatures
-            className="hidden rounded-md bg-background p-(--spacing-lg) lg:block"
+            className="hidden rounded-md bg-[var(--color-inverse-foreground)] p-(--spacing-lg) lg:block"
             collapsible={false}
             features={vehicle.highlights}
             ref={keyHighlightsRef}
@@ -262,8 +259,9 @@ export const VehiclePDP: React.FC<VehiclePDPProps> = ({
           <div className="h-[var(--border-width-1,1px)] w-full shrink-0 bg-[var(--structure-interaction-overlay-border,rgba(212,212,212,0.50))]" />
 
           {/* CTA Buttons */}
-          <VehicleCTAButtons />
-          <div className="h-[var(--border-width-1,1px)] w-full shrink-0 bg-[var(--structure-interaction-overlay-border,rgba(212,212,212,0.50))]" />
+          <div className="flex flex-col gap-(--spacing-md)">
+            <VdpPromotionCards showTestDrive={false} />
+          </div>
 
           {/* Dealer Info */}
           <VehicleDealerInfo
@@ -275,11 +273,19 @@ export const VehiclePDP: React.FC<VehiclePDPProps> = ({
             logoClassName="h-[24px] w-[23px]"
             logoSrc="/images/vdp/Vector_4.svg"
           />
+
+          {/* Schedule Test Drive after dealer */}
+          <VdpPromotionCards
+            showPrequal={false}
+            showTradeIn={false}
+            testDriveButtonText="Schedule Test Drive"
+          />
+
           <div className="h-[var(--border-width-1,1px)] w-full shrink-0 bg-[var(--structure-interaction-overlay-border,rgba(212,212,212,0.50))]" />
 
           {/* Key Highlights - Mobile only */}
           <VehicleKeyFeatures
-            className="rounded-lg bg-background px-(--spacing-md) py-(--spacing-md) lg:hidden"
+            className="rounded-lg bg-[var(--color-inverse-foreground)] px-[var(--spacing-md)] py-[var(--spacing-md)] lg:hidden"
             collapsible={false}
             features={vehicle.highlights}
             ref={keyHighlightsMobileRef}

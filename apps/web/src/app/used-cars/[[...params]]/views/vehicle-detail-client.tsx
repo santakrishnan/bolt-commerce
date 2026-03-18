@@ -1,17 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import {
   DealerInfoCard,
   DealerNotesSection,
   VehicleDetailsTabs,
   VehiclePDP,
   VehicleRating,
-  VehicleStatusFAB,
 } from "~/components/features/vdp";
-import { sampleDealerNotes } from "~/lib/data/dealer/dealer-data";
-import type { VehicleData, VehicleStatusData, VinData } from "~/lib/data/vehicle";
-import { getVehicleStatusFromFlagsSync } from "~/lib/flags/vdp-client";
+import { useDealerData } from "~/hooks/use-dealer-data";
+import type { VehicleData, VinData } from "~/lib/data/vehicle";
 import type { VdpParams } from "~/lib/routes";
 
 interface VehicleDetailClientProps {
@@ -26,24 +23,15 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
 
   const { specs, features, featuresInitialCount, rating, vehicleStatus } = vehicleData;
 
-  // Initialise from the persisted VDP flag cookie (localStorage). Falls back to
-  // vinData.vehicleStatus when no scenario has been selected by the debug FAB.
-  const [activeVehicleStatus, setActiveVehicleStatus] = useState<VehicleStatusData>(() => {
-    const fromFlag = getVehicleStatusFromFlagsSync();
-    const hasActiveFlag = Object.values(fromFlag).some(Boolean);
-    return hasActiveFlag ? fromFlag : vehicleStatus;
-  });
+  // Fetch dealer details from VIN so the dealer association follows vehicle inventory.
+  const { dealerInfo, dealerNotes } = useDealerData(vehicle.vin);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <main className="flex-1">
         {/* Vehicle PDP Section */}
         <div className="mx-auto max-w-(--container-2xl) px-4 py-12 sm:px-6 lg:px-20">
-          <VehiclePDP
-            slugParams={vehicle}
-            vehicle={vehicleInfo}
-            vehicleStatus={activeVehicleStatus}
-          />
+          <VehiclePDP slugParams={vehicle} vehicle={vehicleInfo} />
         </div>
 
         {/* Tabs, Rating and Dealer section - full width grey background */}
@@ -52,14 +40,14 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
             <VehicleDetailsTabs
               features={features}
               featuresInitialCount={featuresInitialCount}
-              featuresTableView={activeVehicleStatus.featuresTableView}
+              featuresTableView={vehicleStatus.featuresTableView}
               historyData={history}
               priceHistory={priceHistory}
               pricingData={pricing}
               showInspectionSection={true}
               specs={specs}
               vehicle={vehicleInfo}
-              vehicleStatus={activeVehicleStatus}
+              vehicleStatus={vehicleStatus}
             />
 
             {/* Rating Section */}
@@ -74,26 +62,15 @@ export function VehicleDetailClient({ vehicle, vinData, vehicleData }: VehicleDe
 
             {/* Dealer Notes Section */}
             <div className="mt-6">
-              <DealerNotesSection />
+              <DealerNotesSection data={dealerNotes} />
             </div>
           </div>
         </div>
 
         {/* Dealer Info Section - white background, no gap before footer */}
         <div className="mx-auto max-w-(--container-2xl) px-6 sm:px-6 lg:px-(--spacing-4xl)">
-          <DealerInfoCard
-            dealer={sampleDealerNotes.dealer}
-            onReviewsClick={() => {
-              // TODO: implement reviews navigation
-            }}
-            onTestDriveClick={() => {
-              // TODO: implement test drive scheduling
-            }}
-          />
+          <DealerInfoCard dealer={dealerInfo} />
         </div>
-
-        {/* Floating Action Button for vehicle status switching */}
-        <VehicleStatusFAB onStatusChange={setActiveVehicleStatus} />
       </main>
     </div>
   );

@@ -7,12 +7,12 @@
 import { Button, ScrollArea } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { type FC, Fragment, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ROUTES } from "~/lib/routes/constants";
+import { CustomBadge } from "~/components/shared/custom-badge";
 import { GarageInfoCard } from "~/components/features/card/garage-info-card";
 import { CircularProgress } from "~/components/shared/circular-progress";
-import { CustomBadge } from "~/components/shared/custom-badge";
-import { ROUTES } from "~/lib/routes/constants";
 
 export type { GarageInfoCardProps } from "~/components/features/card/garage-info-card";
 
@@ -35,11 +35,11 @@ function renderSearchText(text: string): ReactNode {
 export interface SavedVehicleCardProps {
   id: number | string;
   imageUrl: string;
-  miles: string;
-  onClick?: () => void;
-  onRemove?: () => void;
-  price: string;
   title: string;
+  price: string;
+  miles: string;
+  onRemove?: () => void;
+  onClick?: () => void;
 }
 
 export const SavedVehicleCard: FC<SavedVehicleCardProps> = ({
@@ -99,12 +99,12 @@ export const SavedVehicleCard: FC<SavedVehicleCardProps> = ({
 );
 
 export interface RecentSearchCardProps {
-  disabled?: boolean;
-  highlighted?: boolean;
   id: string;
-  onRemove?: () => void;
   search: string;
   url: string;
+  highlighted?: boolean;
+  disabled?: boolean;
+  onRemove?: () => void;
 }
 
 export const RecentSearchCard: FC<RecentSearchCardProps> = ({
@@ -159,10 +159,10 @@ export const RecentSearchCard: FC<RecentSearchCardProps> = ({
 };
 
 export interface FinancingCardProps {
+  prequalified: boolean;
   daysRemaining?: number; // Days remaining for prequalification offer (out of 30)
   onBuyOnline?: () => void;
   onGetPrequalified?: () => void;
-  prequalified: boolean;
 }
 
 export const FinancingCard: FC<FinancingCardProps> = ({
@@ -171,12 +171,15 @@ export const FinancingCard: FC<FinancingCardProps> = ({
   onBuyOnline,
   onGetPrequalified,
 }) => {
+
   // If customer is already prequalified, show the "Your Financing" card
   if (prequalified) {
     const router = useRouter();
     return (
       <GarageInfoCard
-        badge={<CustomBadge text="Pre-qualified" type="preQualifies" />}
+        badge={
+          <CustomBadge type="preQualifies" text="Pre-qualified" />
+        }
         ctaLabel="Buy Online"
         ctaVariant="primary"
         heading={
@@ -189,7 +192,7 @@ export const FinancingCard: FC<FinancingCardProps> = ({
         }
         onCtaClick={() => {
           onBuyOnline?.();
-          router.push(ROUTES.COMING_SOON);
+          router.push(ROUTES.TEMP_SAMPLE_VDP);
         }}
       >
         <div className="flex items-center gap-[var(--spacing-md,16px)]">
@@ -229,14 +232,14 @@ export const FinancingCard: FC<FinancingCardProps> = ({
 };
 
 export interface TradeOfferCardProps {
+  imageUrl?: string;
+  title?: string;
+  price?: string;
+  miles?: string;
   expiresIn?: string;
   hasSubmittedTradeIn: boolean;
-  imageUrl?: string;
-  miles?: string;
-  onGetEstimate?: () => void;
   onShopWithTradeIn?: () => void;
-  price?: string;
-  title?: string;
+  onGetEstimate?: () => void;
 }
 
 export const TradeOfferCard: FC<TradeOfferCardProps> = ({
@@ -255,7 +258,7 @@ export const TradeOfferCard: FC<TradeOfferCardProps> = ({
   if (hasSubmittedTradeIn && imageUrl && title && price && miles && expiresIn) {
     return (
       <GarageInfoCard
-        badge={<CustomBadge expiresInDays={2} type="ExpiresAt" />}
+        badge={<CustomBadge type="ExpiresAt" expiresInDays={2} />}
         ctaLabel="Shop With Your Trade-In"
         ctaVariant="primary"
         heading={
@@ -266,7 +269,7 @@ export const TradeOfferCard: FC<TradeOfferCardProps> = ({
         }
         onCtaClick={() => {
           onShopWithTradeIn?.();
-          router.push(ROUTES.COMING_SOON);
+          router.push(ROUTES.TEMP_SAMPLE_VDP);
         }}
       >
         <div className="flex flex-col gap-[var(--spacing-md,16px)]">
@@ -321,10 +324,10 @@ export const TradeOfferCard: FC<TradeOfferCardProps> = ({
 };
 
 export interface TestDriveCardProps {
+  scheduled: boolean;
   dealershipName?: string;
   onBookAppointment?: () => void;
   onScheduleTestDrive?: () => void;
-  scheduled: boolean;
 }
 
 export const TestDriveCard: React.FC<TestDriveCardProps> = ({
@@ -383,12 +386,12 @@ export const TestDriveCard: React.FC<TestDriveCardProps> = ({
 };
 
 export interface MyGarageCardsProps {
-  financing: FinancingCardProps;
-  onSavedVehicleClick?: (id: number | string) => void;
-  recentSearches: RecentSearchCardProps[];
   savedVehicles: SavedVehicleCardProps[];
-  testDrive?: TestDriveCardProps;
+  recentSearches: RecentSearchCardProps[];
+  financing: FinancingCardProps;
   tradeOffer: TradeOfferCardProps;
+  testDrive?: TestDriveCardProps;
+  onSavedVehicleClick?: (id: number | string) => void;
 }
 
 export const MyGarageCards: FC<
@@ -410,7 +413,7 @@ export const MyGarageCards: FC<
 }) => (
   <div className="flex w-full flex-col gap-4 lg:flex-row">
     <div className="flex min-w-65 flex-1 flex-col rounded-md bg-white py-4 shadow">
-      <div className="mb-6 flex items-center justify-between px-4 pb-0">
+      <div className="flex items-center justify-between px-4 pb-0 mb-6">
         <div className="flex items-center gap-2 font-semibold text-sm">
           <Image
             alt="Saved Vehicles"
@@ -464,7 +467,7 @@ export const MyGarageCards: FC<
       </div>
     </div>
     <div className="flex min-w-65 flex-1 flex-col rounded-lg bg-white py-4 shadow">
-      <div className="mb-6 flex items-center justify-between px-4 pb-0">
+      <div className="flex items-center justify-between px-4 pb-0 mb-6">
         <div className="flex items-center gap-2 font-semibold text-sm">
           <Image
             alt="Recent Searches"

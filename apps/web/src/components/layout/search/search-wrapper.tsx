@@ -77,13 +77,16 @@ export async function SearchWrapper({
 
   return (
     <SearchProvider
+      // Key the provider so it fully remounts when the incoming
+      // initial body/search params change — avoids stale filterState.
+      key={clientKey}
       defaultFilterState={defaultFilterState}
       initialBodyStyles={initialBodyStyles}
       initialFilterPreset={filterPreset}
       initialSearchQuery={resolvedSearchQuery}
       vehicles={data.vehicles}
     >
-      <SearchClient key={clientKey} vehicles={data.vehicles} />
+      <SearchClient vehicles={data.vehicles} />
     </SearchProvider>
   );
 }

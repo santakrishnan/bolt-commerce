@@ -38,14 +38,11 @@ const tabTriggerClassName =
 export function VehicleDetailsTabs({
   className,
   specs,
-  vehicle,
   features,
   featuresInitialCount,
   pricingData,
   priceHistory,
   historyData,
-  vehicleStatus,
-  metaBarChipComponents,
   featuresTableView: _featuresTableView = false,
 }: VehicleDetailsTabsProps) {
   const tabDefs = [
@@ -58,17 +55,7 @@ export function VehicleDetailsTabs({
     {
       id: "features",
       label: "Features & Details",
-      content: (
-        <FeaturesTab
-          features={features}
-          historyData={historyData}
-          initialCount={featuresInitialCount}
-          metaBarChipComponents={metaBarChipComponents}
-          specs={specs}
-          vehicle={vehicle}
-          vehicleStatus={vehicleStatus}
-        />
-      ),
+      content: <FeaturesTab features={features} initialCount={featuresInitialCount} />,
       contentClassName: "mt-0",
     },
     {

@@ -45,7 +45,11 @@ export const VehicleKeyFeatures = React.forwardRef<HTMLDivElement, VehicleKeyFea
     if (!collapsible) {
       return (
         <div className={className} ref={ref}>
-          <Heading className={headingClassName} level={2} weight="semibold">
+          <Heading
+            className={`${headingClassName} md:text-[length:var(--font-size-lg)] lg:text-[length:var(--font-size-lg)]`}
+            level={2}
+            weight="semibold"
+          >
             Key Highlights
           </Heading>
           <div className={gridClassName}>
@@ -68,8 +72,8 @@ export const VehicleKeyFeatures = React.forwardRef<HTMLDivElement, VehicleKeyFea
     }
 
     // Collapsible (default) variant
-    const visibleFeatures = features.slice(0, 6);
-    const hiddenFeatures = features.slice(6);
+    const visibleFeatures = features.slice(0, 10);
+    const hiddenFeatures = features.slice(10);
 
     return (
       <Collapsible

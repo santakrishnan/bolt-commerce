@@ -1,3 +1,6 @@
+"use client";
+
+import { Heading } from "@tfs-ucmp/ui";
 import type React from "react";
 import { AppButton } from "~/components/shared/button";
 import type { VehicleDetail } from "~/lib/data/vehicle";
@@ -44,9 +47,13 @@ export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
         {/* Mobile: stacked layout */}
         <div className="flex flex-col gap-(--spacing-xs) md:hidden">
           {/* Row 1: Heading */}
-          <h1 className="text-(length:--text-xl) font-bold text-[var(--color-core-surfaces-foreground)] leading-normal">
+          <Heading
+            className="text-[length:var(--font-size-xl)] text-[var(--color-core-surfaces-foreground)] leading-normal"
+            level={1}
+            weight="bold"
+          >
             {vehicle.title}
-          </h1>
+          </Heading>
           {/* Row 2: Price/was on left, share links on right */}
           <div className="flex items-center justify-between gap-(--spacing-md)">
             <div className="flex items-baseline gap-(--spacing-xs)">
@@ -132,9 +139,13 @@ export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
           {/* Left: heading + price in one line, miles + VIN below */}
           <div className="flex min-w-0 flex-col gap-(--spacing-md)">
             <div className="flex flex-wrap items-baseline gap-x-(--spacing-md) gap-y-(--spacing-2xs)">
-              <h1 className="font-bold text-[var(--color-core-surfaces-foreground)] text-lg leading-[115%]">
+              <Heading
+                className="text-[var(--color-core-surfaces-foreground)] leading-[115%] md:text-[length:var(--font-size-lg)] lg:text-[length:var(--font-size-lg)]"
+                level={1}
+                weight="bold"
+              >
                 {vehicle.title}
-              </h1>
+              </Heading>
               <div className="flex items-baseline gap-(--spacing-xs)">
                 <span className="font-bold text-(--color-actions-accent) text-lg leading-[115%]">
                   ${vehicle.price.toLocaleString()}

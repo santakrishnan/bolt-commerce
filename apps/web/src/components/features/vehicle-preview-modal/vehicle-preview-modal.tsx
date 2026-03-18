@@ -171,7 +171,6 @@ export const VehiclePreviewModal: React.FC<VehiclePreviewModalProps> = ({
                   interiorName={vehicle.interior}
                   interiorSwatchStyle={{ backgroundColor: vehicle.interiorColorCode }}
                 />
-
                 <div className="h-[var(--border-width-1,1px)] w-full shrink-0 bg-[var(--structure-interaction-overlay-border,rgba(212,212,212,0.50))]" />
                 <VehicleDealerInfo
                   dealerLocation={vehicle.location}

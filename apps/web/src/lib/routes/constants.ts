@@ -24,14 +24,6 @@ export const ROUTES = {
   TEMP_SAMPLE_VDP: "/used-cars/toyota/camry/se/2024/1G1AF1F57A7192174",
 } as const;
 
-// ── Location ─────────────────────────────────────────────────────────
-
-/** Cookie name for the user's manual zip override (set in LocationProvider, read in layout) */
-export const MANUAL_ZIP_COOKIE = "arrow_manual_zip";
-
-/** Validates a 5-digit US zip code */
-export const ZIP_RE = /^\d{5}$/;
-
 // ── API Routes ───────────────────────────────────────────────────────
 
 export const API_ROUTES = {
@@ -40,9 +32,17 @@ export const API_ROUTES = {
   EVENTS: "/api/events",
   EVENTS_TRACK: "/api/events/track",
   SEARCH: "/api/search",
+  SEARCH_VEHICLE: (id: string) => `/api/search/vehicle/${encodeURIComponent(id)}`,
+  SEARCH_DEALER: (vin: string) => `/api/search/dealer/${encodeURIComponent(vin)}`,
   VISITOR_PROFILE: "/api/visitor-profile",
 
-  // ── Saved Registry (proxy → BED) ───────────────────────────────
+  // ── Saved Registry (proxy -> BED) ───────────────────────────────
   SAVED_VEHICLES: "/api/saved-registry/vehicles",
   SEARCH_HISTORY: "/api/saved-registry/search-history",
 } as const;
+
+/** Cookie name for the user's manual zip override (set in LocationProvider, read in layout) */
+export const MANUAL_ZIP_COOKIE = "arrow_manual_zip";
+
+/** Validates a 5-digit US zip code */
+export const ZIP_RE = /^\d{5}$/;

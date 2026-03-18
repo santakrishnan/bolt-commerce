@@ -12,5 +12,6 @@ import * as flags from "~/lib/flags/flags";
 import * as vdpFlags from "~/lib/flags/vdp-flags";
 
 export const GET = createFlagsDiscoveryEndpoint(() => {
-  return getProviderData({ ...flags, ...vdpFlags });
+  const { getUserInfo, ...filteredFlags } = { ...flags, ...vdpFlags };
+  return getProviderData(filteredFlags);
 });

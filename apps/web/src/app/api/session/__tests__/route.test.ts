@@ -19,6 +19,8 @@ const mockEnv = {
 };
 
 describe("Session API", () => {
+  const env = process.env as Record<string, string | undefined>;
+
   beforeEach(() => {
     vi.clearAllMocks();
     Object.assign(process.env, mockEnv);
@@ -218,8 +220,8 @@ describe("Session API", () => {
 
   describe("Cookie Security", () => {
     it("should set secure flag in production", async () => {
-      const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = "production";
+      const originalEnv = env.NODE_ENV;
+      env.NODE_ENV = "production";
 
       const request = new NextRequest("http://localhost:3000/api/session", {
         method: "POST",
@@ -236,11 +238,11 @@ describe("Session API", () => {
       expect(sessionCookie?.secure).toBe(true);
       expect(fpCookie?.secure).toBe(true);
 
-      process.env.NODE_ENV = originalEnv;
+      env.NODE_ENV = originalEnv;
     });
 
     it("should not set secure flag in development", async () => {
-      process.env.NODE_ENV = "development";
+      env.NODE_ENV = "development";
 
       const request = new NextRequest("http://localhost:3000/api/session", {
         method: "POST",

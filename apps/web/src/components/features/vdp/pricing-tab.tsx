@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, cn } from "@tfs-ucmp/ui";
+import { Button, cn, Heading } from "@tfs-ucmp/ui";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
@@ -20,9 +20,12 @@ export function PricingTab({ pricingData, priceHistory }: PricingTabProps) {
     <>
       <div className="rounded-t-lg md:px-[var(--spacing-md)] lg:mb-[var(--spacing-2xl)] lg:px-[var(--spacing-xl)]">
         <div className="mb-[var(--spacing-lg)] flex flex-col gap-[var(--spacing-md)] sm:flex-row sm:items-center sm:justify-between md:px-[var(--spacing-xl)] lg:px-0">
-          <h3 className="text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)]font-semibold text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-[var(--color-core-surface-foreground)] lg:leading-heading">
+          <Heading
+            className="text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)]font-semibold text-body leading-heading md:text-[length:var(--text-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-[var(--color-core-surface-foreground)] lg:leading-heading"
+            level={3}
+          >
             Pricing
-          </h3>
+          </Heading>
           <div className="hidden flex-wrap items-center text-[length:var(--font-size-sm)] sm:flex">
             <div className="flex items-center gap-[var(--spacing-xs)]">
               <Image

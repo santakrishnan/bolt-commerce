@@ -2,6 +2,7 @@ import {
   Button,
   cn,
   DamageReportIcon,
+  Heading,
   NoDamageIcon,
   OdometerIcon,
   PreviousOwnersIcon,
@@ -22,9 +23,12 @@ export function HistoryTab({ historyData }: HistoryTabProps) {
     <div className="rounded-lg pt-0">
       <div className="mb-[var(--spacing-xl)] flex flex-col justify-between gap-[var(--spacing-lg)] md:flex-row md:px-[var(--spacing-xl)] lg:mb-[var(--spacing-2xl)] lg:items-stretch lg:gap-0 lg:border-b-0 lg:px-[var(--spacing-xl)] lg:pb-0">
         <div className="flex shrink-0 flex-col justify-centermd:pr-[var(--spacing-lg)]">
-          <h3 className="mb-[var(--spacing-2xs)] font-semibold text-[length:var(--font-size-lg)] text-[var(--color-core-surface-foreground)] text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:leading-heading">
+          <Heading
+            className="mb-[var(--spacing-2xs)] font-semibold text-[length:var(--font-size-lg)] text-[var(--color-core-surface-foreground)] text-body leading-heading lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:leading-heading"
+            level={3}
+          >
             Vehicle History
-          </h3>
+          </Heading>
           <p className="font-semibold text-[length:var(--font-size-sm)] text-[var(--color-states-muted-foreground)] capitalize leading-normal">
             VIN:{" "}
             <span className="font-normal text-[length:var(--font-size-sm)] text-[var(--color-core-surface-foreground)] leading-normal">

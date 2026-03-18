@@ -3,6 +3,7 @@ import {
   ColorsIcon,
   cn,
   EngineIcon,
+  Heading,
   MarkerPinIcon,
   MileageIcon,
   MPGIcon,
@@ -51,9 +52,13 @@ export function OverviewTab({ specs }: OverviewTabProps) {
     <div className="rounded-lg">
       {/* Header with title and button */}
       <div className="mb-[var(--spacing-lg)] flex items-center justify-between md:pr-[var(--spacing-xl)] lg:mb-[var(--spacing-2xl)]">
-        <h3 className="font-semibold text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)] text-body leading-heading md:px-[var(--spacing-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-heading">
+        <Heading
+          className="font-semibold text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)] text-body leading-heading md:px-[var(--spacing-xl)] md:text-[length:var(--font-size-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-heading"
+          level={3}
+          weight="semibold"
+        >
           Overview
-        </h3>
+        </Heading>
         <AppButton size="md" variant="tertiary">
           View All Specs
         </AppButton>

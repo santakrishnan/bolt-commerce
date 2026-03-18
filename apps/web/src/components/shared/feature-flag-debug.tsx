@@ -1,18 +1,15 @@
 "use client";
 
 import { Heading } from "@tfs-ucmp/ui";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCookie } from "~/lib/cookie-cache";
 import { type FeatureFlags, FLAG_COOKIE_NAME, mockUsers } from "~/lib/flags/config";
-import { ROUTES } from "~/lib/routes/constants";
 
 /**
  * FeatureFlagDebug - A floating debug panel for testing feature flags
- * Only visible in development mode. Hidden on VDP pages (VehicleStatusFAB is shown there instead).
+ * Only visible in development mode.
  */
 export function FeatureFlagDebug() {
-  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<string>("firstTimeVisitor");
 
@@ -39,24 +36,10 @@ export function FeatureFlagDebug() {
       description: "Authenticated, both cards need action (not prequalified + no trade-in).",
     },
     {
-      key: "prequalifiedNoTrade",
-      label: "Card Test: Prequalified + No Trade",
-      description: "Authenticated, prequalified card completed, trade-in card needs action.",
-    },
-    {
-      key: "notPrequalifiedWithTrade",
-      label: "Card Test: Not Prequalified + Has Trade",
-      description: "Authenticated, prequalified card needs action, trade-in card completed.",
-    },
-    {
-      key: "unauthPrequalifiedWithTrade",
-      label: "Card Test: Unauth Prequalified + Trade",
-      description: "Unauthenticated, prequalified card completed, trade-in card completed.",
-    },
-    {
-      key: "unauthNotPrequalifiedNoTrade",
-      label: "Card Test: Unauth Not Prequalified",
-      description: "Unauthenticated, both cards need action (not prequalified + no trade-in).",
+      key: "cardTestPrequalTradeInOffer",
+      label: "Card Test - Prequal And Trade-In Offer",
+      description:
+        "Shows Get Pre-Qualified, Get My Trade-In Offer, and Schedule Test Drive on VDP.",
     },
   ];
 
@@ -69,11 +52,6 @@ export function FeatureFlagDebug() {
       localStorage.setItem(FLAG_COOKIE_NAME, value);
     }
   }, []);
-
-  // Hide on VDP pages — VehicleStatusFAB handles flags there
-  if (pathname?.startsWith(`${ROUTES.USED_CARS}/`)) {
-    return null;
-  }
 
   const handleUserChange = (userType: string) => {
     // Set cookie (expires in 1 day = 86400 seconds) using Cookie Store API

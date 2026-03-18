@@ -1,35 +1,47 @@
 "use client";
 
 import Image from "next/image";
+import { ActionCard } from "~/components/shared/action-card";
 import { AppButton } from "~/components/shared/button";
 
-export const CardPrequalify = () => {
-  return (
-    <div className="flex flex-col gap-[var(--spacing-md)] border-[color:var(--color-structure-interaction-subtle-border)]">
-      <div className="center flex gap-[var(--spacing-md)]">
-        <div className="flex items-center justify-center">
+interface PrequalifyCardProps {
+  buttonText?: string;
+  description?: string;
+  detailed?: boolean;
+  title?: string;
+}
+
+export const PrequalifyCard = ({
+  buttonText = "Get started",
+  detailed = false,
+  title = "Know Your Buying Power",
+  description = "Get pre-qualified without any impact to your credit",
+}: PrequalifyCardProps) => {
+  if (detailed) {
+    return (
+      <ActionCard
+        buttonClassName="w-full rounded-full"
+        buttonSize="md"
+        buttonText={buttonText}
+        buttonVariant="primary"
+        description={description}
+        icon={
           <Image
             alt="Arrow inspected icon"
-            className="h-[var(--size-avatar-sm)] w-[var(--size-avatar-sm)]"
+            className="h-(--size-avatar-sm) w-(--size-avatar-sm)"
             height={32}
             src="/images/vdp/Inspected-red.svg"
             width={32}
           />
-        </div>
-        <div className="flex flex-col gap-[calc(var(--spacing-5)/2)]">
-          <p className="font-[var(--font-weight-semibold)] text-[length:var(--text-sm)] text-[var(--color-text-primary)] leading-[130%] tracking-[var(--tracking-tight)]">
-            Know Your Buying Power
-          </p>
-          <p className="font-[var(--font-weight-normal)] text-[length:var(--text-xs)] text-[var(--color-body-muted)] leading-normal">
-            Get pre-qualified without any impact to your credit
-          </p>
-        </div>
-      </div>
-      <div className="bg-[var(--color-surface)] pb-[var(--spacing-5)] lg:block lg:pb-0">
-        <AppButton className="w-full" size="md" variant="primary">
-          Get started
-        </AppButton>
-      </div>
-    </div>
+        }
+        title={title}
+      />
+    );
+  }
+
+  return (
+    <AppButton className="w-full rounded-full" size="md" variant="primary">
+      {buttonText}
+    </AppButton>
   );
 };

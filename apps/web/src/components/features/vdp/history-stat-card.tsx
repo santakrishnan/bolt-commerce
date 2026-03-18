@@ -1,3 +1,4 @@
+import { Heading } from "@tfs-ucmp/ui";
 import type { ReactNode } from "react";
 
 interface HistoryStatCardProps {
@@ -17,9 +18,12 @@ export function HistoryStatCard({ icon, label, value }: HistoryStatCardProps) {
         {icon}
       </div>
       <div>
-        <h4 className="pb-[var(--spacing-2xs)] font-normal text-[length:var(--font-size-sm)] text-body-muted leading-5">
+        <Heading
+          className="pb-[var(--spacing-2xs)] font-normal text-[length:var(--font-size-sm)] text-body-muted leading-5 md:text-[length:var(--font-size-sm)] lg:text-[length:var(--font-size-sm]"
+          level={4}
+        >
           {label}
-        </h4>
+        </Heading>
         <p className="font-semibold text-[length:var(--font-size-md)] text-body leading-5">
           {value}
         </p>

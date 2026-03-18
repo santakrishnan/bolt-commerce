@@ -26,7 +26,7 @@ export const FilterSection = ({
         className="flex h-auto w-full items-center justify-between px-4 py-4 transition-colors hover:bg-gray-50"
         onClick={onToggle}
         type="button"
-        variant="ghost"
+        variant="search"
       >
         <span className="font-semibold text-[length:var(--text-md)] text-[var(--color-brand-text-primary)] leading-normal">
           {title}

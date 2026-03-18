@@ -23,7 +23,7 @@ export function fetchBecauseYouViewedCars(): Vehicle[] {
 
 // NOTE: `becauseViewedVehicles` is intentionally a separate copy of the
 // mock dataset so this API does not reference `mockVehicles` directly.
-export const becauseViewedVehicles: Vehicle[] = [
+export const becauseViewedVehicles = [
   {
     id: 1,
     title: "2023 Toyota Corolla Cross",
@@ -479,4 +479,4 @@ export const becauseViewedVehicles: Vehicle[] = [
     intColorName: "Moonstone",
     intColorCode: "#9EA6AD",
   },
-];
+] as Vehicle[];

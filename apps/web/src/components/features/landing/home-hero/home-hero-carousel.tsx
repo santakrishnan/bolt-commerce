@@ -38,10 +38,6 @@ export function HomeHeroCarousel({
     return () => clearInterval(interval);
   }, [isPaused, slides.length, autoAdvanceMs]);
 
-  const _goToSlide = (index: number) => {
-    setCurrentIndex(index);
-  };
-
   return (
     <section aria-label="Image carousel" className="absolute inset-0">
       <button

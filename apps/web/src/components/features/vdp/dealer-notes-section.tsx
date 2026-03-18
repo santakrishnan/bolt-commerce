@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, cn } from "@tfs-ucmp/ui";
+import { Card, cn, Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import type { DealerNotes } from "../../../lib/data/dealer/dealer-data";
 import { sampleDealerNotes } from "../../../lib/data/dealer/dealer-data";
@@ -20,9 +20,13 @@ export function DealerNotesSection({ data = sampleDealerNotes }: DealerNotesSect
         <div className="flex h-full flex-col gap-[var(--spacing-md)] p-[var(--spacing-lg)] pb-[var(--spacing-xl)] lg:flex-row lg:items-center lg:gap-[var(--spacing-3xl)] lg:p-[var(--spacing-xl)]">
           {/* Text Content */}
           <div className="flex-1">
-            <h2 className="font-semibold text-[length:var(--font-size-lg)] text-[var(--color-core-surfaces-foreground)] lg:mb-[var(--spacing-xl)]">
+            <Heading
+              className="text-[length:var(--font-size-lg)] text-[var(--color-core-surfaces-foreground)] lg:mb-[var(--spacing-xl)]"
+              level={2}
+              weight="semibold"
+            >
               Dealer Notes
-            </h2>
+            </Heading>
             <p className="font-normal text-[length:var(--font-size-sm)] text-[var(--color-states-muted-foreground)] leading-relaxed lg:text-[length:var(--font-size-md)]">
               {data.vehicleDescription}
             </p>

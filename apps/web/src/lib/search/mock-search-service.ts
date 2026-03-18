@@ -440,112 +440,151 @@ function getVehicleYearBucket(year: number): string {
  * computeFacetCounts). availableFilters is a by-product of the count loop —
  * a value "existing" simply means its count is > 0.
  */
+function countFacets(
+  v: Vehicle,
+  facetAcc: {
+    bodyType: Record<string, number>;
+    fuelType: Record<string, number>;
+    drivetrain: Record<string, number>;
+    transmission: Record<string, number>;
+    priceRange: Record<string, number>;
+    mileageRange: Record<string, number>;
+    yearRange: Record<string, number>;
+    exteriorColor: Record<string, number>;
+    interiorColor: Record<string, number>;
+  }
+) {
+  const priceBucket = getVehiclePriceBucket(v.price);
+  const mileageBucket = getVehicleMileageBucket(v.mileage);
+  const yearBucket = getVehicleYearBucket(v.year);
+
+  facetAcc.bodyType[v.bodyType] = (facetAcc.bodyType[v.bodyType] ?? 0) + 1;
+  facetAcc.fuelType[v.fuelType] = (facetAcc.fuelType[v.fuelType] ?? 0) + 1;
+  facetAcc.drivetrain[v.drivetrain] = (facetAcc.drivetrain[v.drivetrain] ?? 0) + 1;
+  facetAcc.transmission[v.transmission] = (facetAcc.transmission[v.transmission] ?? 0) + 1;
+  facetAcc.exteriorColor[v.extColorName] = (facetAcc.exteriorColor[v.extColorName] ?? 0) + 1;
+  facetAcc.interiorColor[v.intColorName] = (facetAcc.interiorColor[v.intColorName] ?? 0) + 1;
+  facetAcc.priceRange[priceBucket] = (facetAcc.priceRange[priceBucket] ?? 0) + 1;
+  facetAcc.mileageRange[mileageBucket] = (facetAcc.mileageRange[mileageBucket] ?? 0) + 1;
+  facetAcc.yearRange[yearBucket] = (facetAcc.yearRange[yearBucket] ?? 0) + 1;
+}
+
+interface FilterAccumulator {
+  bodyStyles: Set<string>;
+  comfortFeatures: Set<string>;
+  drivetrains: Set<string>;
+  exteriorColors: Set<string>;
+  exteriorFeatures: Set<string>;
+  fuelTypes: Set<string>;
+  hasInspection160: boolean;
+  interiorColors: Set<string>;
+  models: Set<string>;
+  performanceFeatures: Set<string>;
+  safetyFeatures: Set<string>;
+  seatingCapacity: Set<string>;
+  techFeatures: Set<string>;
+  transmissions: Set<string>;
+}
+
+function accumulateAvailableFilters(v: Vehicle, filterAcc: FilterAccumulator) {
+  filterAcc.bodyStyles.add(v.bodyType);
+  filterAcc.fuelTypes.add(v.fuelType);
+  filterAcc.drivetrains.add(v.drivetrain);
+  filterAcc.transmissions.add(v.transmission);
+  filterAcc.exteriorColors.add(v.extColorName);
+  filterAcc.interiorColors.add(v.intColorName);
+  filterAcc.models.add(v.model);
+  if (v.inspection160) {
+    filterAcc.hasInspection160 = true;
+  }
+  for (const f of v.features.safety) {
+    filterAcc.safetyFeatures.add(f);
+  }
+  for (const f of v.features.comfort) {
+    filterAcc.comfortFeatures.add(f);
+  }
+  for (const f of v.features.tech) {
+    filterAcc.techFeatures.add(f);
+  }
+  for (const f of v.features.exterior) {
+    filterAcc.exteriorFeatures.add(f);
+  }
+  for (const f of v.features.performance) {
+    filterAcc.performanceFeatures.add(f);
+  }
+  for (const s of v.seatingCapacity) {
+    filterAcc.seatingCapacity.add(s);
+  }
+}
+
 function computeFiltersAndFacets(vehicles: Vehicle[]): {
   availableFilters: AvailableFilters;
   facetCounts: FacetCounts;
 } {
   // ── Facet count accumulators ──
-  const bodyTypeCount: Record<string, number> = {};
-  const fuelTypeCount: Record<string, number> = {};
-  const drivetrainCount: Record<string, number> = {};
-  const transmissionCount: Record<string, number> = {};
-  const priceRangeCount: Record<string, number> = {};
-  const mileageRangeCount: Record<string, number> = {};
-  const yearRangeCount: Record<string, number> = {};
-  const exteriorColorCount: Record<string, number> = {};
-  const interiorColorCount: Record<string, number> = {};
+  const facetAcc = {
+    bodyType: {} as Record<string, number>,
+    fuelType: {} as Record<string, number>,
+    drivetrain: {} as Record<string, number>,
+    transmission: {} as Record<string, number>,
+    priceRange: {} as Record<string, number>,
+    mileageRange: {} as Record<string, number>,
+    yearRange: {} as Record<string, number>,
+    exteriorColor: {} as Record<string, number>,
+    interiorColor: {} as Record<string, number>,
+  };
 
   // ── Available filter set accumulators ──
-  const bodyStyles = new Set<string>();
-  const fuelTypes = new Set<string>();
-  const drivetrains = new Set<string>();
-  const transmissions = new Set<string>();
-  const exteriorColors = new Set<string>();
-  const interiorColors = new Set<string>();
-  const models = new Set<string>();
-  const safetyFeatures = new Set<string>();
-  const comfortFeatures = new Set<string>();
-  const techFeatures = new Set<string>();
-  const exteriorFeatures = new Set<string>();
-  const perfFeatures = new Set<string>();
-  const seatingCap = new Set<string>();
-  let hasInspection160 = false;
+  const filterAcc = {
+    bodyStyles: new Set<string>(),
+    fuelTypes: new Set<string>(),
+    drivetrains: new Set<string>(),
+    transmissions: new Set<string>(),
+    exteriorColors: new Set<string>(),
+    interiorColors: new Set<string>(),
+    models: new Set<string>(),
+    safetyFeatures: new Set<string>(),
+    comfortFeatures: new Set<string>(),
+    techFeatures: new Set<string>(),
+    exteriorFeatures: new Set<string>(),
+    performanceFeatures: new Set<string>(),
+    seatingCapacity: new Set<string>(),
+    hasInspection160: false,
+  };
 
   for (const v of vehicles) {
-    // Facet counts (slug keys — resolved to display strings in UI)
-    const priceBucket = getVehiclePriceBucket(v.price);
-    const mileageBucket = getVehicleMileageBucket(v.mileage);
-    const yearBucket = getVehicleYearBucket(v.year);
-
-    bodyTypeCount[v.bodyType] = (bodyTypeCount[v.bodyType] ?? 0) + 1;
-    fuelTypeCount[v.fuelType] = (fuelTypeCount[v.fuelType] ?? 0) + 1;
-    drivetrainCount[v.drivetrain] = (drivetrainCount[v.drivetrain] ?? 0) + 1;
-    transmissionCount[v.transmission] = (transmissionCount[v.transmission] ?? 0) + 1;
-    exteriorColorCount[v.extColorName] = (exteriorColorCount[v.extColorName] ?? 0) + 1;
-    interiorColorCount[v.intColorName] = (interiorColorCount[v.intColorName] ?? 0) + 1;
-    priceRangeCount[priceBucket] = (priceRangeCount[priceBucket] ?? 0) + 1;
-    mileageRangeCount[mileageBucket] = (mileageRangeCount[mileageBucket] ?? 0) + 1;
-    yearRangeCount[yearBucket] = (yearRangeCount[yearBucket] ?? 0) + 1;
-
-    // Available filters (derived from the same pass — no second loop needed)
-    bodyStyles.add(v.bodyType);
-    fuelTypes.add(v.fuelType);
-    drivetrains.add(v.drivetrain);
-    transmissions.add(v.transmission);
-    exteriorColors.add(v.extColorName);
-    interiorColors.add(v.intColorName);
-    models.add(v.model);
-    if (v.inspection160) {
-      hasInspection160 = true;
-    }
-    for (const f of v.features.safety) {
-      safetyFeatures.add(f);
-    }
-    for (const f of v.features.comfort) {
-      comfortFeatures.add(f);
-    }
-    for (const f of v.features.tech) {
-      techFeatures.add(f);
-    }
-    for (const f of v.features.exterior) {
-      exteriorFeatures.add(f);
-    }
-    for (const f of v.features.performance) {
-      perfFeatures.add(f);
-    }
-    for (const s of v.seatingCapacity) {
-      seatingCap.add(s);
-    }
+    countFacets(v, facetAcc);
+    accumulateAvailableFilters(v, filterAcc);
   }
 
   return {
     availableFilters: {
       totalCount: vehicles.length,
-      hasInspection160,
-      bodyStyles: [...bodyStyles],
-      fuelTypes: [...fuelTypes],
-      drivetrains: [...drivetrains],
-      transmissions: [...transmissions],
-      exteriorColors: [...exteriorColors],
-      interiorColors: [...interiorColors],
-      models: [...models],
-      safetyFeatures: [...safetyFeatures],
-      comfortFeatures: [...comfortFeatures],
-      techFeatures: [...techFeatures],
-      exteriorFeatures: [...exteriorFeatures],
-      performanceFeatures: [...perfFeatures],
-      seatingCapacity: [...seatingCap],
+      hasInspection160: filterAcc.hasInspection160,
+      bodyStyles: [...filterAcc.bodyStyles],
+      fuelTypes: [...filterAcc.fuelTypes],
+      drivetrains: [...filterAcc.drivetrains],
+      transmissions: [...filterAcc.transmissions],
+      exteriorColors: [...filterAcc.exteriorColors],
+      interiorColors: [...filterAcc.interiorColors],
+      models: [...filterAcc.models],
+      safetyFeatures: [...filterAcc.safetyFeatures],
+      comfortFeatures: [...filterAcc.comfortFeatures],
+      techFeatures: [...filterAcc.techFeatures],
+      exteriorFeatures: [...filterAcc.exteriorFeatures],
+      performanceFeatures: [...filterAcc.performanceFeatures],
+      seatingCapacity: [...filterAcc.seatingCapacity],
     },
     facetCounts: {
-      bodyType: bodyTypeCount,
-      fuelType: fuelTypeCount,
-      drivetrain: drivetrainCount,
-      transmission: transmissionCount,
-      priceRange: priceRangeCount,
-      mileageRange: mileageRangeCount,
-      yearRange: yearRangeCount,
-      exteriorColor: exteriorColorCount,
-      interiorColor: interiorColorCount,
+      bodyType: facetAcc.bodyType,
+      fuelType: facetAcc.fuelType,
+      drivetrain: facetAcc.drivetrain,
+      transmission: facetAcc.transmission,
+      priceRange: facetAcc.priceRange,
+      mileageRange: facetAcc.mileageRange,
+      yearRange: facetAcc.yearRange,
+      exteriorColor: facetAcc.exteriorColor,
+      interiorColor: facetAcc.interiorColor,
     },
   };
 }

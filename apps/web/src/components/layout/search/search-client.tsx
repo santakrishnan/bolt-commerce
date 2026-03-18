@@ -374,6 +374,7 @@ export function SearchClient({ vehicles }: SearchClientProps) {
             searchQueryRef.current = q;
             setSearchQuery(q);
           }}
+          onToggleFilter={() => setIsFilterOpen(true)}
           searchQuery={searchQuery}
           vehicleCount={vehicleCount}
           vehiclesAvailable={vehicles.length}

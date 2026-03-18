@@ -2,10 +2,12 @@
 import { Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useSearchContext } from "~/components/layout/search/search-context";
 import { AppButton } from "~/components/shared/button";
 import { SearchBar } from "~/components/shared/search-bar";
 import { MockAutocompleteService } from "~/components/shared/search-bar/services/mock-autocomplete";
 import { CustomChips } from "../../shared";
+import { SORT_LABELS } from "./sort-labels";
 import type { ActiveFilter } from "./vehicle-results";
 
 // Create autocomplete service instance
@@ -56,8 +58,22 @@ export function SearchHero({
   const sectionRef = useRef<HTMLElement>(null);
   const [isHeroVisible, setIsHeroVisible] = useState(true);
   const [isStickyDropdownOpen, setIsStickyDropdownOpen] = useState(false);
+  const { sortOption, setSortOption } = useSearchContext();
+  const selectRef = useRef<HTMLSelectElement | null>(null);
+  const measureRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => setLocalQuery(searchQuery), [searchQuery]);
+
+  // Recompute select width when sortOption changes (matches SRP behavior)
+  useEffect(() => {
+    if (!(measureRef.current && selectRef.current)) {
+      return;
+    }
+    const w = measureRef.current.offsetWidth;
+    if (w > 0) {
+      selectRef.current.style.width = `${w}px`;
+    }
+  }, [sortOption]);
 
   // Detect when hero scrolls out of view to show sticky bar
   useEffect(() => {
@@ -87,7 +103,7 @@ export function SearchHero({
           <div className="mx-auto flex max-w-[var(--container-2xl)] flex-col items-center justify-between gap-4 px-4 py-5 sm:flex-row sm:px-6 lg:px-20">
             {/* Left: Filter + Reset OR Vehicle count + Sort when filters applied */}
             {activeFilters.length > 0 ? (
-              <div className="flex shrink-0 items-center gap-3">
+              <div className="flex shrink-0 items-center gap-[var(--spacing-sm)]">
                 <AppButton
                   className="h-10 w-10"
                   onClick={onToggleFilter}
@@ -103,26 +119,41 @@ export function SearchHero({
                     width={16}
                   />
                 </AppButton>
-                <div className="flex flex-row items-center gap-3 md:flex-col md:items-start md:gap-0">
-                  <div className="font-bold text-[#111] text-[12px] leading-normal md:text-[16px]">
+                <div className="mx-auto flex flex-row items-center gap-[var(--spacing-sm)] md:mx-0 md:flex-col md:items-start md:gap-0">
+                  <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal md:text-[length:var(--font-size-md)]">
                     {vehicleCount} vehicles found
                   </div>
                   <span className="my-1 text-[#ccc] md:hidden">|</span>
-                  <div className="font-semibold text-[#121212] text-[12px] leading-normal">
+                  <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal">
                     Sort by:{" "}
-                    <button
-                      className="inline-flex items-center gap-1 font-medium text-black hover:underline"
-                      type="button"
-                    >
-                      Recommended{" "}
+                    <div className="inline-flex items-center gap-[var(--spacing-sm)] font-semibold">
+                      <span
+                        aria-hidden
+                        className="pointer-events-none invisible absolute whitespace-nowrap font-medium"
+                        ref={measureRef}
+                      >
+                        {SORT_LABELS[sortOption]}
+                      </span>
+                      <select
+                        className="cursor-pointer appearance-none border-none bg-transparent font-medium text-black outline-none"
+                        onChange={(e) =>
+                          setSortOption(e.target.value as "recommended" | "low-high" | "high-low")
+                        }
+                        ref={selectRef}
+                        value={sortOption}
+                      >
+                        <option value="recommended">Recommended</option>
+                        <option value="low-high">Low to High</option>
+                        <option value="high-low">High to Low</option>
+                      </select>
                       <Image
                         alt="Dropdown"
-                        className="mt-[3%] h-1.75 w-[12px]"
+                        className="h-1.75 w-[12px]"
                         height={7}
                         src="/images/dropdown-arrow.svg"
                         width={12}
                       />
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -152,7 +183,7 @@ export function SearchHero({
             )}
             {/* Right: SearchBar */}
             <div
-              className={`relative max-w-[848px] flex-1 ${isStickyDropdownOpen ? "z-[65]" : ""}`}
+              className={`relative w-full min-w-0 max-w-[848px] flex-1 overflow-hidden ${isStickyDropdownOpen ? "z-[50]" : ""}`}
             >
               {activeFilters.length === 0 && (
                 <SearchBar
@@ -164,6 +195,12 @@ export function SearchHero({
                     showSearchButton: true,
                     enableSearchHistory: false,
                     quickFilters: suggestedPills,
+                    customPlaceholder: (
+                      <>
+                        SUV under 35K with{" "}
+                        <span className="font-[var(--font-weight-bold)]">low miles</span>.
+                      </>
+                    ),
                   }}
                   onOpenChange={(open) => {
                     setIsStickyDropdownOpen(open);
@@ -172,6 +209,11 @@ export function SearchHero({
                       setIsDropdownOpen(false);
                     }
                     onBlurOverlayChange?.(open);
+                  }}
+                  onQuickFilterSelect={(filter) => {
+                    setLocalQuery(filter);
+                    onSearchChange(filter);
+                    onSearch();
                   }}
                   onSubmit={handleSubmit}
                   onValueChange={setLocalQuery}
@@ -224,7 +266,9 @@ export function SearchHero({
             )}
 
             {/* Search Bar */}
-            <div className={`relative max-w-[848px] flex-1 pt-4 ${isDropdownOpen ? "z-50" : ""}`}>
+            <div
+              className={`relative w-full min-w-0 max-w-[848px] flex-1 overflow-hidden pt-4 ${isDropdownOpen ? "z-50" : ""}`}
+            >
               {/* SearchBar with Pills Suggestions */}
               <SearchBar
                 autocompleteService={autocompleteService}
@@ -236,6 +280,12 @@ export function SearchHero({
                   showSearchButton: true,
                   enableSearchHistory: false,
                   quickFilters: showQuickFilters ? suggestedPills : undefined,
+                  customPlaceholder: (
+                    <>
+                      SUV under 35K with{" "}
+                      <span className="font-[var(--font-weight-bold)]">low miles</span>.
+                    </>
+                  ),
                 }}
                 onOpenChange={(open) => {
                   setIsDropdownOpen(open);

@@ -11,6 +11,7 @@ import type { Vehicle } from "~/components/shared/types";
 import { getUsedCarsSrpNoResultsMessage } from "~/lib/messages/used-cars";
 import { getVehicleEstimation } from "~/lib/search/mock-vehicles";
 import CarCard from "../card/car-card";
+import { SORT_LABELS } from "./sort-labels";
 
 function vehicleToCarCardProps(vehicle: Vehicle) {
   const parts = vehicle.miles.split(" - ");
@@ -24,7 +25,7 @@ function vehicleToCarCardProps(vehicle: Vehicle) {
     badge = { type: "priceDrop", text: "Price Drop" };
   }
 
-  const estimation = getVehicleEstimation(vehicle);
+  const estimation = getVehicleEstimation(vehicle as Parameters<typeof getVehicleEstimation>[0]);
 
   return {
     carImage: vehicle.image,
@@ -86,11 +87,8 @@ export function VehicleResults({
   const activeFilterCount = activeFilters.length;
   const { sortOption, setSortOption } = useSearchContext();
 
-  const sortLabels: Record<string, string> = {
-    recommended: "Recommended",
-    "low-high": "Low to High",
-    "high-low": "High to Low",
-  };
+  // Use shared sort label map for consistency with other components
+  const sortLabels = SORT_LABELS;
   const selectRef = useRef<HTMLSelectElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
   // biome-ignore lint/correctness/useExhaustiveDependencies: Recompute select width when sortBy changes.
@@ -196,9 +194,9 @@ export function VehicleResults({
                   {vehicleCount} vehicles found
                 </div>
                 <span className="mb-[var(--spacing-2xs)] text-[#ccc] md:hidden">|</span>
-                <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal md:text-[length:var(--font-size-md)]">
+                <div className="font-[var(--font-family,'Toyota_Type')] font-semibold text-[length:var(--font-size-xs)] text-[var(--color-core-surfaces-foreground)] leading-normal">
                   Sort by:{" "}
-                  <div className="inline-flex items-center gap-[var(--spacing-sm)]">
+                  <div className="inline-flex items-center gap-[var(--spacing-sm)] font-semibold">
                     {/* Hidden span to measure rendered text width of selected option */}
                     <span
                       aria-hidden
@@ -221,7 +219,7 @@ export function VehicleResults({
                     </select>
                     <Image
                       alt="Dropdown"
-                      className="mt-[3%] h-1.75 w-[var(--spacing-sm)]"
+                      className="h-1.75 w-[var(--spacing-sm)]"
                       height={7}
                       src="/images/dropdown-arrow.svg"
                       width={12}

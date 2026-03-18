@@ -1,7 +1,7 @@
 "use client";
 
 import { Input, useDebounce } from "@tfs-ucmp/ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
@@ -12,12 +12,13 @@ interface SearchBarProps {
  * SearchBar - Client Component
  * Search input with debouncing
  */
-export function SearchBar({ placeholder = "Search...", onSearch: _onSearch }: SearchBarProps) {
+export function SearchBar({ placeholder = "Search...", onSearch }: SearchBarProps) {
   const [search, setSearch] = useState("");
-  const _debouncedSearch = useDebounce(search, 300);
+  const debouncedSearch = useDebounce(search, 300);
 
-  // Effect would go here to call onSearch with debouncedSearch
-  // useEffect(() => { onSearch?.(debouncedSearch) }, [debouncedSearch, onSearch])
+  useEffect(() => {
+    onSearch?.(debouncedSearch);
+  }, [debouncedSearch, onSearch]);
 
   return (
     <div className="relative">

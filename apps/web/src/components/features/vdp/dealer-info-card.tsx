@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, cn, StarIcon } from "@tfs-ucmp/ui";
+import { Card, CardContent, cn, Heading, StarIcon } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import { AppButton } from "~/components/shared/button";
 import type { DealerInfo } from "../../../lib/data/dealer/dealer-data";
@@ -12,10 +12,13 @@ interface DealerInfoCardProps {
   onTestDriveClick?: () => void;
 }
 
+// TODO: Replace placeholder no-op handlers with real View Reviews / Test Drive actions.
+const noop = () => undefined;
+
 export function DealerInfoCard({
   dealer,
-  onReviewsClick,
-  onTestDriveClick,
+  onReviewsClick = noop,
+  onTestDriveClick = noop,
   className,
 }: DealerInfoCardProps) {
   return (
@@ -62,9 +65,13 @@ export function DealerInfoCard({
           {/* Dealer Information */}
           <CardContent className="flex w-full flex-col items-start justify-center space-y-4 px-0 pb-[var(--spacing-xl)] lg:min-w-0 lg:flex-[1] lg:space-y-4 lg:p-0">
             {/* Dealer Name */}
-            <h3 className="mb-[var(--spacing-xl)] font-bold text-[length:var(--font-size-xl)] text-[var(--color-core-surfaces-foreground)] lg:text-[length:var(--font-size-lg)]">
+            <Heading
+              className="mb-[var(--spacing-xl)] text-[length:var(--font-size-xl)] text-[var(--color-core-surfaces-foreground)] lg:text-[length:var(--font-size-lg)]"
+              level={3}
+              weight="bold"
+            >
               {dealer.name}
-            </h3>
+            </Heading>
 
             {/* Location */}
             <div className="flex items-start gap-[var(--spacing-xs)]">

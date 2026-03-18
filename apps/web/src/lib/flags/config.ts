@@ -130,71 +130,12 @@ export const mockUsers: Record<string, MockUser> = {
     prequalified: false,
   },
 
-  // Card Variation: Prequalified + No Trade-In
-  prequalifiedNoTrade: {
-    id: "prequalified-no-trade-004",
-    firstName: "Michael",
-    lastName: "Chen",
-    email: "michael.chen@example.com",
-    flags: {
-      showDefaultLandingHero: false,
-      showPersonalizedHeroBanner: false,
-      customerPreQualified: true,
-      customerTestDriveScheduled: false,
-      customerTradeInSubmitted: false,
-      redirectToMyGarage: true,
-    },
-    lastVisit: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
-    isAuthenticated: true,
-    prequalified: true,
-    daysRemaining: 5, // Red status (≤33%)
-  },
-
-  // Card Variation: Not Prequalified + Has Trade-In
-  notPrequalifiedWithTrade: {
-    id: "not-prequalified-with-trade-005",
-    firstName: "Lisa",
-    lastName: "Martinez",
-    email: "lisa.martinez@example.com",
-    flags: {
-      showDefaultLandingHero: false,
-      showPersonalizedHeroBanner: false,
-      customerPreQualified: false,
-      customerTestDriveScheduled: false,
-      customerTradeInSubmitted: true,
-      redirectToMyGarage: true,
-    },
-    lastVisit: Date.now() - 3 * 60 * 60 * 1000, // 3 hours ago
-    isAuthenticated: true,
-    prequalified: false,
-  },
-
-  // Card Variation: Prequalified + Has Trade-In (unauthenticated)
-  unauthPrequalifiedWithTrade: {
-    id: "unauth-prequalified-with-trade-006",
-    firstName: "David",
-    lastName: "Brown",
-    email: "david.brown@example.com",
-    flags: {
-      showDefaultLandingHero: false,
-      showPersonalizedHeroBanner: false,
-      customerPreQualified: true,
-      customerTestDriveScheduled: false,
-      customerTradeInSubmitted: true,
-      redirectToMyGarage: true,
-    },
-    lastVisit: Date.now() - 8 * 60 * 60 * 1000, // 8 hours ago
-    isAuthenticated: false,
-    prequalified: true,
-    daysRemaining: 20, // Green status (>50%)
-  },
-
-  // Card Variation: Not Prequalified + No Trade-In (unauthenticated)
-  unauthNotPrequalifiedNoTrade: {
-    id: "unauth-not-prequalified-no-trade-007",
-    firstName: "Jennifer",
-    lastName: "Taylor",
-    email: "jennifer.taylor@example.com",
+  // Card test scenario - shows prequal + trade-in CTAs and schedule test drive on VDP
+  cardTestPrequalTradeInOffer: {
+    id: "card-test-prequal-trade-in-offer-004",
+    firstName: "Card",
+    lastName: "Test",
+    email: "card.test@example.com",
     flags: {
       showDefaultLandingHero: false,
       showPersonalizedHeroBanner: false,
@@ -203,8 +144,8 @@ export const mockUsers: Record<string, MockUser> = {
       customerTradeInSubmitted: false,
       redirectToMyGarage: true,
     },
-    lastVisit: Date.now() - 10 * 60 * 60 * 1000, // 10 hours ago
-    isAuthenticated: false,
+    lastVisit: Date.now() - 3 * 60 * 60 * 1000,
+    isAuthenticated: true,
     prequalified: false,
   },
 };
@@ -215,7 +156,7 @@ export const mockUsers: Record<string, MockUser> = {
 
 /**
  * Default user type (used as fallback)
- * Options: "firstTimeVisitor" | "returningUnauthenticated" | "authenticatedPrequalified" | "authenticatedNotPrequalified" | "prequalifiedNoTrade" | "notPrequalifiedWithTrade" | "unauthPrequalifiedWithTrade" | "unauthNotPrequalifiedNoTrade"
+ * Options: "firstTimeVisitor" | "returningUnauthenticated" | "authenticatedPrequalified" | "authenticatedNotPrequalified" | "cardTestPrequalTradeInOffer"
  */
 export const DEFAULT_USER_TYPE: keyof typeof mockUsers = "firstTimeVisitor";
 

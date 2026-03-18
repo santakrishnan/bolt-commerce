@@ -1,5 +1,5 @@
-import { Heading } from "@tfs-ucmp/ui";
 import type React from "react";
+import { Heading } from "@/components/heading";
 
 export interface VehicleTitleProps {
   className?: string;
@@ -20,7 +20,11 @@ export const VehicleTitle: React.FC<VehicleTitleProps> = ({
 }) => {
   if (title) {
     return (
-      <Heading className={className} level={1} weight="bold">
+      <Heading
+        className={`${className} text-[length:var(--font-size-lg)] md:text-[length:var(--font-size-lg)] lg:text-[length:var(--font-size-2xl)]`}
+        level={1}
+        weight="bold"
+      >
         {title}
       </Heading>
     );
@@ -28,7 +32,11 @@ export const VehicleTitle: React.FC<VehicleTitleProps> = ({
 
   const trimLabel = trim ? ` ${trim}` : "";
   return (
-    <Heading className={className} level={1} weight="bold">
+    <Heading
+      className={`${className} text-[length:var(--font-size-lg)] md:text-[length:var(--font-size-lg)] lg:text-[length:var(--font-size-2xl)]`}
+      level={1}
+      weight="bold"
+    >
       {year} {make} {model}
       {trimLabel}
     </Heading>

@@ -1,7 +1,16 @@
 import { cacheLife } from "next/cache";
-import { ArrowServerError, createArrowServerClient } from "~/lib/arrow/server-api";
+import {
+  ArrowServerError,
+  type ArrowServerIds,
+  createArrowServerClient,
+} from "~/lib/arrow/server-api";
 import type { VehicleData, VinData } from "./types";
 import { fetchMockVehicleData, fetchMockVinData } from "./vdp.mocks";
+
+export interface VdpFetchOptions {
+  forwardHeaders?: Record<string, string>;
+  ids?: ArrowServerIds;
+}
 
 let _client: ReturnType<typeof createArrowServerClient> | null = null;
 
@@ -22,7 +31,7 @@ function isMockMode(): boolean {
   return !process.env.VDP_SERVICE_URL || process.env.USE_MOCK_VDP === "true";
 }
 
-export async function fetchVinData(vin: string): Promise<VinData> {
+export async function fetchVinData(vin: string, options: VdpFetchOptions = {}): Promise<VinData> {
   "use cache";
   cacheLife({ stale: 300, revalidate: 300, expire: 3600 });
 
@@ -31,7 +40,10 @@ export async function fetchVinData(vin: string): Promise<VinData> {
   }
 
   try {
-    return await getVdpClient().get<VinData>(`/vdp/vehicles/${vin}`);
+    return await getVdpClient().get<VinData>(`/vdp/vehicles/${vin}`, {
+      ids: options.ids,
+      headers: options.forwardHeaders,
+    });
   } catch (error) {
     if (error instanceof ArrowServerError) {
       console.error("[VDPService] Upstream error (vin-data):", error.message);
@@ -42,7 +54,10 @@ export async function fetchVinData(vin: string): Promise<VinData> {
   }
 }
 
-export async function fetchVehicleData(id: string): Promise<VehicleData> {
+export async function fetchVehicleData(
+  id: string,
+  options: VdpFetchOptions = {}
+): Promise<VehicleData> {
   "use cache";
   cacheLife({ stale: 300, revalidate: 300, expire: 3600 });
 
@@ -51,7 +66,10 @@ export async function fetchVehicleData(id: string): Promise<VehicleData> {
   }
 
   try {
-    return await getVdpClient().get<VehicleData>(`/vdp/vehicle-details/${id}`);
+    return await getVdpClient().get<VehicleData>(`/vdp/vehicle-details/${id}`, {
+      ids: options.ids,
+      headers: options.forwardHeaders,
+    });
   } catch (error) {
     if (error instanceof ArrowServerError) {
       console.error("[VDPService] Upstream error (vehicle-data):", error.message);

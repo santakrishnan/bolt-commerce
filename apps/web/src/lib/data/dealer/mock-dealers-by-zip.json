@@ -1,0 +1,152 @@
+{
+  "75001": {
+    "dealerInfo": {
+      "id": "toyota-plano",
+      "name": "Toyota of Plano",
+      "address": "4855 W Plano Pkwy, Plano, TX 75001",
+      "phone": "(972) 555-0101",
+      "hours": "Mon-Sat: 9:00 AM - 8:00 PM",
+      "rating": 4.7,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2022 Toyota Tacoma TRD Sport with low mileage, single owner, clean history, and recent full-service inspection by our certified technicians.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "80202": {
+    "dealerInfo": {
+      "id": "toyota-denver",
+      "name": "Toyota of Denver",
+      "address": "1600 W 38th Ave, Denver, CO 80202",
+      "phone": "(303) 555-0202",
+      "hours": "Mon-Fri: 9:00 AM - 7:00 PM",
+      "rating": 4.7,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2023 RAV4 Adventure AWD with upgraded suspension, all-weather package, and tow hitch — ready for Colorado roads.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "98101": {
+    "dealerInfo": {
+      "id": "toyota-seattle",
+      "name": "Toyota of Seattle",
+      "address": "820 Stewart St, Seattle, WA 98101",
+      "phone": "(206) 555-0303",
+      "hours": "Mon-Fri: 9:00 AM - 6:00 PM",
+      "rating": 4.8,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2022 Venza Hybrid XLE with panoramic roof, heated leather seats, and all-weather mats — exceptional condition throughout.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "10001": {
+    "dealerInfo": {
+      "id": "toyota-new-york",
+      "name": "Manhattan Toyota",
+      "address": "645 11th Ave, New York, NY 10001",
+      "phone": "(212) 555-0404",
+      "hours": "Mon-Sat: 8:00 AM - 7:00 PM",
+      "rating": 4.3,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2022 RAV4 Hybrid AWD, city-driven with premium audio, sunroof, and blind-spot monitoring — thoroughly inspected.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "60601": {
+    "dealerInfo": {
+      "id": "toyota-chicago",
+      "name": "Toyota of Chicago",
+      "address": "111 N Michigan Ave, Chicago, IL 60601",
+      "phone": "(312) 555-0505",
+      "hours": "Mon-Fri: 8:30 AM - 7:00 PM",
+      "rating": 4.6,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2021 Tacoma TRD Sport 4WD with low mileage, factory tow package, and a clean Carfax — priced to move.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "85001": {
+    "dealerInfo": {
+      "id": "toyota-phoenix",
+      "name": "Toyota of Phoenix",
+      "address": "500 E Van Buren St, Phoenix, AZ 85001",
+      "phone": "(602) 555-0606",
+      "hours": "Mon-Sat: 9:00 AM - 8:00 PM",
+      "rating": 4.5,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2023 4Runner TRD Off-Road with desert package, skid plates, and navigation — one owner, like new condition.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "90001": {
+    "dealerInfo": {
+      "id": "toyota-los-angeles",
+      "name": "Toyota of Los Angeles",
+      "address": "3520 S Figueroa St, Los Angeles, CA 90001",
+      "phone": "(213) 555-0707",
+      "hours": "Mon-Sat: 9:00 AM - 8:00 PM",
+      "rating": 4.5,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2023 Prius Prime plug-in hybrid, one careful owner, full service history, complimentary Level 2 charging cable included.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "33101": {
+    "dealerInfo": {
+      "id": "toyota-miami",
+      "name": "Toyota of Miami",
+      "address": "3000 NW 7th Ave, Miami, FL 33101",
+      "phone": "(305) 555-0808",
+      "hours": "Mon-Sat: 9:00 AM - 8:00 PM",
+      "rating": 4.4,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2022 Highlander XLE with third-row seating, sunroof, and 360-degree camera — Florida-driven, no accidents reported.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "30303": {
+    "dealerInfo": {
+      "id": "toyota-atlanta",
+      "name": "Toyota of Atlanta",
+      "address": "1000 Peachtree St NE, Atlanta, GA 30303",
+      "phone": "(404) 555-0909",
+      "hours": "Mon-Fri: 9:00 AM - 7:00 PM",
+      "rating": 4.6,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2021 Camry SE with sport package, dual-zone climate, and lane-departure warning — well-maintained with full service records.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  },
+  "37203": {
+    "dealerInfo": {
+      "id": "toyota-nashville",
+      "name": "Toyota of Nashville",
+      "address": "710 Rep. John Lewis Way N, Nashville, TN 37203",
+      "phone": "(615) 555-1010",
+      "hours": "Mon-Sat: 9:00 AM - 7:00 PM",
+      "rating": 4.5,
+      "dealershipImage": "/images/vdp/dealer.png"
+    },
+    "dealerNotes": {
+      "vehicleDescription": "2023 Corolla Cross Hybrid with Apple CarPlay, heated front seats, and safety sense — low miles and factory warranty remaining.",
+      "vehicleImage": "/images/vdp/dealer_info.png"
+    }
+  }
+}

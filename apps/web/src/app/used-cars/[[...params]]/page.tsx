@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { SearchWrapper } from "~/components/layout/search";
 import { getUsedCarsPageMetadata } from "~/lib/messages/used-cars";
 import { ROUTES } from "~/lib/routes/constants";
 import { buildUsedCarsPath, parseUsedCarsParams, type UsedCarsRoute } from "~/lib/routes/used-cars";
-import { fetchVehicleData, fetchVinData } from "~/services/vdp";
+import { getVehicleBundleFromApi } from "~/services/vdp-api";
 import { UsedCarsDetails } from "./views/details";
 
 interface Props {
@@ -18,6 +19,31 @@ function resolveRoute(segments: string[] | undefined): UsedCarsRoute {
     notFound();
   }
   return route;
+}
+
+function getRequestOrigin(requestHeaders: Headers): string {
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const proto = requestHeaders.get("x-forwarded-proto") ?? "http";
+
+  if (!host) {
+    throw new Error("Unable to resolve request host for VDP API fetch");
+  }
+
+  return `${proto}://${host}`;
+}
+
+function buildProxyHeaders(requestHeaders: Headers): Record<string, string> {
+  const forwarded: Record<string, string> = {};
+
+  const passthroughHeaders = ["cookie", "user-agent", "accept-language", "referer"] as const;
+  for (const name of passthroughHeaders) {
+    const value = requestHeaders.get(name);
+    if (value) {
+      forwarded[name] = value;
+    }
+  }
+
+  return forwarded;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -49,8 +75,13 @@ export default async function UsedCarsPage({ params, searchParams }: Props) {
 
   // ── Details (VDP) ──
   if (route.type === "details") {
-    const vinData = await fetchVinData(route.vin);
-    const vehicleData = await fetchVehicleData(vinData.vehicle.id);
+    const requestHeaders = await headers();
+    const apiOptions = {
+      baseUrl: getRequestOrigin(requestHeaders),
+      headers: buildProxyHeaders(requestHeaders),
+    };
+    const { vinData, vehicleData } = await getVehicleBundleFromApi(route.vin, apiOptions);
+
     return (
       <UsedCarsDetails
         make={route.make}

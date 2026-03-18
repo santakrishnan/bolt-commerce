@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "~/components/providers/location-provider";
 import { lockBodyScroll, unlockBodyScroll } from "~/lib/body-scroll-lock";
-import { getCurrentUserSync } from "~/lib/flags/client";
+import { getCurrentUserSync, getFlagSync } from "~/lib/flags/client";
 import { ROUTES } from "~/lib/routes/constants";
 import { AvatarButton, MobileUserButton, SignInButton } from "./header/auth-buttons";
 import { FavoritesButton } from "./header/favorites-button";
@@ -34,9 +34,9 @@ export function Header() {
 
   useEffect(() => {
     const currentUser = getCurrentUserSync();
-    // Show avatar for any known/returning user — not just personalized-banner users
-    const isKnownUser = currentUser.id !== "first-time-visitor";
-    setShowUserAvatar(isKnownUser);
+    // Show avatar only when the personalized hero banner flag is enabled
+    const showPersonalized = getFlagSync("showPersonalizedHeroBanner");
+    setShowUserAvatar(showPersonalized);
     setUserFirstName(currentUser.firstName);
   }, []);
 

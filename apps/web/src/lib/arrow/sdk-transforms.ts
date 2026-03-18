@@ -35,7 +35,11 @@ export interface SdkV4Result {
  * Checks for the presence of `sealedResult` or the absence of legacy
  * v3-only fields (`browserName`, `ipLocation`).
  */
-export function isSdkV4Result(result: Record<string, unknown>): result is SdkV4Result {
+export function isSdkV4Result(result: unknown): result is SdkV4Result {
+  if (!result || typeof result !== "object") {
+    return false;
+  }
+
   return "sealedResult" in result || !("browserName" in result || "ipLocation" in result);
 }
 

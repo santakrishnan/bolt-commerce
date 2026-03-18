@@ -1,24 +1,12 @@
 "use client";
 
-import { Button, cn, VectorRightOutlineIcon } from "@tfs-ucmp/ui";
+import { Button, cn, Heading, VectorRightOutlineIcon } from "@tfs-ucmp/ui";
 import { useState } from "react";
-import type {
-  FeatureCategory,
-  HistoryData,
-  VehicleDetail,
-  VehicleSpecData,
-  VehicleStatusData,
-} from "~/lib/data/vehicle";
-import { VehicleMetaBar, type VehicleMetaBarChipComponents } from "./vehicle-meta-bar";
+import type { FeatureCategory } from "~/lib/data/vehicle";
 
 interface FeaturesTabProps {
   features: FeatureCategory[];
-  historyData: HistoryData;
   initialCount: number;
-  metaBarChipComponents?: VehicleMetaBarChipComponents;
-  specs: VehicleSpecData[];
-  vehicle: VehicleDetail;
-  vehicleStatus: VehicleStatusData;
 }
 
 const COLUMNS_PER_ROW = 4;
@@ -46,15 +34,7 @@ function FeatureItem({ text }: { text: string }) {
   );
 }
 
-export function FeaturesTab({
-  features,
-  initialCount,
-  vehicle,
-  specs,
-  historyData,
-  vehicleStatus,
-  metaBarChipComponents,
-}: FeaturesTabProps) {
+export function FeaturesTab({ features, initialCount }: FeaturesTabProps) {
   const [expanded, setExpanded] = useState(features.length > initialCount);
   const visibleCategories = expanded ? features : features.slice(0, initialCount);
   const rows = splitCategoriesIntoRows(visibleCategories);
@@ -62,18 +42,13 @@ export function FeaturesTab({
 
   return (
     <>
-      <VehicleMetaBar
-        chipComponents={metaBarChipComponents}
-        historyData={historyData}
-        specs={specs}
-        vehicle={vehicle}
-        vehicleStatus={vehicleStatus}
-      />
-
       <div className="mb-[var(--spacing-lg)] flex items-center justify-between md:pr-[var(--spacing-xl)] lg:mb-[var(--spacing-2xl)]">
-        <h3 className="font-semibold text-[length:var(--text-xl)] text-[var(--color-core-surface-foreground)] text-body leading-heading md:pl-[var(--spacing-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-heading">
+        <Heading
+          className="font-semibold text-[var(--color-core-surface-foreground)] text-body leading-heading md:pl-[var(--spacing-xl)] md:text-[length:var(--text-xl)] lg:font-semibold lg:text-[length:var(--font-size-lg)] lg:text-heading"
+          level={3}
+        >
           Key Features
-        </h3>
+        </Heading>
         {hasExpandableContent ? (
           <Button
             aria-expanded={expanded}
@@ -97,9 +72,12 @@ export function FeaturesTab({
               <div className="grid grid-cols-1 items-start gap-x-[var(--spacing-3xl)] gap-y-[var(--spacing-xl)] md:grid-cols-2 lg:grid-cols-4">
                 {row.map((category) => (
                   <div key={`${rowKey}-${category.name}`}>
-                    <h4 className="flex min-h-[var(--spacing-sd)] items-center font-semibold text-[length:var(--font-size-sm)] text-heading leading-6">
+                    <Heading
+                      className="flex min-h-[var(--spacing-sd)] items-center font-semibold text-[length:var(--font-size-sm)] text-heading leading-6 md:text-[length:var(--font-size-sm)] lg:text-[length:var(--font-size-sm)]"
+                      level={4}
+                    >
                       {category.name}
-                    </h4>
+                    </Heading>
                     <div className="mt-[var(--spacing-lg)] space-y-3">
                       {category.features.length === 0 ? (
                         <p className="text-[#AAA] text-[13px] italic leading-5">
