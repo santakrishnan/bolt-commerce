@@ -247,7 +247,7 @@ export function ProfileProvider({ children }: ProfileProviderProps) {
     refreshIds,
   };
 
-  return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
+  return <ProfileContext value={value}>{children}</ProfileContext>;
 }
 
 /**

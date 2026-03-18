@@ -26,8 +26,8 @@
 import {
   createContext,
   type ReactNode,
+  use,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -280,7 +280,7 @@ export function VisitorProfileProvider({
     [state, invalidateProfile, refreshProfile]
   );
 
-  return <VisitorProfileContext.Provider value={value}>{children}</VisitorProfileContext.Provider>;
+  return <VisitorProfileContext value={value}>{children}</VisitorProfileContext>;
 }
 
 // ─── Hook ───────────────────────────────────────────────────────────────────
@@ -292,7 +292,7 @@ export function VisitorProfileProvider({
  * which wraps it automatically).
  */
 export function useVisitorProfile(): VisitorProfileContextValue {
-  const ctx = useContext(VisitorProfileContext);
+  const ctx = use(VisitorProfileContext);
   if (!ctx) {
     throw new Error("useVisitorProfile must be used within <ArrowProvider>");
   }

@@ -1,6 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
-import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { createContext, use, useCallback, useRef, useState } from "react";
 import type { FilterState } from "~/components/features/search/filter-sidebar";
 import type { AvailableFilters } from "~/components/features/search/filter-sidebar/types";
 import type { Vehicle } from "~/lib/search/data";
@@ -75,7 +75,7 @@ interface SearchContextValue {
 const SearchContext = createContext<SearchContextValue | undefined>(undefined);
 
 export function useSearchContext() {
-  const ctx = useContext(SearchContext);
+  const ctx = use(SearchContext);
   if (!ctx) {
     throw new Error("useSearchContext must be used within SearchProvider");
   }
@@ -173,7 +173,7 @@ export function SearchProvider({
   );
 
   return (
-    <SearchContext.Provider
+    <SearchContext
       value={{
         vehicles,
         vehiclePool,
@@ -205,6 +205,6 @@ export function SearchProvider({
       }}
     >
       {children}
-    </SearchContext.Provider>
+    </SearchContext>
   );
 }

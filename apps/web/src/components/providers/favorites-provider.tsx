@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useMemo } from "react";
+import { createContext, use, useCallback, useMemo } from "react";
 import { useOptimisticListMutation } from "~/hooks/use-optimistic-list-mutation";
 import { savedVehicleQueries } from "~/lib/queries/saved-vehicles";
 import { clearAllSavedVehicles, saveVehicle, unsaveVehicle } from "~/services/saved-vehicles-api";
@@ -108,13 +108,13 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
     ]
   );
 
-  return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>;
+  return <FavoritesContext value={value}>{children}</FavoritesContext>;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────
 
 export function useFavorites(): FavoritesContextValue {
-  const ctx = useContext(FavoritesContext);
+  const ctx = use(FavoritesContext);
   if (!ctx) {
     throw new Error("useFavorites must be used within a <FavoritesProvider>");
   }

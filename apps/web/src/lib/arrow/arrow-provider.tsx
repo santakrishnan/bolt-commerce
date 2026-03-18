@@ -140,7 +140,7 @@ function ArrowBridge({ children }: { children: ReactNode }) {
     [profile, fingerprintData, getTrackingIds, vp]
   );
 
-  return <ArrowContext.Provider value={value}>{children}</ArrowContext.Provider>;
+  return <ArrowContext value={value}>{children}</ArrowContext>;
 }
 
 // ─── Public provider ────────────────────────────────────────────────────────

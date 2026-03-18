@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { createContext, useCallback, useContext, useMemo } from "react";
+import { createContext, use, useCallback, useMemo } from "react";
 import { useOptimisticListMutation } from "~/hooks/use-optimistic-list-mutation";
 import { searchHistoryQueries } from "~/lib/queries/search-history";
 import {
@@ -118,13 +118,13 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
     [searches, isFetched, handleAdd, handleRemove, handleClearAll]
   );
 
-  return <SearchHistoryContext.Provider value={value}>{children}</SearchHistoryContext.Provider>;
+  return <SearchHistoryContext value={value}>{children}</SearchHistoryContext>;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────
 
 export function useSearchHistory(): SearchHistoryContextValue {
-  const ctx = useContext(SearchHistoryContext);
+  const ctx = use(SearchHistoryContext);
   if (!ctx) {
     throw new Error("useSearchHistory must be used within a <SearchHistoryProvider>");
   }

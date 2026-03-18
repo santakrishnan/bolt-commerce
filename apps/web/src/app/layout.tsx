@@ -5,7 +5,6 @@ import "./globals.css";
 import { ThemeProvider } from "@tfs-ucmp/shared/providers";
 import { Footer } from "~/components/layout/footer";
 import { Header } from "~/components/layout/header";
-import { CartProvider } from "~/components/providers/cart-provider";
 import { FavoritesProvider } from "~/components/providers/favorites-provider";
 import { LocationProvider } from "~/components/providers/location-provider";
 import { QueryProvider } from "~/components/providers/query-provider";
@@ -23,18 +22,24 @@ export const metadata: Metadata = {
 
 /**
  * Providers are applied outermost-first.
- * Order: ThemeProvider → ArrowProvider → LocationProvider →
- * QueryProvider → FavoritesProvider → SearchHistoryProvider → CartProvider
+ * Order: ThemeProvider → ArrowProvider → QueryProvider →
+ *        FavoritesProvider → SearchHistoryProvider
  *
- * LocationProvider is rendered via LocationInit (async Server Component)
- * so cookies() is called inside the Suspense boundary, not at layout level.
+ * All providers above are synchronous client components — they render
+ * immediately and belong OUTSIDE the Suspense boundary so PPR can
+ * include their server-rendered HTML in the static shell.
+ *
+ * LocationProvider is the only async dependency (via LocationInit which
+ * reads cookies()) — it lives INSIDE Suspense as a dynamic hole.
+ *
+ * CartProvider removed — zero consumers on any rendered route.
  */
-const OuterProviders = composeProviders(ThemeProvider, ArrowProvider);
-const InnerProviders = composeProviders(
+const SyncProviders = composeProviders(
+  ThemeProvider,
+  ArrowProvider,
   QueryProvider,
   FavoritesProvider,
-  SearchHistoryProvider,
-  CartProvider
+  SearchHistoryProvider
 );
 
 /**
@@ -54,16 +59,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html className={toyotaType.variable} lang="en" suppressHydrationWarning>
       <body>
-        <Suspense fallback={null}>
-          <OuterProviders>
+        <SyncProviders>
+          <Suspense fallback={null}>
             <LocationInit>
-              <InnerProviders>
-                <Header />
-                {children}
-              </InnerProviders>
+              <Header />
+              {children}
             </LocationInit>
-          </OuterProviders>
-        </Suspense>
+          </Suspense>
+        </SyncProviders>
         {/* Footer is a Server Component with no provider dependencies — keep it outside */}
         <Footer />
         {/* Feature Flag Debug Panel - excluded from production bundle entirely */}

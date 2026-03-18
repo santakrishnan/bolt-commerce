@@ -11,13 +11,7 @@ export function Footer() {
     <div className="w-full bg-[var(--core-surfaces-foreground)]">
       <div className="mx-auto max-w-[var(--container-2xl)] px-4 sm:px-6 lg:px-20">
         <footer className="font-toyota text-[var(--states-inverse-muted-foreground)]">
-          <div
-            className="flex w-full flex-col"
-            style={{
-              paddingTop: "48px",
-              paddingBottom: "48px",
-            }}
-          >
+          <div className="flex w-full flex-col py-12">
             {/* Row 1: Brand + Navigation (5 columns) */}
             <div className="grid w-full grid-cols-1 gap-[32px] border-[var(--structure-interaction-inverse-border)] border-b pb-[40px] md:grid-cols-5">
               {/* Brand */}

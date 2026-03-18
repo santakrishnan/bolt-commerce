@@ -11,7 +11,7 @@ const iconMap = {
 
 /**
  * FooterTop - Brand section with social media links
- * Client Component for interactive social links
+ * Server Component — static brand section with social links
  */
 export function FooterTop() {
   return (
