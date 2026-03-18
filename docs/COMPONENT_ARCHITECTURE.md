@@ -1,5 +1,150 @@
 # Component Architecture Guide
 
+``
+Recommendations
+1. Split into targeted Suspense boundaries
+The cookies() call in LocationInit is the only thing that requires Suspense (it's an async Server Component). ArrowProvider is a client component — it doesn't need Suspense, it manages its own loading state. Move providers that don't depend on the async call outside Suspense:
+
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html className={toyotaType.variable} lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <QueryProvider>
+            <ArrowProvider>
+              <Suspense fallback={<LayoutShell>{children}</LayoutShell>}>
+                <LocationInit>
+                  <FavoritesProvider>
+                    <SearchHistoryProvider>
+                      <CartProvider>
+                        <Header />
+                        {children}
+                      </CartProvider>
+                    </SearchHistoryProvider>
+                  </FavoritesProvider>
+                </LocationInit>
+              </Suspense>
+            </ArrowProvider>
+          </QueryProvider>
+        </ThemeProvider>
+        <Footer />
+      </body>
+    </html>
+  );
+}
+Why: ThemeProvider, QueryProvider, and ArrowProvider are all client components with no async dependencies. They can render immediately. Only LocationInit (async server component reading cookies) needs Suspense.
+
+2. Provide a meaningful Suspense fallback
+fallback={null} means blank screen. Instead, show the app shell immediately:
+
+
+function LayoutShell({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <header className="absolute top-0 right-0 left-0 z-[35] h-16 w-full sm:h-20" />
+      <div className="h-16 sm:h-20" aria-hidden="true" />
+      {children}
+    </>
+  );
+}
+This renders the header spacer and page content immediately while LocationInit resolves.
+
+3. ArrowProvider should not block the tree
+ArrowProvider's bootstrap call takes 100ms–2s. Currently it blocks all children. Instead, ArrowProvider should render children immediately and expose a ready flag. Consumers that need Arrow data (like LocationProvider) already check isResolved — they handle the loading state themselves.
+
+If ArrowProvider currently delays rendering children until bootstrap completes, consider changing it to render children immediately with a "not ready" context value. This is likely already the case based on the code — but verify that ProfileProvider renders {children} even while isLoading: true.
+
+4. Move CartProvider to where it's actually used
+CartProvider is pure in-memory state with zero dependencies. It doesn't need to wrap the entire app — it only needs to wrap pages that use the cart. Move it to the specific routes that need it, or at minimum, keep it but understand it adds no overhead (it's ~0ms to mount).
+
+5. Consider lazy-loading Favorites and SearchHistory providers
+FavoritesProvider and SearchHistoryProvider each trigger a useQuery on mount (fetching from IndexedDB). These could be deferred until the user interacts with search or favorites. However, since they use placeholderData: [], they render instantly and fetch in the background — so the real-world impact is minimal. Keep them as-is unless profiling shows otherwise.
+
+Recommended Final Layout
+
+import type { Metadata } from "next";
+import { cookies } from "next/headers";
+import { Suspense } from "react";
+import "./globals.css";
+import { ThemeProvider } from "@tfs-ucmp/shared/providers";
+import { Footer } from "~/components/layout/footer";
+import { Header } from "~/components/layout/header";
+import { CartProvider } from "~/components/providers/cart-provider";
+import { FavoritesProvider } from "~/components/providers/favorites-provider";
+import { LocationProvider } from "~/components/providers/location-provider";
+import { QueryProvider } from "~/components/providers/query-provider";
+import { SearchHistoryProvider } from "~/components/providers/search-history-provider";
+import { FeatureFlagDebug } from "~/components/shared/feature-flag-debug";
+import { ArrowProvider } from "~/lib/arrow";
+import { toyotaType } from "~/lib/fonts";
+import { MANUAL_ZIP_COOKIE, ZIP_RE } from "~/lib/routes/constants";
+
+export const metadata: Metadata = {
+  title: "Arrow - Modern E-commerce",
+  description: "Arrow - Modern E-commerce",
+};
+
+/** Reads manual-zip cookie on the server. Rendered inside Suspense. */
+async function LocationInit({ children }: { children: React.ReactNode }) {
+  const cookieStore = await cookies();
+  const savedZip = cookieStore.get(MANUAL_ZIP_COOKIE)?.value;
+  const initialZip = savedZip && ZIP_RE.test(savedZip) ? savedZip : null;
+  return <LocationProvider initialZip={initialZip}>{children}</LocationProvider>;
+}
+
+/** Skeleton header to show while LocationInit resolves. */
+function HeaderSkeleton() {
+  return <div aria-hidden="true" className="h-16 w-full sm:h-20" />;
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html className={toyotaType.variable} lang="en" suppressHydrationWarning>
+      <body>
+        {/* ── Sync providers: render immediately, no async deps ── */}
+        <ThemeProvider>
+          <QueryProvider>
+            <ArrowProvider>
+              <FavoritesProvider>
+                <SearchHistoryProvider>
+                  <CartProvider>
+                    {/* ── Async boundary: only LocationInit needs Suspense ── */}
+                    <Suspense
+                      fallback={
+                        <>
+                          <HeaderSkeleton />
+                          {children}
+                        </>
+                      }
+                    >
+                      <LocationInit>
+                        <Header />
+                        {children}
+                      </LocationInit>
+                    </Suspense>
+                  </CartProvider>
+                </SearchHistoryProvider>
+              </FavoritesProvider>
+            </ArrowProvider>
+          </QueryProvider>
+        </ThemeProvider>
+
+        {/* ── Footer: Server Component, no provider deps ── */}
+        <Footer />
+
+        {/* ── Dev-only debug panel ── */}
+        {process.env.NODE_ENV !== "production" && (
+          <Suspense fallback={null}>
+            <FeatureFlagDebug />
+          </Suspense>
+        )}
+      </body>
+    </html>
+  );
+}
+``
+
 ## Overview
 
 This document defines the component structure for the Arrow E-commerce monorepo, based on Vercel's composition patterns, React best practices, and Next.js conventions.
