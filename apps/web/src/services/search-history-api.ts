@@ -1,141 +1,81 @@
 /**
- * Mock API service for recent search history.
+ * Client API service for recent search history.
  *
- * Simulates a REST-like backend with in-memory persistence and artificial
- * network latency.  In production this would be a real endpoint; the
- * interface is kept identical so the swap is painless.
+ * All operations go through the saved-registry proxy:
+ *   GET    /api/saved-registry/search-history       → getAllSearchHistory()
+ *   POST   /api/saved-registry/search-history       → addSearchEntry(query, url, type)
+ *   DELETE /api/saved-registry/search-history/:id   → removeSearchEntry(id)
+ *   DELETE /api/saved-registry/search-history       → clearSearchHistory()
  *
- * Endpoints modelled:
- *   GET    /search-history            → getAllSearchHistory()
- *   POST   /search-history            → addSearchEntry(query, url, type)
- *   DELETE /search-history/:id        → removeSearchEntry(id)
- *   DELETE /search-history            → clearSearchHistory()
+ * The proxy handles visitor identification via cookies and forwards
+ * requests to the BED Recent Search Service (currently mocked).
+ *
+ * Function signatures are unchanged from the previous IndexedDB
+ * implementation — query factories and providers work without changes.
  */
 
-const MAX_SEARCHES = 10;
+import { API_ROUTES } from "~/lib/routes/constants";
+import type { SearchEntry } from "~/lib/saved-registry/types";
 
-// IndexedDB helper imported dynamically inside functions to avoid SSR
+// Re-export the type so existing consumers keep importing from this file.
+export type { SearchEntry } from "~/lib/saved-registry/types";
 
-// ── Shared type (mirrors SearchHistoryEntry in search-bar/types.ts) ──────────
+// ── Helpers ──────────────────────────────────────────────────────────
 
-export interface SearchEntry {
-  id: string;
-  query: string;
-  timestamp: string;
-  type: "nlp" | "filter";
-  url: string;
+async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(url, {
+    credentials: "include",
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...init?.headers,
+    },
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? `Request failed: ${res.status}`);
+  }
+
+  const { data } = await res.json();
+  return data as T;
 }
 
-// Key used to persist search history
-const IDB_KEY = "search-history-store";
-
-// ── In-memory store (kept as cached copy; persisted to IDB) ────────────────
-
-let store: SearchEntry[] = [];
-
-async function readStore(): Promise<SearchEntry[]> {
-  if (typeof window === "undefined") {
-    return store;
-  }
-  try {
-    const { idbGet } = await import("~/lib/indexeddb");
-    const val = await idbGet<SearchEntry[]>(IDB_KEY);
-    if (Array.isArray(val)) {
-      store = val;
-    }
-  } catch (_err) {
-    // best-effort
-  }
-  return store;
-}
-
-async function writeStore(): Promise<void> {
-  if (typeof window === "undefined") {
-    return;
-  }
-  try {
-    const { idbSet } = await import("~/lib/indexeddb");
-    await idbSet(IDB_KEY, store);
-  } catch (_err) {
-    // best-effort
-  }
-}
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-/** Simulate network latency (50-150 ms). */
-function simulateLatency(): Promise<void> {
-  const ms = 50 + Math.random() * 100;
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-// ── Public API ───────────────────────────────────────────────────────────────
+// ── Public API (same signatures as before) ───────────────────────────
 
 /** Retrieve all search entries (most recent first). */
-export async function getAllSearchHistory(): Promise<SearchEntry[]> {
-  await simulateLatency();
-  await readStore();
-  return [...store];
+export function getAllSearchHistory(): Promise<SearchEntry[]> {
+  return fetchJson<SearchEntry[]>(API_ROUTES.SEARCH_HISTORY);
 }
 
 /**
  * Add a search entry.
- * - Skips empty or single-character queries (returns unchanged list).
- * - Duplicate queries are moved to the top with an updated timestamp.
- * - Oldest entries are pruned when the list exceeds MAX_SEARCHES.
  * Returns the updated list.
  */
-export async function addSearchEntry(
+export function addSearchEntry(
   query: string,
   url: string,
   type: "nlp" | "filter" = "nlp"
 ): Promise<SearchEntry[]> {
-  await simulateLatency();
-  await readStore();
-
-  const trimmed = query.trim();
-  if (trimmed.length <= 1) {
-    return [...store];
-  }
-
-  const entries = [...store];
-  const existingIdx = entries.findIndex((e) => e.query.toLowerCase() === trimmed.toLowerCase());
-
-  if (existingIdx === -1) {
-    entries.unshift({
-      id: Date.now().toString(),
-      query: trimmed,
-      url,
-      timestamp: new Date().toISOString(),
-      type,
-    });
-  } else {
-    const existing = entries[existingIdx] as SearchEntry;
-    entries.splice(existingIdx, 1);
-    entries.unshift({ ...existing, url, timestamp: new Date().toISOString() });
-  }
-
-  store = entries.slice(0, MAX_SEARCHES);
-  await writeStore();
-  return [...store];
+  return fetchJson<SearchEntry[]>(API_ROUTES.SEARCH_HISTORY, {
+    method: "POST",
+    body: JSON.stringify({ query, url, type }),
+  });
 }
 
 /**
  * Remove a search entry by id.
  * Returns the updated list.
  */
-export async function removeSearchEntry(id: string): Promise<SearchEntry[]> {
-  await simulateLatency();
-  await readStore();
-  store = store.filter((e) => e.id !== id);
-  await writeStore();
-  return [...store];
+export function removeSearchEntry(id: string): Promise<SearchEntry[]> {
+  return fetchJson<SearchEntry[]>(`${API_ROUTES.SEARCH_HISTORY}/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
 }
 
 /** Clear all search history. Returns an empty array. */
-export async function clearSearchHistory(): Promise<SearchEntry[]> {
-  await simulateLatency();
-  store = [];
-  await writeStore();
-  return [];
+export function clearSearchHistory(): Promise<SearchEntry[]> {
+  return fetchJson<SearchEntry[]>(API_ROUTES.SEARCH_HISTORY, {
+    method: "DELETE",
+  });
 }

@@ -8,14 +8,13 @@ import { getAllSearchHistory, type SearchEntry } from "~/services/search-history
  * (SearchHistoryProvider, search-bar hook, my-garage) reads from the
  * same cache entry.
  *
- * When the real API replaces the mock, swap `queryFn` here — all consumers
- * update automatically.
+ * `queryFn` calls the saved-registry proxy (`/api/saved-registry/search-history`)
+ * which forwards to the BED Recent Search Service (currently mocked).
  */
 export const searchHistoryQueries = {
   all: () =>
     queryOptions({
       queryKey: ["search-history"] as const,
-      //  TODO: Replace with actual API call
       queryFn: getAllSearchHistory,
       // Show empty list while the first fetch runs
       placeholderData: [] as SearchEntry[],

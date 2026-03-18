@@ -41,4 +41,8 @@ export const API_ROUTES = {
   EVENTS_TRACK: "/api/events/track",
   SEARCH: "/api/search",
   VISITOR_PROFILE: "/api/visitor-profile",
+
+  // ── Saved Registry (proxy → BED) ───────────────────────────────
+  SAVED_VEHICLES: "/api/saved-registry/vehicles",
+  SEARCH_HISTORY: "/api/saved-registry/search-history",
 } as const;

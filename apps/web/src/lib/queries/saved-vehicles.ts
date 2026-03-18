@@ -7,8 +7,8 @@ import { getAllSavedVehicles } from "~/services/saved-vehicles-api";
  * Centralises the query key and options so every consumer (FavoritesProvider,
  * header badge, favorites page, my-garage) reads from the same cache entry.
  *
- * When the real API replaces the mock, swap `queryFn` here — all consumers
- * update automatically.
+ * `queryFn` calls the saved-registry proxy (`/api/saved-registry/vehicles`)
+ * which forwards to the BED Saved Vehicle Service (currently mocked).
  */
 export const savedVehicleQueries = {
   all: () =>
