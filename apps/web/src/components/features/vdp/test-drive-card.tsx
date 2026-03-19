@@ -1,5 +1,3 @@
-"use client";
-
 import { AppButton } from "~/components/shared/button";
 
 interface TestDriveCardProps {

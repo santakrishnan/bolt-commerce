@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, cn, Heading } from "@tfs-ucmp/ui";
 import Image from "next/image";
 import type { DealerNotes } from "../../../lib/data/dealer/dealer-data";

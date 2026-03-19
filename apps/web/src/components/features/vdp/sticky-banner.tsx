@@ -7,21 +7,15 @@ import type { VehicleDetail } from "~/lib/data/vehicle";
 import { buildVdpPath, type VdpParams } from "~/lib/routes";
 import { VehicleActionIcons } from "./vehicle-action-icons";
 export interface VehicleStickyBannerProps {
-  scrollDirection: "up" | "down";
-  showStickyCTA: boolean;
+  ref?: React.Ref<HTMLDivElement>;
   slugParams: VdpParams;
-  stickyHeight?: number;
-  stickyScrollOffset: number;
   vehicle: VehicleDetail;
 }
 
 export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
   vehicle,
-  showStickyCTA,
-  stickyScrollOffset,
-  scrollDirection,
-  stickyHeight = 72,
   slugParams,
+  ref,
 }) => {
   const shouldShowOriginalPrice =
     vehicle.originalPrice != null && vehicle.originalPrice > (vehicle.price ?? 0);
@@ -29,17 +23,10 @@ export const VehicleStickyBanner: React.FC<VehicleStickyBannerProps> = ({
   return (
     <div
       className="fixed right-0 left-0 z-50 bg-surface py-(--spacing-lg) shadow-sm"
+      ref={ref}
       style={{
-        opacity:
-          scrollDirection === "down"
-            ? Math.min(1, stickyScrollOffset / stickyHeight)
-            : Math.max(0, stickyScrollOffset / stickyHeight),
-        transform:
-          scrollDirection === "down"
-            ? `translateY(${Math.max(stickyHeight - stickyScrollOffset, 0)}px)`
-            : "translateY(0px)",
         transition: "opacity 0.2s, transform 0.2s",
-        display: showStickyCTA ? "block" : "none",
+        display: "none",
         top: 0,
       }}
     >

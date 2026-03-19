@@ -1,13 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getCookie } from "~/lib/cookie-cache";
-import { FLAG_COOKIE_NAME } from "~/lib/flags/config";
+import { usePromotionFlags } from "~/hooks/use-promotion-flags";
+
+import type { PromotionCardId } from "./promotion-registry";
+import { PROMOTION_CARDS } from "./promotion-registry";
 import { PrequalifyCard } from "./prequalify-card";
 import { TestDriveCard } from "./test-drive-card";
 import { TradeInCard } from "./trade-in-card";
 
-const CARD_TEST_PREQUAL_TRADE_OFFER_FLAG = "cardTestPrequalTradeInOffer";
+// ─── Card component lookup ───────────────────────────────────────────
+
+const CARD_COMPONENTS = {
+  prequalify: PrequalifyCard,
+  testDrive: TestDriveCard,
+  tradeIn: TradeInCard,
+} as const;
+
+// ─── Props ───────────────────────────────────────────────────────────
 
 interface VdpPromotionCardsProps {
   showPrequal?: boolean;
@@ -16,44 +25,69 @@ interface VdpPromotionCardsProps {
   testDriveButtonText?: string;
 }
 
-export function VdpPromotionCards({
-  showPrequal = true,
-  showTradeIn = true,
-  showTestDrive = true,
-  testDriveButtonText,
-}: VdpPromotionCardsProps) {
-  const [isCardTestEnabled, setIsCardTestEnabled] = useState(false);
+// ─── Visibility map from parent props ────────────────────────────────
 
-  useEffect(() => {
-    setIsCardTestEnabled(getCookie(FLAG_COOKIE_NAME) === CARD_TEST_PREQUAL_TRADE_OFFER_FLAG);
-  }, []);
+function buildVisibilityMap(props: VdpPromotionCardsProps): Record<PromotionCardId, boolean> {
+  return {
+    prequalify: props.showPrequal ?? true,
+    testDrive: props.showTestDrive ?? true,
+    tradeIn: props.showTradeIn ?? true,
+  };
+}
 
-  const prequalButtonText = isCardTestEnabled ? "Apply My Trade-In" : "Get Pre-Qualified";
-  const tradeInButtonText = isCardTestEnabled
-    ? "Accept My Trade-In Offer"
-    : "Get My Trade-In Offer";
+// ─── Component ───────────────────────────────────────────────────────
+
+/**
+ * VdpPromotionCards
+ *
+ * Renders promotion cards based on parent props, visitor profile context,
+ * and registry guards. Which cards exist, when they hide, and who can
+ * see them is defined in `promotion-registry.ts`.
+ */
+export function VdpPromotionCards(props: VdpPromotionCardsProps) {
+  const { context, isLoading } = usePromotionFlags();
+
+  if (isLoading) {
+    return null;
+  }
+
+  const visibility = buildVisibilityMap(props);
+
+  const visibleCards = PROMOTION_CARDS
+    .filter((entry) => visibility[entry.id]) // pass 1: parent props
+    .filter((entry) => !entry.guard || entry.guard(context)) // pass 2: guard
+    .sort((a, b) => a.priority - b.priority);
+
+  if (visibleCards.length === 0) {
+    return null;
+  }
 
   return (
     <>
-      {showPrequal && (
-        <PrequalifyCard
-          buttonText={prequalButtonText}
-          description={isCardTestEnabled ? "Up to $45k in financing available" : undefined}
-          detailed={isCardTestEnabled}
-          title={isCardTestEnabled ? "You're Pre Qualified" : undefined}
-        />
-      )}
-      {showTradeIn && (
-        <TradeInCard
-          buttonText={tradeInButtonText}
-          description={
-            isCardTestEnabled ? "Don't miss out, your guaranteed price is waiting" : undefined
-          }
-          detailed={isCardTestEnabled}
-          title={isCardTestEnabled ? "Your Trade-In Offer is Ready" : undefined}
-        />
-      )}
-      {showTestDrive && isCardTestEnabled && <TestDriveCard buttonText={testDriveButtonText} />}
+      {visibleCards.map((entry) => {
+        const Card = CARD_COMPONENTS[entry.id];
+        const isDetailed = context.isCardTestEnabled;
+        const overrides = isDetailed ? entry.cardTestOverrides : undefined;
+
+        if (entry.id === "testDrive") {
+          return (
+            <Card
+              buttonText={props.testDriveButtonText ?? entry.defaultButtonText}
+              key={entry.id}
+            />
+          );
+        }
+
+        return (
+          <Card
+            buttonText={overrides?.buttonText ?? entry.defaultButtonText}
+            description={overrides?.description}
+            detailed={isDetailed}
+            key={entry.id}
+            title={overrides?.title}
+          />
+        );
+      })}
     </>
   );
 }

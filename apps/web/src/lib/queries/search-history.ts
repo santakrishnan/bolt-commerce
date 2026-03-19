@@ -18,5 +18,8 @@ export const searchHistoryQueries = {
       queryFn: getAllSearchHistory,
       // Show empty list while the first fetch runs
       placeholderData: [] as SearchEntry[],
+      // Longer stale time since mutations use optimistic updates and data is
+      // persisted in IndexedDB. Syncs with server every 5 minutes.
+      staleTime: 5 * 60 * 1000,
     }),
 } as const;

@@ -16,21 +16,28 @@ import {
 export const SEARCH_HISTORY_KEY = searchHistoryQueries.all().queryKey;
 
 // ── Context shape ────────────────────────────────────────────────────
+// The provider only holds mutations. Data is fetched lazily by consumers
+// via useSearchHistory(), so pages that don't need search history
+// (e.g. VDP) never fire the /api/saved-registry/search-history call.
 
-interface SearchHistoryContextValue {
+interface SearchHistoryMutations {
   /** Add a new search. Skips empty/1-char queries. Dedupes by query text. */
   addSearch: (query: string, url: string, type?: "nlp" | "filter") => void;
   /** Remove all search history. */
   clearAll: () => void;
-  /** Whether the initial fetch has completed. */
-  isLoaded: boolean;
   /** Remove a search entry by id. */
   removeSearch: (id: string) => void;
+}
+
+/** Full context value returned by useSearchHistory (mutations + data). */
+export interface SearchHistoryContextValue extends SearchHistoryMutations {
+  /** Whether the initial fetch has completed. */
+  isLoaded: boolean;
   /** Current list of search entries (most recent first). */
   searches: SearchEntry[];
 }
 
-const SearchHistoryContext = createContext<SearchHistoryContextValue | null>(null);
+const SearchHistoryContext = createContext<SearchHistoryMutations | null>(null);
 
 // ── Mutation variable types ──────────────────────────────────────────
 
@@ -45,11 +52,10 @@ interface AddVars {
 const queryOpts = searchHistoryQueries.all();
 
 // ── Provider ─────────────────────────────────────────────────────────
+// Mutations only — no useQuery here. The API call fires lazily when a
+// consumer mounts and calls useSearchHistory().
 
 export function SearchHistoryProvider({ children }: { children: React.ReactNode }) {
-  // ── Query: fetch all history via query factory ────────────────────
-  const { data: searches = [], isFetched } = useQuery(queryOpts);
-
   // ── Mutations using shared optimistic hook ──────────────────────────
 
   const { mutate: doAdd } = useOptimisticListMutation<SearchEntry, AddVars>({
@@ -105,28 +111,36 @@ export function SearchHistoryProvider({ children }: { children: React.ReactNode 
 
   const handleClearAll = useCallback(() => doClear(), [doClear]);
 
-  // ── Context value ─────────────────────────────────────────────────
+  // ── Context value (mutations only) ─────────────────────────────────
 
-  const value = useMemo<SearchHistoryContextValue>(
+  const value = useMemo<SearchHistoryMutations>(
     () => ({
-      searches,
-      isLoaded: isFetched,
       addSearch: handleAdd,
       removeSearch: handleRemove,
       clearAll: handleClearAll,
     }),
-    [searches, isFetched, handleAdd, handleRemove, handleClearAll]
+    [handleAdd, handleRemove, handleClearAll]
   );
 
   return <SearchHistoryContext value={value}>{children}</SearchHistoryContext>;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────
+// Fetches search history data lazily — the API call only fires when a
+// component calls this hook. Pages without search bar skip the call.
 
 export function useSearchHistory(): SearchHistoryContextValue {
   const ctx = use(SearchHistoryContext);
   if (!ctx) {
     throw new Error("useSearchHistory must be used within a <SearchHistoryProvider>");
   }
-  return ctx;
+
+  // Lazy data fetch — only runs when a consumer mounts
+  const { data: searches = [], isFetched } = useQuery(queryOpts);
+
+  return {
+    ...ctx,
+    searches,
+    isLoaded: isFetched,
+  };
 }

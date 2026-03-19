@@ -18,5 +18,9 @@ export const savedVehicleQueries = {
       // Show empty list while the first fetch runs — does NOT suppress the fetch
       // (unlike initialData which would treat [] as "fresh" for staleTime duration)
       placeholderData: [] as string[],
+      // Longer stale time since mutations use optimistic updates and data is
+      // persisted in IndexedDB. Avoids redundant background refetches on every
+      // page refresh — syncs with server every 5 minutes instead.
+      staleTime: 5 * 60 * 1000,
     }),
 } as const;

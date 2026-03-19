@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 import { SearchWrapper } from "~/components/layout/search";
 import { getUsedCarsPageMetadata } from "~/lib/messages/used-cars";
 import { ROUTES } from "~/lib/routes/constants";
 import { buildUsedCarsPath, parseUsedCarsParams, type UsedCarsRoute } from "~/lib/routes/used-cars";
-import { getVehicleBundleFromApi } from "~/services/vdp-api";
+import { getDealerDetailsFromApi, getVehicleBundleFromApi } from "~/services/vdp-api";
 import { UsedCarsDetails } from "./views/details";
 
 interface Props {
@@ -80,18 +81,24 @@ export default async function UsedCarsPage({ params, searchParams }: Props) {
       baseUrl: getRequestOrigin(requestHeaders),
       headers: buildProxyHeaders(requestHeaders),
     };
-    const { vinData, vehicleData } = await getVehicleBundleFromApi(route.vin, apiOptions);
+    // Kick off fetches eagerly — don't await here.
+    // Promises flow into UsedCarsDetails which awaits inside a Suspense
+    // boundary, so the page shell (header/footer) streams immediately.
+    const vehicleBundlePromise = getVehicleBundleFromApi(route.vin, apiOptions);
+    const dealerDataPromise = getDealerDetailsFromApi(route.vin, apiOptions);
 
     return (
-      <UsedCarsDetails
-        make={route.make}
-        model={route.model}
-        trim={route.trim}
-        vehicleData={vehicleData}
-        vin={route.vin}
-        vinData={vinData}
-        year={route.year}
-      />
+      <Suspense>
+        <UsedCarsDetails
+          dealerDataPromise={dealerDataPromise}
+          make={route.make}
+          model={route.model}
+          trim={route.trim}
+          vehicleBundlePromise={vehicleBundlePromise}
+          vin={route.vin}
+          year={route.year}
+        />
+      </Suspense>
     );
   }
 

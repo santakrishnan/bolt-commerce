@@ -47,44 +47,70 @@ export const VehiclePDP: React.FC<VehiclePDPProps> = ({
   // No JS needed, handled by className below
 
   // --- Top sticky logic: animate in as user scrolls past Key Highlights ---
-  // Use a single useState for scroll offset, and only one useEffect
-  const [stickyScrollOffset, setStickyScrollOffset] = useState(0);
-  const [showStickyCTA, setShowStickyCTA] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("down");
+  // Use refs + direct DOM updates to avoid re-renders on every scroll event
+  const stickyScrollOffsetRef = useRef(0);
+  const showStickyCTARef = useRef(false);
+  const scrollDirectionRef = useRef<"up" | "down">("down");
   const prevScrollY = useRef(0);
+  const bannerRef = useRef<HTMLDivElement>(null);
 
   // Sticky height for animation (default 72px)
   const STICKY_HEIGHT = 72;
+
+  const updateBannerStyle = useCallback(
+    (scrollOffset: number, show: boolean, dir: "up" | "down") => {
+      if (!bannerRef.current) {
+        return;
+      }
+      const el = bannerRef.current;
+      el.style.opacity =
+        dir === "down"
+          ? String(Math.min(1, scrollOffset / STICKY_HEIGHT))
+          : String(Math.max(0, scrollOffset / STICKY_HEIGHT));
+      el.style.transform =
+        dir === "down"
+          ? `translateY(${Math.max(STICKY_HEIGHT - scrollOffset, 0)}px)`
+          : "translateY(0px)";
+      el.style.display = show ? "block" : "none";
+    },
+    []
+  );
+
   useEffect(() => {
     function handleScroll() {
-      // Use whichever Key Highlights element is currently visible (desktop vs mobile)
       const desktopEl = keyHighlightsRef.current;
       const mobileEl = keyHighlightsMobileRef.current;
       const target = desktopEl && desktopEl.offsetParent !== null ? desktopEl : mobileEl;
       if (!target) {
         return;
       }
+
       const rect = target.getBoundingClientRect();
       const header = document.querySelector("header");
       const headerHeight = header ? header.getBoundingClientRect().height : 80;
-      // If Key Highlights is above header, start animating in
-      const offset = Math.max(0, headerHeight - rect.top);
-      setStickyScrollOffset(offset > 0 ? offset : 0);
-      setShowStickyCTA(rect.top < headerHeight);
 
-      // Track scroll direction
+      const offset = Math.max(0, headerHeight - rect.top);
+      stickyScrollOffsetRef.current = offset > 0 ? offset : 0;
+      showStickyCTARef.current = rect.top < headerHeight;
+
       const currentY = window.scrollY;
       if (currentY > prevScrollY.current) {
-        setScrollDirection("down");
+        scrollDirectionRef.current = "down";
       } else if (currentY < prevScrollY.current) {
-        setScrollDirection("up");
+        scrollDirectionRef.current = "up";
       }
       prevScrollY.current = currentY;
+
+      updateBannerStyle(
+        stickyScrollOffsetRef.current,
+        showStickyCTARef.current,
+        scrollDirectionRef.current
+      );
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [updateBannerStyle]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewIndex, setPreviewIndex] = useState(0);
@@ -118,11 +144,8 @@ export const VehiclePDP: React.FC<VehiclePDPProps> = ({
     <div className="mx-auto max-w-[var(--container-2xl)]">
       {/* Sticky vehicle details banner */}
       <VehicleStickyBanner
-        scrollDirection={scrollDirection}
-        showStickyCTA={showStickyCTA}
+        ref={bannerRef}
         slugParams={slugParams}
-        stickyHeight={STICKY_HEIGHT}
-        stickyScrollOffset={stickyScrollOffset}
         vehicle={vehicle}
       />
       {/* Breadcrumb Navigation */}

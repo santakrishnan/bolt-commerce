@@ -6,6 +6,7 @@ export { PrequalifyCard } from "./prequalify-card";
 export { PriceRangeMeter } from "./price-range-meter";
 export { TestDriveCard } from "./test-drive-card";
 export { TradeInCard } from "./trade-in-card";
+export { VdpPromotionCards } from "./vdp-promotion-cards";
 export { VehicleDetailsTabs } from "./vehicle-details-tabs";
 export { VehiclePDP } from "./vehicle-pdp";
 export { VehicleRating } from "./vehicle-rating";

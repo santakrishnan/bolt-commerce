@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 /**
  * Providers are applied outermost-first.
  * Order: ThemeProvider → ArrowProvider → QueryProvider →
- *        FavoritesProvider → SearchHistoryProvider
+ *        SearchHistoryProvider → FavoritesProvider
  *
  * All providers above are synchronous client components — they render
  * immediately and belong OUTSIDE the Suspense boundary so PPR can
@@ -38,8 +38,8 @@ const SyncProviders = composeProviders(
   ThemeProvider,
   ArrowProvider,
   QueryProvider,
-  FavoritesProvider,
-  SearchHistoryProvider
+  SearchHistoryProvider,
+  FavoritesProvider
 );
 
 /**

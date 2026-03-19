@@ -1,4 +1,4 @@
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import {
   ArrowServerError,
   type ArrowServerIds,
@@ -34,6 +34,7 @@ function isMockMode(): boolean {
 export async function fetchVinData(vin: string, options: VdpFetchOptions = {}): Promise<VinData> {
   "use cache";
   cacheLife({ stale: 300, revalidate: 300, expire: 3600 });
+  cacheTag("vdp", vin);
 
   if (isMockMode()) {
     return await fetchMockVinData(vin);
@@ -60,6 +61,7 @@ export async function fetchVehicleData(
 ): Promise<VehicleData> {
   "use cache";
   cacheLife({ stale: 300, revalidate: 300, expire: 3600 });
+  cacheTag("vdp", id);
 
   if (isMockMode()) {
     return await fetchMockVehicleData(id);
