@@ -1,5 +1,45 @@
 # Feature Flags Documentation
 
+Optimize VDP architecture: donut pattern, streaming, lazy queries, scroll perf
+
+Performance & Streaming
+- Pass data as promises + Suspense boundary in page.tsx — page shell
+  (header/footer) streams immediately, VDP content fills in when data resolves
+- Remove root loading.tsx that caused spinner flash on every async page
+- Parallel server-side fetch (Promise.all) for vehicle + dealer data,
+  eliminating client-side waterfall via useDealerData hook
+
+RSC Boundaries (Donut Pattern)
+- Rewrite details.tsx as async server component — renders static content
+  (rating, dealer notes, dealer card) directly, embeds client islands
+- Remove "use client" from presentational components: dealer-notes-section,
+  prequalify-card, test-drive-card, trade-in-card
+- Delete orphaned vehicle-detail-client.tsx and use-dealer-data.ts
+
+Scroll Performance
+- Convert useState → useRef for scroll-driven values (stickyScrollOffset,
+  showStickyCTA, scrollDirection) in vehicle-pdp.tsx
+- Direct DOM manipulation via bannerRef — eliminates re-renders on every
+  scroll event
+- Extract updateBannerStyle into useCallback to reduce handleScroll complexity
+
+Lazy Query Loading
+- SearchHistoryProvider: move useQuery into useSearchHistory() hook —
+  /api/saved-registry/search-history only fires when a consumer mounts
+  (VDP no longer triggers it)
+- Increase staleTime to 5min for saved-vehicles and search-history queries —
+  IDB-restored data stays fresh, avoids redundant background refetches
+
+Provider Isolation
+- Swap SearchHistoryProvider before FavoritesProvider in composeProviders —
+  fixes cross-triggering where favorites changes caused search history
+  re-renders
+
+React 19 / Next.js 16
+- Remove forwardRef from key-features.tsx — ref as direct prop (React 19)
+- Add cacheTag("vdp", vin/id) to vdp.service.ts for targeted invalidation
+- sticky-banner.tsx accepts ref prop directly (React 19 pattern)
+
 ## Overview
 
 This document explains the feature flag system used to control user experiences on the landing page, My Garage page, and GarageInfoCards. The system allows testing different user scenarios and personalizing content based on user state.
