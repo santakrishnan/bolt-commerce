@@ -2,6 +2,35 @@
 
 This document explains how to install and use agent skills for AI-assisted development in this project.
 
+feat: fix search submission, add searchId/filterId correlation, async parallel
+filters, and adopt React 19 rendering patterns
+
+Search button fix:
+- handleSubmit now calls both onSearchChange() and onSearch()
+
+Request correlation:
+- Add searchId (UUID) to search API response, persists across pagination/sort
+- Create separate /api/search/filters endpoint with its own filterId
+- Reset both IDs when search query changes (new search = new correlation)
+
+Async parallel filter loading:
+- Split SearchContext into two independent TanStack Query hooks
+  (vehicle-search + search-filters) that fire in parallel
+- Filters no longer block vehicle results rendering
+- Per-section loading spinners in filter sidebar via loadingFacetSections
+
+React 19 patterns:
+- useDeferredValue replaces manual setTimeout debouncing in useSearchSuggestions
+- useDeferredValue on vehiclePool for seamless card re-rendering without loaders
+- use() hook replaces useEffect+useState for quick filter pills in SearchHero
+- useTransition wraps filter state updates for non-blocking UI
+- Suspense boundary around SearchHero for use() suspension
+
+API call optimization:
+- Module-level singleton for SuggestProxyService (cache persists across remounts)
+- enabled flag on useSearchSuggestions suppresses programmatic-change fetches
+- isFirstRender guard prevents mount-time suggest API calls
+
 ## What are Agent Skills?
 
 Agent skills are modular packages that extend AI agent capabilities with specialized knowledge, workflows, and best practices. They help AI assistants understand:
