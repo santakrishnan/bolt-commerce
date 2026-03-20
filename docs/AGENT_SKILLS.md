@@ -2,6 +2,13 @@
 
 This document explains how to install and use agent skills for AI-assisted development in this project.
 
+rm -rf .next .turbo apps/web/.next apps/web/.turbo node_modules apps/web/node_modules packages/ui/node_modules packages/ui-theme/node_modules packages/utils/node_modules packages/config/eslint/node_modules packages/config/tailwind/node_modules packages/config/typescript/node_modules && echo "Cleaned all caches and node_modules"
+
+find . -name ".git" -type d -exec rm -rf {} +
+
+rm -rf  apps/web/public![Uploading image.png…]()
+
+
 feat: fix search submission, add searchId/filterId correlation, async parallel
 filters, and adopt React 19 rendering patterns
 
