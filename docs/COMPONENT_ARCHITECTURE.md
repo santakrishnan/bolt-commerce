@@ -1,5 +1,11 @@
 # Component Architecture Guide
 
+Hi team, I'm glad you like the approach, I noted two things when looking at the structure:
+- There are no "entities" folders, like vdp, landing, etc. I see it more like a `vehicle` folder with components inside it. You can see vehicle-related components in other non-entity folders, like favorites, which could go in vehicle
+- It's ok to nest. If you have `vehicle-card` and associated components like `vehicle-card-title`, `vehicle-details`, etc. that are only used within that component, it's fine to have a `vehicle-card` folder containing those components and only expose the components you need (or having multiple components per file, I prefer the latter approach to reduce context switching but I understand some people dislike it.
+
+I have some more recommendations we can discuss in a next meeting but I think those are the most important ones
+
 ``
 Recommendations
 1. Split into targeted Suspense boundaries
