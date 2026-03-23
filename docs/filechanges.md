@@ -1,5 +1,47 @@
 Here's the complete list of every file changed across the entire cleanup (Batches 1–7 + reviewer feedback round). All paths relative to apps/web/src/.
 
+PR Title: Modular codebase cleanup: decompose monolithic components + consolidate vehicle domain
+
+PR Body:
+
+Summary
+Decompose large monolithic component files across VDP, search, my-garage, vehicle-card, and shared features by extracting types, constants, helpers, and sub-components into co-located sibling files
+Consolidate scattered vehicle-related types and utilities into a canonical shared/vehicle/ domain (types, mappers, formatters, print-sheet components)
+Convert all export * barrel files to explicit named exports for tighter public API control
+Trim over-exported barrels (vdp/components 12→5, my-garage 5→1, search 27→2)
+Merge team's in-flight changes: search-bar focus retry logic, search-hero progress bar, filter-sidebar a11y fix (div→button), search-client display query + reset consolidation, home-hero responsive breakpoints
+What changed
+Structural extractions (no behavioral changes):
+
+vehicle-meta-bar.tsx — color swatches/helpers → .constants.ts, chips merged back inline
+vehicle-pdp.tsx — scroll handler → hooks/use-sticky-scroll.ts
+price-range-meter.tsx — magic numbers → .constants.ts
+price-history-table.tsx — formatters → vdp/lib/formatters.tsx
+my-garage-cards.tsx — 5 sub-card components → my-garage-sub-cards.tsx, interfaces → types.ts
+my-garageclient.tsx — helpers → my-garage/lib/helpers.ts
+vehicle-results.tsx — mapper → search/lib/vehicle-to-card-props.ts
+search-context.tsx — facet helpers → search/lib/facet-utils.ts
+custom-badge.tsx — constants, helpers, types → 3 sibling files
+custom-chips.tsx — helpers, types → 2 sibling files
+refine-search-modal.tsx — buildFilterOptions → .helpers.ts
+Vehicle domain consolidation:
+
+Created shared/vehicle/ with canonical types.ts, mappers.ts, formatters.ts
+Moved print-sheet components from shared/components/ → shared/vehicle/components/
+Eliminated 110 lines of duplicate types in vdp/services/types.ts (now re-exports from vdp/data/types.ts)
+Barrel hygiene:
+
+6 barrel files converted from export * → explicit named exports
+3 barrels trimmed to only externally-consumed exports
+Team changes merged:
+
+search-bar.tsx — hasInteracted default, focus retry with exponential backoff
+search-hero.tsx — progress bar in sticky header, min-h-20
+search-client.tsx — itemsPerPage 20→12, displaySearchQuery (hyphen→space), consolidated resetFilters
+search-wrapper.tsx — key prop moved from SearchClient to SearchProvider
+filter-sidebar/index.tsx — overlay div→button for a11y
+home-hero-static.config.ts — granular responsive breakpoints (m360–t900)
+
 New Files Created (22)
 #	Path	Description
 1	shared/vehicle/types.ts	Canonical Vehicle interface
