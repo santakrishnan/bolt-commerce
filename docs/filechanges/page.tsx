@@ -1,89 +1,79 @@
-import { getUsedCarsPageMetadata } from "@config/messages/used-cars";
-import { ROUTES } from "@config/routes/constants";
-import {
-  buildUsedCarsPath,
-  parseUsedCarsParams,
-  type UsedCarsRoute,
-} from "@config/routes/used-cars";
-import { SrpShell } from "@features/search/components/srp-shell";
-import { VehicleGridSkeleton } from "@features/search/components/vehicle-grid-skeleton";
-import { SearchWrapper } from "@features/search/context";
-import { VdpSkeleton } from "@features/vdp/components/vdp-skeleton";
-import { getVehicleBundleCached } from "@features/vdp/services/vdp-cached";
-import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
-import { Suspense } from "react";
-import { UsedCarsDetails } from "./views/details";
+"use client";
 
-interface Props {
-  params: Promise<{ params?: string[] }>;
-  searchParams: Promise<{ q?: string }>;
+import type { VdpParams } from "@config/routes";
+import type { VehicleDetail } from "@features/vdp/data";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { VehicleStickyBanner } from "./sticky-banner";
+
+interface VehiclePdpStickyClientProps {
+  desktopTargetId: string;
+  mobileTargetId: string;
+  slugParams: VdpParams;
+  vehicle: VehicleDetail;
 }
 
-function resolveRoute(segments: string[] | undefined): UsedCarsRoute {
-  const route = parseUsedCarsParams(segments);
-  if (!route) {
-    notFound();
-  }
-  return route;
-}
+export function VehiclePdpStickyClient({
+  vehicle,
+  slugParams,
+  desktopTargetId,
+  mobileTargetId,
+}: VehiclePdpStickyClientProps) {
+  const pathname = usePathname();
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { params: segments } = await params;
-  const route = resolveRoute(segments);
-  const meta = getUsedCarsPageMetadata(route);
+  const [stickyScrollOffset, setStickyScrollOffset] = useState(0);
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("down");
+  const STICKY_HEIGHT = 72;
 
-  return {
-    title: meta.title,
-    description: meta.description,
-    openGraph: { title: meta.title, type: "website" },
-  };
-}
+  useEffect(() => {
+    if (pathname) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [pathname]);
 
-export default async function UsedCarsPage({ params, searchParams }: Props) {
-  // Unwrap both promises in parallel
-  const [{ params: segments }, { q: initialSearchQuery }] = await Promise.all([
-    params,
-    searchParams,
-  ]);
-  const route = resolveRoute(segments);
+  useEffect(() => {
+    let prevScrollY = 0;
 
-  // Canonical URL enforcement — redirect if casing differs
-  const canonicalPath = buildUsedCarsPath(route);
-  const currentPath = segments ? `${ROUTES.USED_CARS}/${segments.join("/")}` : ROUTES.USED_CARS;
-  if (currentPath !== canonicalPath) {
-    redirect(canonicalPath);
-  }
+    function handleScroll() {
+      const desktopEl = document.getElementById(desktopTargetId);
+      const mobileEl = document.getElementById(mobileTargetId);
+      const target = desktopEl && desktopEl.offsetParent !== null ? desktopEl : mobileEl;
 
-  // ── Details (VDP) ──
-  // Calls cached service functions directly (VIN-only cache key, no headers()).
-  // Data is cached per VIN via "use cache" + cacheLife("vdp") in vdp-cached.ts.
-  if (route.type === "details") {
-    const vehicleBundlePromise = getVehicleBundleCached(route.vin);
+      if (!target) {
+        return;
+      }
 
-    return (
-      <Suspense fallback={<VdpSkeleton />}>
-        <UsedCarsDetails
-          make={route.make}
-          model={route.model}
-          trim={route.trim}
-          vehicleBundlePromise={vehicleBundlePromise}
-          vin={route.vin}
-          year={route.year}
-        />
-      </Suspense>
-    );
-  }
+      const rect = target.getBoundingClientRect();
+      const header = document.querySelector("header");
+      const headerHeight = header ? header.getBoundingClientRect().height : 80;
 
-  // ── SRP (Search Results Page) ──
+      const offset = Math.max(0, headerHeight - rect.top);
+      setStickyScrollOffset(offset > 0 ? offset : 0);
+      setShowStickyCTA(rect.top < headerHeight);
+
+      const currentY = window.scrollY;
+      if (currentY > prevScrollY) {
+        setScrollDirection("down");
+      } else if (currentY < prevScrollY) {
+        setScrollDirection("up");
+      }
+      prevScrollY = currentY;
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [desktopTargetId, mobileTargetId]);
+
   return (
-    <SrpShell initialBodyType={route.filters.bodyType}>
-      <Suspense fallback={<VehicleGridSkeleton />}>
-        <SearchWrapper
-          initialBodyType={route.filters.bodyType}
-          initialSearchQuery={initialSearchQuery}
-        />
-      </Suspense>
-    </SrpShell>
+    <VehicleStickyBanner
+      scrollDirection={scrollDirection}
+      showStickyCTA={showStickyCTA}
+      slugParams={slugParams}
+      stickyHeight={STICKY_HEIGHT}
+      stickyScrollOffset={stickyScrollOffset}
+      vehicle={vehicle}
+    />
   );
 }
