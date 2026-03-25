@@ -1,134 +1,89 @@
+import { getUsedCarsPageMetadata } from "@config/messages/used-cars";
+import { ROUTES } from "@config/routes/constants";
 import {
-  customerPreQualified,
-  getUserInfo,
-  redirectToMyGarage,
-  showPersonalizedHeroBanner,
-} from "@config/flags/flags";
-import {
-  ArrowInspectedSectionWrapper,
-  ArrowInspectedSkeleton,
-  BuyingProcess,
-  CustomerJourneyCarouselSection,
-  CustomerJourneySkeleton,
-  HomeHero,
-  VehicleFinderQuickLinks,
-  VehicleFinderSkeleton,
-  VehicleTypeSelectorSkeleton,
-  VehicleTypeSelectorWrapper,
-} from "@features/landing";
-import { MyGarageWrapper } from "@features/my-garage";
-import knownUserData from "@shared/data/known-user.json";
-import dynamic from "next/dynamic";
+  buildUsedCarsPath,
+  parseUsedCarsParams,
+  type UsedCarsRoute,
+} from "@config/routes/used-cars";
+import { SrpShell } from "@features/search/components/srp-shell";
+import { VehicleGridSkeleton } from "@features/search/components/vehicle-grid-skeleton";
+import { SearchWrapper } from "@features/search/context";
+import { VdpSkeleton } from "@features/vdp/components/vdp-skeleton";
+import { getVehicleBundleCached } from "@features/vdp/services/vdp-cached";
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import { UsedCarsDetails } from "./views/details";
 
-const AnimatedSection = dynamic(() =>
-  import("@shared/components/animated-section").then((mod) => ({
-    default: mod.AnimatedSection,
-  }))
-);
-
-/**
- * Sync shell rendered as the PPR static fallback — what users see instantly
- * before any dynamic data (flags, cookies) resolves. Matches the default
- * anonymous-user view: hero with search bar + skeleton placeholders for
- * every async section below the fold. BuyingProcess is included as real
- * content since it's fully sync (reads static JSON).
- */
-function HomePageShell() {
-  return (
-    <div className="bg-[var(--color-core-surfaces-background)]">
-      <HomeHero showSearch={true} showStats={true} showSubtitle={true} />
-      <VehicleTypeSelectorSkeleton />
-      <BuyingProcess />
-      <VehicleFinderSkeleton />
-      <CustomerJourneySkeleton />
-      <ArrowInspectedSkeleton />
-    </div>
-  );
+interface Props {
+  params: Promise<{ params?: string[] }>;
+  searchParams: Promise<{ q?: string }>;
 }
 
-/**
- * Page export is sync so the Suspense fallback (HomePageShell) is reachable
- * during prerender. The async flag-reading logic lives in HomePageContent,
- * which streams in once cookies() resolves.
- */
-export default function HomePage() {
-  return (
-    <Suspense fallback={<HomePageShell />}>
-      <HomePageContent />
-    </Suspense>
-  );
+function resolveRoute(segments: string[] | undefined): UsedCarsRoute {
+  const route = parseUsedCarsParams(segments);
+  if (!route) {
+    notFound();
+  }
+  return route;
 }
 
-/**
- * Async component that reads feature flags (via cookies) and renders
- * the appropriate variant: garage view, personalized hero, or default
- * landing page with individually-streamed sections.
- */
-async function HomePageContent() {
-  const [shouldShowGarage, userInfo, showPersonalizedBanner, isPreQualified] = await Promise.all([
-    redirectToMyGarage(),
-    getUserInfo(),
-    showPersonalizedHeroBanner(),
-    customerPreQualified(),
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { params: segments } = await params;
+  const route = resolveRoute(segments);
+  const meta = getUsedCarsPageMetadata(route);
+
+  return {
+    title: meta.title,
+    description: meta.description,
+    openGraph: { title: meta.title, type: "website" },
+  };
+}
+
+export default async function UsedCarsPage({ params, searchParams }: Props) {
+  // Unwrap both promises in parallel
+  const [{ params: segments }, { q: initialSearchQuery }] = await Promise.all([
+    params,
+    searchParams,
   ]);
+  const route = resolveRoute(segments);
 
-  if (shouldShowGarage) {
+  // Canonical URL enforcement — redirect if casing differs
+  const canonicalPath = buildUsedCarsPath(route);
+  const currentPath = segments ? `${ROUTES.USED_CARS}/${segments.join("/")}` : ROUTES.USED_CARS;
+  if (currentPath !== canonicalPath) {
+    redirect(canonicalPath);
+  }
+
+  // ── Details (VDP) ──
+  // Calls cached service functions directly (VIN-only cache key, no headers()).
+  // Data is cached per VIN via "use cache" + cacheLife("vdp") in vdp-cached.ts.
+  if (route.type === "details") {
+    const vehicleBundlePromise = getVehicleBundleCached(route.vin);
+
     return (
-      <MyGarageWrapper
-        knownUserOverrides={{ showCards: false }}
-        showUserName={showPersonalizedBanner && userInfo.isAuthenticated}
-      />
+      <Suspense fallback={<VdpSkeleton />}>
+        <UsedCarsDetails
+          make={route.make}
+          model={route.model}
+          trim={route.trim}
+          vehicleBundlePromise={vehicleBundlePromise}
+          vin={route.vin}
+          year={route.year}
+        />
+      </Suspense>
     );
   }
 
-  const shouldHideSections = userInfo.isAuthenticated && isPreQualified;
-
-  const knownUserOverrides = showPersonalizedBanner
-    ? {
-        ...knownUserData,
-        userName: userInfo.firstName,
-        showCards: true,
-        showContinueShopping: true,
-      }
-    : undefined;
-
+  // ── SRP (Search Results Page) ──
   return (
-    <div className="bg-[var(--color-core-surfaces-background)]">
-      <HomeHero
-        knownUser={knownUserOverrides}
-        showSearch={!showPersonalizedBanner}
-        showStats={true}
-        showSubtitle={true}
-      />
-
-      {!shouldHideSections && (
-        <>
-          <Suspense fallback={<VehicleTypeSelectorSkeleton />}>
-            <AnimatedSection delay={0.1} staggerChildren>
-              <VehicleTypeSelectorWrapper />
-            </AnimatedSection>
-          </Suspense>
-          <AnimatedSection delay={0.1} staggerChildren>
-            <BuyingProcess />
-          </AnimatedSection>
-          <Suspense fallback={<VehicleFinderSkeleton />}>
-            <AnimatedSection delay={0.1}>
-              <VehicleFinderQuickLinks />
-            </AnimatedSection>
-          </Suspense>
-          <Suspense fallback={<CustomerJourneySkeleton />}>
-            <AnimatedSection delay={0.1} staggerChildren>
-              <CustomerJourneyCarouselSection isPreQualified={isPreQualified} />
-            </AnimatedSection>
-          </Suspense>
-          <Suspense fallback={<ArrowInspectedSkeleton />}>
-            <AnimatedSection delay={0.1}>
-              <ArrowInspectedSectionWrapper />
-            </AnimatedSection>
-          </Suspense>
-        </>
-      )}
-    </div>
+    <SrpShell initialBodyType={route.filters.bodyType}>
+      <Suspense fallback={<VehicleGridSkeleton />}>
+        <SearchWrapper
+          initialBodyType={route.filters.bodyType}
+          initialSearchQuery={initialSearchQuery}
+        />
+      </Suspense>
+    </SrpShell>
   );
 }
