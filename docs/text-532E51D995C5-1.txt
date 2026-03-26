@@ -1,5 +1,23 @@
 Toyota Web App Prototype Architecture Review
 
+refactor(vdp): merge VinData + VehicleData into single type, eliminate API waterfall
+
+Consolidate VehicleData into VinData so all product data (vehicle, pricing,
+history, specs, features, rating, status) comes from a single API call.
+Replace the sequential waterfall (fetchVinData → fetchVehicleData + fetchDealer)
+with parallel Promise.all([fetchVinDataCached, fetchDealerByVinCached]).
+
+Changes:
+- Merge VehicleData fields into VinData type, delete VehicleData interface
+- Remove fetchVehicleData, fetchVehicleDataCached, and fetchMockVehicleData
+- Flatten mock inventory to store VinData directly (remove vinByVehicleId map)
+- Simplify VehicleBundle to { vinData, dealerInfo } (remove vehicleData field)
+- Update vdp-cached to use Promise.all for parallel product + dealer fetching
+- Simplify API route to single fetchVinData call
+- Update details view to destructure all fields from vinData
+- Remove VehicleData from all barrel exports and re-exports
+- Update 7 test files to reflect merged data structure
+
 Summary:
 Meeting Summary
 
