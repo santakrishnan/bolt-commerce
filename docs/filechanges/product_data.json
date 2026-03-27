@@ -1,0 +1,179 @@
+
+{
+  "vehicles": [
+    {
+      "vin": "4T1B11HK5KU123456",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2022,
+      "price": 26500.00,
+      "mileage": 8000,
+      "bodyStyle": "sedan",
+      "exteriorColor": "silver",
+      "mileageCondition": {
+        "score": 83,
+        "label": "Very Low Miles",
+        "expectedMileage": 24000,
+        "mileageRatio": 0.33,
+        "percentOfExpected": "33%"
+      },
+      "dealership": {
+        "name": "Bay Area Toyota",
+        "address": "1234 Market Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "location": {
+          "lat": 37.7758,
+          "lon": -122.4128
+        }
+      },
+      "distance": {
+        "miles": 0.8,
+        "kilometers": 1.3
+      },
+      "description": "Stunning 2022 Toyota Camry SE with only 8K miles. Barely driven, like new condition."
+    },
+    {
+      "vin": "4T1BF1FK8HU234567",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2021,
+      "price": 24200.00,
+      "mileage": 18000,
+      "bodyStyle": "sedan",
+      "exteriorColor": "white",
+      "mileageCondition": {
+        "score": 75,
+        "label": "Very Low Miles",
+        "expectedMileage": 36000,
+        "mileageRatio": 0.50,
+        "percentOfExpected": "50%"
+      },
+      "dealership": {
+        "name": "Bay Area Toyota",
+        "address": "1234 Market Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "location": {
+          "lat": 37.7758,
+          "lon": -122.4128
+        }
+      },
+      "distance": {
+        "miles": 0.8,
+        "kilometers": 1.3
+      },
+      "description": "Beautiful 2021 Toyota Camry LE with low 18K miles. Well-maintained, one owner."
+    },
+    {
+      "vin": "4T1BZ1HK9JU345678",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2023,
+      "price": 28900.00,
+      "mileage": 5000,
+      "bodyStyle": "sedan",
+      "exteriorColor": "blue",
+      "mileageCondition": {
+        "score": 79,
+        "label": "Very Low Miles",
+        "expectedMileage": 12000,
+        "mileageRatio": 0.42,
+        "percentOfExpected": "42%"
+      },
+      "dealership": {
+        "name": "Peninsula Toyota Center",
+        "address": "5678 El Camino Real",
+        "city": "San Mateo",
+        "state": "CA",
+        "location": {
+          "lat": 37.5630,
+          "lon": -122.3255
+        }
+      },
+      "distance": {
+        "miles": 15.2,
+        "kilometers": 24.5
+      },
+      "description": "Like-new 2023 Toyota Camry XSE with only 5K miles. Minimal use, pristine condition."
+    }
+  ],
+  "totalCount": 12,
+  "smartFilters": [
+    {
+      "name": "distance_range",
+      "display_name": "Distance",
+      "type": "LITERAL",
+      "options": [
+        {"value": "0-10", "display_name": "Within 10 miles", "count": 5},
+        {"value": "10-25", "display_name": "10-25 miles", "count": 4},
+        {"value": "25-50", "display_name": "25-50 miles", "count": 3}
+      ]
+    },
+    {
+      "name": "mileage_condition",
+      "display_name": "Mileage Condition",
+      "type": "INTELLIGENT",
+      "description": "Mileage relative to vehicle age",
+      "options": [
+        {
+          "value": "essentially_new",
+          "display_name": "Essentially New (90-100)",
+          "count": 2,
+          "description": "Barely driven, like new"
+        },
+        {
+          "value": "very_low",
+          "display_name": "Very Low Miles (75-89)",
+          "count": 10,
+          "description": "Well below average for age"
+        }
+      ]
+    },
+    {
+      "name": "body_style",
+      "display_name": "Body Style",
+      "type": "LITERAL",
+      "options": [
+        {"value": "sedan", "display_name": "Sedan", "count": 12}
+      ]
+    },
+    {
+      "name": "price_range",
+      "display_name": "Price Range",
+      "type": "LITERAL",
+      "options": [
+        {"value": "20000-30000", "display_name": "Less than $30K", "count": 9},
+        {"value": "30000-40000", "display_name": "Less than $40K", "count": 3}
+      ]
+    },
+    {
+      "name": "reliability_rating",
+      "display_name": "Reliability Rating",
+      "type": "INTELLIGENT",
+      "description": "JD Power reliability scores",
+      "options": [
+        {"value": "excellent", "display_name": "Excellent (85+)", "count": 10}
+      ]
+    },
+    {
+      "name": "ownership_history",
+      "display_name": "Ownership History",
+      "type": "INTELLIGENT",
+      "description": "Number of previous owners",
+      "options": [
+        {"value": "1_owner", "display_name": "Single Owner", "count": 8}
+      ]
+    }
+  ],
+  "appliedFilters": [
+    {"field": "make", "value": "Toyota", "displayText": "Make: Toyota"},
+    {"field": "model", "value": "Camry", "displayText": "Model: Camry"},
+    {"field": "mileage_condition", "value": "low_miles", "displayText": "Mileage: Low Miles for Age (Score ≥ 75)"},
+    {"field": "distance", "value": "100", "displayText": "Distance: Within 100 miles"}
+  ],
+  "visitorLocation": {
+    "lat": 37.7749,
+    "lon": -122.4194
+  }
+}
