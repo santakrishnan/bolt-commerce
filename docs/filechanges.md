@@ -1,5 +1,63 @@
 Here's the complete list of every file changed across the entire cleanup (Batches 1–7 + reviewer feedback round). All paths relative to apps/web/src/.
 
+web:dev: [browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+web:dev:
+web:dev: - A server/client branch `if (typeof window !== 'undefined')`.
+web:dev: - Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+web:dev: - Date formatting in a user's locale which doesn't match the server.
+web:dev: - External changing data without sending a snapshot of it along with the HTML.
+web:dev: - Invalid HTML tag nesting.
+web:dev:
+web:dev: It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+web:dev:
+web:dev: https://react.dev/link/hydration-mismatch
+web:dev:
+web:dev:   ...
+web:dev:     <SearchClient initialQuickFilters={[...]}>
+web:dev:       <div className="flex min-h...">
+web:dev:         <FilterSidebar availableFilters={{...}} filterState={{...}} isOpen={false} loadingFacetSections={[...]} ...>
+web:dev:           <aside className="fixed top-...">
+web:dev:             <div>
+web:dev:             <div className="flex flex-...">
+web:dev:               <SidebarNav>
+web:dev:               <SidebarFilters availableFilters={{...}} draftState={{...}} facetCounts={undefined} ...>
+web:dev:                 <div className="relative f...">
+web:dev:                   <div className="scrollbar-..." onScroll={function FilterSidebar.useCallback[handleScroll]} ...>
+web:dev:                     <div className="pb-6 lg:pb-12">
+web:dev:                       <FilterSectionPrice filterSections={{...}} ...>
+web:dev:                         <FilterSection isLoading={false} isOpen={false} onToggle={function onToggle} ...>
+web:dev:                           <div className="border-gra..." ref={function sectionRef}>
+web:dev:                             <_c className="flex h-aut..." onClick={function onToggle} type="button" variant="search">
+web:dev:                               <button className={"cursor-p..."} ref={null} onClick={function onToggle} type="button">
+web:dev:                                 <span className="flex items...">
+web:dev: -                                 <output
+web:dev: -                                   aria-label="Price is updating"
+web:dev: -                                   aria-live="polite"
+web:dev: -                                   className="inline-block h-3 w-3 animate-spin rounded-full border border-gray-300 b..."
+web:dev: -                                 >
+web:dev:                                 ...
+web:dev:                       ...
+web:dev:                   ...
+web:dev:         ...
+web:dev:
+web:dev:     at <unknown> (https://react.dev/link/hydration-mismatch)
+web:dev:     at span (<anonymous>)
+web:dev:     at FilterSection (src/features/search/components/filter-sidebar/filter-section.tsx:28:9)
+web:dev:     at FilterSectionPrice (src/features/search/components/filter-sidebar/sections/filter-section-price.tsx:32:3)
+web:dev:     at SidebarFilters (src/features/search/components/filter-sidebar/sidebar-filters.tsx:86:11)
+web:dev:     at FilterSidebar (src/features/search/components/filter-sidebar/index.tsx:225:11)
+web:dev:     at SearchClient (src/features/search/context/search-client.tsx:355:7)
+web:dev:     at SearchWrapper (src/features/search/context/search-wrapper.tsx:69:9)
+web:dev:     at UsedCarsPage (src/app/used-cars/[[...params]]/page.tsx:81:9)
+web:dev:   26 |         variant="search"
+web:dev:   27 |       >
+web:dev: > 28 |         <span className="flex items-center gap-2 font-semibold text-[length:var(--text-md)] text-[var(--color-brand-text-primary)] leading-normal">
+web:dev:      |         ^
+web:dev:   29 |           {title}
+web:dev:   30 |           {isLoading && (
+web:dev:   31 |             <output
+web:dev: Route / is rendering with server caches disabled. For this navigation, Component Metadata in React DevTools will not accurately reflect what is statically prerenderable and runtime prefetchable. See more info here: https://nextjs.org/docs/messages/cache-bypass-in-dev
+
 PR Title: Modular codebase cleanup: decompose monolithic components + consolidate vehicle domain
 
 PR Body:
