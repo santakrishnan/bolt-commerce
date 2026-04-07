@@ -1,5 +1,14 @@
 # Feature Flags Documentation
 
+# Authentication — better-auth
+# Generate a strong random secret: `openssl rand -hex 32`
+BETTER_AUTH_SECRET=dev-secret-change-in-production
+BETTER_AUTH_URL=http://localhost:3000
+
+# Exposed to the browser so the auth client knows where to send requests.
+# Must match BETTER_AUTH_URL in local development.
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
+
 ## Overview
 Integrate better-auth (v1.6.0) into the Arrow web app for Phase 0 prototyping.
 No database or Auth0 integration — email/password only, validated against
