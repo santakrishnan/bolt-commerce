@@ -1,5 +1,34 @@
 # Feature Flags Documentation
 
+## Overview
+Integrate better-auth (v1.6.0) into the Arrow web app for Phase 0 prototyping.
+No database or Auth0 integration — email/password only, validated against
+sample credentials stored in a config file.
+
+## Acceptance Criteria
+- [ ] `better-auth` installed in `apps/web`
+- [ ] Sample credentials config at `src/config/auth/sample-users.ts`
+      (alice@example.com / Demo@1234, bob@example.com / Demo@1234)
+- [ ] Server auth instance with in-memory adapter + startup seeding
+      (`src/features/auth/lib/auth.ts`)
+- [ ] Client auth instance (`src/features/auth/lib/auth-client.ts`)
+- [ ] Catch-all API route at `/api/auth/[...all]`
+- [ ] Sign-in page at `/sign-in` with email/password form
+- [ ] Dev credentials hint visible only in non-production builds
+- [ ] 26 passing tests (form behaviour + auth seeding/sign-in)
+
+## Out of Scope (Phase 1)
+- Auth0 / OAuth integration
+- Database-backed user store
+- Sign-up flow (sample users only in Phase 0)
+- Password reset
+
+## Env vars required
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `NEXT_PUBLIC_BETTER_AUTH_URL`
+
+
 Optimize VDP architecture: donut pattern, streaming, lazy queries, scroll perf
 
 Performance & Streaming
