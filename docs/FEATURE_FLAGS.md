@@ -1,5 +1,26 @@
 # Feature Flags Documentation
 
+apps/web/src/features/landing/components/
+├── home-hero/
+│   └── home-hero-stats.tsx
+├── vehicle-type-selector/
+│   ├── vehicle-type-card.tsx
+│   └── vehicle-type-selector.tsx
+├── arrow-inspected/
+│   ├── arrow-inspected-section.tsx
+│   └── inspection-feature-card.tsx
+└── vehicle-quick-links/
+    └── vehicle-quick-link-card.tsx
+
+File	What changed
+home-hero-stats.tsx	Stats gap lg:gap-[var(--spacing-5xl)] (was raw lg:gap-[88px]), removed lg:px-32 and lg:w-50
+vehicle-type-card.tsx	Card padding → px-[var(--spacing-md)] py-[var(--spacing-xl)]
+vehicle-type-selector.tsx	Grid gap unified → gap-[var(--spacing-md)] (removed gap-x/gap-y split)
+arrow-inspected-section.tsx	Default description → sentence case
+inspection-feature-card.tsx	Content padding → px-[var(--spacing-lg)] py-[var(--spacing-xl)] at all breakpoints
+vehicle-quick-link-card.tsx	Border → border-[var(--color-structure-interaction-border)] (#d4d4d4), hover → hover:border-[var(--color-structure-interaction-border-hover)] (#eb0d1c), bg → bg-[var(--color-core-surfaces-card)]
+
+
 # Authentication — better-auth
 # Generate a strong random secret: `openssl rand -hex 32`
 BETTER_AUTH_SECRET=dev-secret-change-in-production
