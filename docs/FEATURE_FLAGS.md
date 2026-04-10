@@ -21,6 +21,45 @@ inspection-feature-card.tsx	Content padding → px-[var(--spacing-lg)] py-[var(-
 vehicle-quick-link-card.tsx	Border → border-[var(--color-structure-interaction-border)] (#d4d4d4), hover → hover:border-[var(--color-structure-interaction-border-hover)] (#eb0d1c), bg → bg-[var(--color-core-surfaces-card)]
 
 
+The Figma spec covers far more than just gap. Let me do the full audit:
+
+Property	Figma spec	Current code	Issue
+Value font-weight	semibold (600)	font-normal	❌ Wrong
+Value font-size	--font-size-xl (20px) all sizes	--text-md (16px) mobile → xl on md	❌ Mobile wrong
+Value line-height	1.15	not set	❌ Missing
+Value color	--color-core-surfaces-inverse-foreground (#f5f5f5)	text-primary-foreground (#fff)	❌ Wrong
+Label font-size	--font-size-sm (14px) all sizes	--font-size-xs (12px) mobile → sm on md	❌ Mobile wrong
+Label tracking	-0.14px literal	--tracking-tight = -0.42px at 14px	❌ Over-tracked
+Label color	--color-core-surfaces-inverse-foreground (#f5f5f5)	text-primary-foreground/80	❌ Wrong
+Icon size	48px always	40px mobile → 48px lg	❌ Mobile wrong
+Icon shape	Square tile, no border-radius	rounded-full wrapper div	❌ Wrong
+Icon-to-text gap	24px always	12px mobile → 24px md	❌ Mobile wrong
+Text stack gap	12px between value + label	none	❌ Missing
+min-w-[6.5ch]	not in spec	present	❌ Extra
+Container border-radius	not in spec	rounded-[var(--radius-2xl)]	❌ Extra
+
+Full bug list
+vehicle-type-selector.tsx — 3 bugs
+#	Property	Figma	Current	Bug
+1	Heading font-size at md	32px (--font-size-2xl)	20px (--font-size-xl)	❌ Shrinks at md
+2	Heading mb-	none (parent flex gap handles spacing)	mb-[var(--spacing-lg)] / sm:mb-[var(--spacing-xl)]	❌ Double-spacing: 48px gap + 24/32px margin = 72/80px
+3	Grid row gap	12px (--spacing-sm)	16px (--spacing-md) uniform	❌ Row gap 4px too wide
+vehicle-type-card.tsx — 10 bugs
+#	Property	Figma	Current	Bug
+1	Card min-h	none	min-h-[140px] sm:min-h-[160px]	❌ Extra constraint
+2	Unselected card bg	transparent	bg-[--color-core-surfaces-background]	❌ Same as page bg — masks shadow/border
+3	Selected card bg	bg-[--color-core-surfaces-card] (white)	bg-[--color-core-surfaces-background]	❌ Same as unselected
+4	Hover bg	bg-[--color-core-surfaces-card] (white)	hover:bg-[--color-destructive-foreground] (also white, wrong token)	❌ Wrong token
+5	Card horizontal padding	px-0	px-[--spacing-md] / sm:px-[--spacing-lg]	❌ Figma has no px
+6	Image-to-text gap	32px (flex gap-[--spacing-xl])	mb-[--spacing-md] = 16px	❌ Half the Figma value
+7	Image height	116px always	70px mobile → 116px sm+	❌ Mobile too small
+8	Name font-size	20px always	16px mobile → 20px sm+	❌ Mobile too small
+9	Name color class	text-[--color-core-surfaces-foreground]	md:text-[length:var(--font-size-xl)][var(--color-core-surfaces-foreground)] — concatenation bug, color never applied	❌ Broken syntax
+10	Text block gap	12px (--spacing-sm)	8px (--spacing-xs)	❌ 4px too tight
+11	Description tracking	-0.14px	not set (inherits 0)	❌ Missing
+12	Description truncate	text wraps naturally	truncate	❌ Cuts description
+
+
 # Authentication — better-auth
 # Generate a strong random secret: `openssl rand -hex 32`
 BETTER_AUTH_SECRET=dev-secret-change-in-production
